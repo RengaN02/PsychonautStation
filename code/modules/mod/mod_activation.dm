@@ -160,6 +160,7 @@
 		module.on_deactivation(display_message = FALSE)
 	mod_link.end_call()
 	activating = TRUE
+	var/list/used_skin = theme.skins[skin]
 	to_chat(wearer, span_notice("MODsuit [active ? "shutting down" : "starting up"]."))
 	if (ai_assistant)
 		to_chat(ai_assistant, span_notice("MODsuit [active ? "shutting down" : "starting up"]."))
@@ -187,7 +188,7 @@
 		if(active)
 			playsound(src, 'sound/machines/synth_yes.ogg', 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE, frequency = 6000)
 			if(!malfunctioning)
-				wearer.playsound_local(get_turf(src), 'sound/mecha/nominal.ogg', 50)
+				wearer.playsound_local(get_turf(src), used_skin[MOD_STARTUP_SOUND] || 'sound/mecha/nominal.ogg', 50)
 		else
 			playsound(src, 'sound/machines/synth_no.ogg', 50, TRUE, SHORT_RANGE_SOUND_EXTRARANGE, frequency = 6000)
 	activating = FALSE

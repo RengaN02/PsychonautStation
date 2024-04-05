@@ -43,6 +43,9 @@
 #define MOD_ICON_OVERRIDE "mod_icon_override"
 #define MOD_WORN_ICON_OVERRIDE "mod_worn_icon_override"
 
+//Defines for Modsuits skin flags
+#define MOD_STARTUP_SOUND "mod_startup_sound"
+
 //Defines for MODlink frequencies
 #define MODLINK_FREQ_NANOTRASEN "NT"
 #define MODLINK_FREQ_SYNDICATE "SYND"
