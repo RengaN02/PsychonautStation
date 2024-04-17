@@ -258,12 +258,12 @@
 
 /datum/action/cooldown/mob_cooldown/headcrab_jump/Activate(atom/target_atom)
 	disable_cooldown_actions()
-	jump_to(target_atom)
+	hcjump_to(target_atom)
 	StartCooldown()
 	enable_cooldown_actions()
 	return TRUE
 
-/datum/action/cooldown/mob_cooldown/headcrab_jump/jump_to(atom/target_atom)
+/datum/action/cooldown/mob_cooldown/headcrab_jump/proc/hcjump_to(atom/target_atom)
 	var/mob/living/basic/headcrab/hc = owner
 	if(!istype(hc))
 		return
