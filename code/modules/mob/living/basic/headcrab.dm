@@ -24,11 +24,13 @@
 	var/datum/action/cooldown/mob_cooldown/headcrab_jump/hcjump
 
 /mob/living/basic/headcrab/Initialize(mapload)
+	. = ..()
 	hcjump = new(src)
 	hcjump.Grant(src)
 
 /mob/living/basic/headcrab/Destroy()
 	hcjump = null
+	return ..()
 
 /mob/living/basic/headcrab/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
