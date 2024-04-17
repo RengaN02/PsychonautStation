@@ -19,7 +19,7 @@
 	faction = list(FACTION_ZOMBIE)
 	pressure_resistance = 200
 	ai_controller = /datum/ai_controller/basic_controller/headcrab
-	var/hctype = /obj/item/organ/external/headcrab/default
+	var/obj/item/organ/external/headcrab/hctype = /obj/item/organ/external/headcrab/default
 	var/crabbed_someone = FALSE
 	var/datum/action/cooldown/mob_cooldown/headcrab_jump/hcjump
 
@@ -48,13 +48,14 @@
 	hcorgan.Insert(hit_human)
 	crabbed_someone = TRUE
 
-/mob/living/basic/headcrab/throw_at(atom/target, range, speed, mob/thrower, spin=FALSE, diagonals_first = FALSE, datum/callback/callback, gentle, quickstart = TRUE)
+/mob/living/basic/headcrab/throw_at(atom/target, range, speed, mob/thrower, spin=FALSE, diagonals_first = FALSE, datum/callback/callback, force = MOVE_FORCE_NORMAL, gentle, quickstart = TRUE)
 	if(stat != DEAD)
 		icon_state = "headcrab_jump"
-	return ..(target, range, speed, thrower, FALSE, diagonals_first, callback, quickstart = quickstart)
+	return ..(target, range, speed, thrower, FALSE, diagonals_first, callback, force, gentle, quickstart = quickstart)
 
 // MOB END
 // AI START
+
 /datum/ai_controller/basic_controller/headcrab
 	blackboard = list(
 		BB_TARGETING_STRATEGY = /datum/targeting_strategy/basic,
