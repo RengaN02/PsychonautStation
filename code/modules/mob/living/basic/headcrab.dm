@@ -46,7 +46,6 @@
 	forceMove(hcorgan)
 	visible_message(span_danger("\The [src] jumps to the [hit_human]s face!"))
 	hcorgan.Insert(hit_human)
-	crabbed_someone = TRUE
 
 /mob/living/basic/headcrab/throw_at(atom/target, range, speed, mob/thrower, spin=FALSE, diagonals_first = FALSE, datum/callback/callback, force = MOVE_FORCE_NORMAL, gentle, quickstart = TRUE)
 	if(stat != DEAD)
@@ -209,6 +208,7 @@
 				is_head_protected = TRUE
 		if(!is_head_protected)
 			try_to_zombie_infect(receiver)
+		hc.crabbed_someone = TRUE
 
 /obj/item/organ/external/headcrab/Remove(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
