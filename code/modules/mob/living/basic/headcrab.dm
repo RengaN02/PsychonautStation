@@ -1,3 +1,5 @@
+//MOB START
+
 /mob/living/basic/headcrab
 	name = "Headcrab"
 	desc = "It can hug."
@@ -18,6 +20,15 @@
 	pressure_resistance = 200
 	ai_controller = /datum/ai_controller/basic_controller/headcrab
 	var/hctype = /obj/item/organ/external/headcrab/default
+	var/crabbed_someone = FALSE
+	var/datum/action/cooldown/mob_cooldown/headcrab_jump/hcjump
+
+/mob/living/basic/headcrab/Initialize(mapload)
+	hcjump = new(src)
+	hcjump.Grant(src)
+
+/mob/living/basic/headcrab/Destroy()
+	hcjump = null
 
 /mob/living/basic/headcrab/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
@@ -28,17 +39,22 @@
 	if(. || !ishuman(hit_atom))
 		return
 	var/mob/living/carbon/human/hit_human = hit_atom
+	if(hit_human.get_organ_by_type(/obj/item/organ/external/headcrab))
+		return
 	var/obj/item/organ/external/headcrab/hcorgan = new hctype(src)
 	hcorgan.hc = src
 	forceMove(hcorgan)
 	visible_message(span_danger("\The [src] jumps to the [hit_human]s face!"))
 	hcorgan.Insert(hit_human)
+	crabbed_someone = TRUE
 
 /mob/living/basic/headcrab/throw_at(atom/target, range, speed, mob/thrower, spin=FALSE, diagonals_first = FALSE, datum/callback/callback, gentle, quickstart = TRUE)
 	if(stat != DEAD)
 		icon_state = "headcrab_jump"
 	return ..(target, range, speed, thrower, FALSE, diagonals_first, callback, quickstart = quickstart)
 
+// MOB END
+// AI START
 /datum/ai_controller/basic_controller/headcrab
 	blackboard = list(
 		BB_TARGETING_STRATEGY = /datum/targeting_strategy/basic,
@@ -85,17 +101,25 @@
 	var/atom/target = controller.blackboard[target_key]
 	var/datum/targeting_strategy/targeting_strategy = GET_TARGETING_STRATEGY(controller.blackboard[targeting_strategy_key])
 	var/mob/living/basic/headcrab/hc = basic_mob
+
 	if(!istype(hc))
 		return
 
 	if(!ishuman(target))
 		return
 
+	var/mob/living/carbon/human/ht = target
 	if(!targeting_strategy.can_attack(basic_mob, target, chase_range))
 		finish_action(controller, FALSE, target_key)
 		return
 
 	if(!can_see(basic_mob, target, required_distance))
+		return
+
+	if(ht.get_organ_by_type(/obj/item/organ/external/headcrab))
+		return
+
+	if(hc.crabbed_someone)
 		return
 
 	if(avoid_friendly_fire && check_friendly_in_path(basic_mob, target, targeting_strategy))
@@ -156,6 +180,9 @@
 
 	return turf_list
 
+// AI END
+// EXTERNAL ORGAN START
+
 /datum/sprite_accessory/headcrab
 	icon = 'icons/psychonaut/mob/nonhuman-player/headcrab.dmi'
 
@@ -187,6 +214,7 @@
 	if(hc)
 		hc.apply_damage(hc.health)
 		hc.forceMove(get_turf(src))
+		hc.crabbed_someone = FALSE
 		qdel(src)
 
 /obj/item/organ/external/headcrab/default
@@ -214,3 +242,33 @@
 	if(sprite_datum.center)
 		center_image(appearance, sprite_datum.dimension_x, sprite_datum.dimension_y)
 	return appearance
+
+// EXTERNAL ORGAN END
+// ACTION START
+
+/datum/action/cooldown/mob_cooldown/headcrab_jump
+	name = "Jump"
+	button_icon = 'icons/mob/actions/actions_items.dmi'
+	button_icon_state = "sniper_zoom"
+	desc = "Allows you to jump towards a position."
+	cooldown_time = 2 SECONDS
+
+/datum/action/cooldown/mob_cooldown/headcrab_jump/Activate(atom/target_atom)
+	disable_cooldown_actions()
+	jump_to(target_atom)
+	StartCooldown()
+	enable_cooldown_actions()
+	return TRUE
+
+/datum/action/cooldown/mob_cooldown/headcrab_jump/jump_to(atom/target_atom)
+	var/mob/living/basic/headcrab/hc = owner
+	if(!istype(hc))
+		return
+	if(ismob(target_atom))
+		if(hc.faction_check_atom(target_atom, FALSE))
+			return
+	if(hc.crabbed_someone)
+		return
+	hc.throw_at(target_atom, 6, 2, hc)
+
+// ACTION END
