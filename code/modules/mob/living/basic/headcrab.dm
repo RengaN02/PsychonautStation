@@ -43,11 +43,11 @@
 	var/mob/living/carbon/human/hit_human = hit_atom
 	if(hit_human.get_organ_by_type(/obj/item/organ/external/headcrab))
 		return
-	var/obj/item/organ/external/headcrab/hcorgan = new hctype(src)
+	var/obj/item/organ/external/headcrab/hcorgan = new hctype()
 	hcorgan.hc = src
+	hcorgan.Insert(hit_human)
 	forceMove(hcorgan)
 	visible_message(span_danger("\The [src] jumps to the [hit_human]s face!"))
-	hcorgan.Insert(hit_human)
 
 /mob/living/basic/headcrab/throw_at(atom/target, range, speed, mob/thrower, spin=FALSE, diagonals_first = FALSE, datum/callback/callback, force = MOVE_FORCE_NORMAL, gentle, quickstart = TRUE)
 	if(stat != DEAD)
@@ -82,9 +82,8 @@
 /datum/ai_behavior/headcrab_jump
 	action_cooldown = 1 SECONDS
 	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM
-	required_distance = 6
 	/// range we will try chasing the target before giving up
-	var/chase_range = 6
+	var/jump_range = 7
 	///do we care about avoiding friendly fire?
 	var/avoid_friendly_fire =  TRUE
 
@@ -108,17 +107,19 @@
 		return
 
 	if(!ishuman(target))
-		return
-
-	var/mob/living/carbon/human/ht = target
-	if(!targeting_strategy.can_attack(basic_mob, target, chase_range))
 		finish_action(controller, FALSE, target_key)
 		return
 
-	if(!can_see(basic_mob, target, required_distance))
+	var/mob/living/carbon/human/ht = target
+	if(!targeting_strategy.can_attack(basic_mob, target, jump_range))
+		finish_action(controller, FALSE, target_key)
+		return
+
+	if(!can_see(basic_mob, target, jump_range))
 		return
 
 	if(ht.get_organ_by_type(/obj/item/organ/external/headcrab))
+		finish_action(controller, FALSE, target_key)
 		return
 
 	if(hc.crabbed_someone)
@@ -128,7 +129,7 @@
 		adjust_position(basic_mob, target)
 		return ..()
 
-	hc.throw_at(target, required_distance, 2, hc)
+	hc.throw_at(target, jump_range, 2, hc)
 	return ..() //only start the cooldown when the shot is shot
 
 /datum/ai_behavior/headcrab_jump/finish_action(datum/ai_controller/controller, succeeded, target_key, targeting_strategy_key, hiding_location_key)
@@ -215,10 +216,11 @@
 /obj/item/organ/external/headcrab/Remove(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
 	if(hc)
+		hc.forceMove(get_turf(organ_owner))
 		hc.apply_damage(hc.health)
-		hc.forceMove(get_turf(src))
 		hc.crabbed_someone = FALSE
-		qdel(src)
+		if(!isnull(src))
+			qdel(src)
 
 /obj/item/organ/external/headcrab/default
 	sprite_accessory_override = /datum/sprite_accessory/headcrab/default
@@ -230,10 +232,10 @@
 /datum/bodypart_overlay/mutant/headcrab/can_draw_on_bodypart(mob/living/carbon/human/human)
 	return TRUE
 
-/datum/bodypart_overlay/mutant/headcrab/get_global_feature_list() 
-	return GLOB.headcrab_list 
+/datum/bodypart_overlay/mutant/headcrab/get_global_feature_list()
+	return GLOB.headcrab_list
 
-/datum/bodypart_overlay/mutant/headcrab/get_base_icon_state() 
+/datum/bodypart_overlay/mutant/headcrab/get_base_icon_state()
 	return sprite_datum.icon_state
 
 /datum/bodypart_overlay/mutant/headcrab/get_image(image_layer, obj/item/bodypart/limb)
