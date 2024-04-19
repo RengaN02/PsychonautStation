@@ -43,11 +43,11 @@
 	var/mob/living/carbon/human/hit_human = hit_atom
 	if(hit_human.get_organ_by_type(/obj/item/organ/external/headcrab))
 		return
-	var/obj/item/organ/external/headcrab/hcorgan = new hctype()
+	var/obj/item/organ/external/headcrab/hcorgan = new hctype(src)
 	hcorgan.hc = src
-	hcorgan.Insert(hit_human)
 	forceMove(hcorgan)
 	visible_message(span_danger("\The [src] jumps to the [hit_human]s face!"))
+	hcorgan.Insert(hit_human)
 
 /mob/living/basic/headcrab/throw_at(atom/target, range, speed, mob/thrower, spin=FALSE, diagonals_first = FALSE, datum/callback/callback, force = MOVE_FORCE_NORMAL, gentle, quickstart = TRUE)
 	if(stat != DEAD)
@@ -82,8 +82,9 @@
 /datum/ai_behavior/headcrab_jump
 	action_cooldown = 1 SECONDS
 	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM
+	required_distance = 6
 	/// range we will try chasing the target before giving up
-	var/jump_range = 7
+	var/chase_range = 6
 	///do we care about avoiding friendly fire?
 	var/avoid_friendly_fire =  TRUE
 
@@ -107,19 +108,17 @@
 		return
 
 	if(!ishuman(target))
-		finish_action(controller, FALSE, target_key)
 		return
 
 	var/mob/living/carbon/human/ht = target
-	if(!targeting_strategy.can_attack(basic_mob, target, jump_range))
+	if(!targeting_strategy.can_attack(basic_mob, target, chase_range))
 		finish_action(controller, FALSE, target_key)
 		return
 
-	if(!can_see(basic_mob, target, jump_range))
+	if(!can_see(basic_mob, target, required_distance))
 		return
 
 	if(ht.get_organ_by_type(/obj/item/organ/external/headcrab))
-		finish_action(controller, FALSE, target_key)
 		return
 
 	if(hc.crabbed_someone)
@@ -129,7 +128,7 @@
 		adjust_position(basic_mob, target)
 		return ..()
 
-	hc.throw_at(target, jump_range, 2, hc)
+	hc.throw_at(target, required_distance, 2, hc)
 	return ..() //only start the cooldown when the shot is shot
 
 /datum/ai_behavior/headcrab_jump/finish_action(datum/ai_controller/controller, succeeded, target_key, targeting_strategy_key, hiding_location_key)
@@ -201,10 +200,14 @@
 	use_mob_sprite_as_obj_sprite = TRUE
 	bodypart_overlay = /datum/bodypart_overlay/mutant/headcrab
 	var/mob/living/basic/headcrab/hc
+	var/causes_damage = TRUE
 
-/obj/item/organ/external/headcrab/Insert(mob/living/carbon/receiver, special, movement_flags)
+/obj/item/organ/external/headcrab/on_mob_insert(mob/living/carbon/receiver, special = FALSE, movement_flags)
 	. = ..()
+	START_PROCESSING(SSobj, src)
 	if(hc)
+		receiver.Paralyze(3 SECONDS)
+		receiver.emote("scream")
 		var/is_head_protected = FALSE
 		for(var/obj/item/clothing/equipped in receiver.get_equipped_items())
 			if((equipped.body_parts_covered & HEAD) && (equipped.get_armor_rating(BIO) == 100))
@@ -213,14 +216,26 @@
 			try_to_zombie_infect(receiver)
 		hc.crabbed_someone = TRUE
 
-/obj/item/organ/external/headcrab/Remove(mob/living/carbon/organ_owner, special, movement_flags)
+/obj/item/organ/external/headcrab/on_mob_remove(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
+	STOP_PROCESSING(SSobj, src)
 	if(hc)
-		hc.forceMove(get_turf(organ_owner))
 		hc.apply_damage(hc.health)
+		hc.forceMove(get_turf(src))
 		hc.crabbed_someone = FALSE
-		if(!isnull(src))
-			qdel(src)
+		qdel(src)
+
+/obj/item/organ/external/headcrab/process(seconds_per_tick, times_fired)
+	if(!owner)
+		return
+	if(!(src in owner.organs))
+		Remove(owner)
+	if(!hc)
+		return
+	if(causes_damage && !iszombie(owner) && owner.stat != DEAD)
+		owner.adjustOxyLoss(0.5 * seconds_per_tick)
+		if(!owner.get_organ_slot(ORGAN_SLOT_ZOMBIE) && !HAS_TRAIT(owner, TRAIT_NO_ZOMBIFY) && SPT_PROB(50, seconds_per_tick))
+			try_to_zombie_infect(owner)
 
 /obj/item/organ/external/headcrab/default
 	sprite_accessory_override = /datum/sprite_accessory/headcrab/default
@@ -232,10 +247,10 @@
 /datum/bodypart_overlay/mutant/headcrab/can_draw_on_bodypart(mob/living/carbon/human/human)
 	return TRUE
 
-/datum/bodypart_overlay/mutant/headcrab/get_global_feature_list()
-	return GLOB.headcrab_list
+/datum/bodypart_overlay/mutant/headcrab/get_global_feature_list() 
+	return GLOB.headcrab_list 
 
-/datum/bodypart_overlay/mutant/headcrab/get_base_icon_state()
+/datum/bodypart_overlay/mutant/headcrab/get_base_icon_state() 
 	return sprite_datum.icon_state
 
 /datum/bodypart_overlay/mutant/headcrab/get_image(image_layer, obj/item/bodypart/limb)
