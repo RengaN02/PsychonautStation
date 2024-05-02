@@ -90,7 +90,7 @@
 			var/datum/bank_account/department/D = SSeconomy.get_dep_account(ACCOUNT_CAR)
 			if(D)
 				D.adjust_money((bitcoins_mined*RAD_COLLECTOR_MINING_CONVERSION_RATE) / 2) //about 750 credits per minute with 2 emitters and 6 collectors with stock parts
-			sciweb.add_point_type(TECHWEB_POINT_TYPE_DEFAULT, bitcoins_mined * RAD_COLLECTOR_MINING_CONVERSION_RATE) //about 1300 points per minute with the above set up
+			sciweb.add_point_type(TECHWEB_POINT_TYPE_GENERIC, bitcoins_mined * RAD_COLLECTOR_MINING_CONVERSION_RATE) //about 1300 points per minute with the above set up
 			stored_energy -= bitcoins_mined
 
 /obj/machinery/power/energy_accumulator/rad_collector/interact(mob/user)
