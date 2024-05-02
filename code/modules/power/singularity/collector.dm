@@ -20,10 +20,12 @@
 	var/input_power_multiplier = 1
 	var/active = 0
 	var/obj/item/radio/radio
+	var/datum/techweb/sciweb
 
 /obj/machinery/power/energy_accumulator/rad_collector/Initialize(mapload)
 	. = ..()
 	RegisterSignal(src, COMSIG_IN_RANGE_OF_IRRADIATION, PROC_REF(on_pre_potential_irradiation))
+	sciweb = locate(/datum/techweb/science) in SSresearch.techwebs
 	radio = new(src)
 	radio.keyslot = new /obj/item/encryptionkey/headset_eng
 	radio.subspace_transmission = TRUE
@@ -74,7 +76,7 @@
 			var/power_produced = RAD_COLLECTOR_OUTPUT
 			release_energy(power_produced)
 			stored_energy -= power_produced
-	else if(is_station_level(z) && SSresearch.science_tech)
+	else if(is_station_level(z) && sciweb)
 		if(!totaltrit || !totalo2)
 			playsound(src, 'sound/machines/ding.ogg', 50, 1)
 			eject()
@@ -88,7 +90,7 @@
 			var/datum/bank_account/department/D = SSeconomy.get_dep_account(ACCOUNT_CAR)
 			if(D)
 				D.adjust_money((bitcoins_mined*RAD_COLLECTOR_MINING_CONVERSION_RATE) / 2) //about 750 credits per minute with 2 emitters and 6 collectors with stock parts
-			SSresearch.science_tech.add_point_type(TECHWEB_POINT_TYPE_DEFAULT, bitcoins_mined * RAD_COLLECTOR_MINING_CONVERSION_RATE) //about 1300 points per minute with the above set up
+			sciweb.add_point_type(TECHWEB_POINT_TYPE_DEFAULT, bitcoins_mined * RAD_COLLECTOR_MINING_CONVERSION_RATE) //about 1300 points per minute with the above set up
 			stored_energy -= bitcoins_mined
 
 /obj/machinery/power/energy_accumulator/rad_collector/interact(mob/user)
@@ -148,7 +150,7 @@
 	return TRUE
 
 /obj/machinery/power/energy_accumulator/rad_collector/multitool_act(mob/living/user, obj/item/I)
-	if(!is_station_level(z) && !SSresearch.science_tech)
+	if(!is_station_level(z) && !sciweb)
 		to_chat(user, "<span class='warning'>[src] isn't linked to a research system!</span>")
 		return TRUE
 	if(active)
