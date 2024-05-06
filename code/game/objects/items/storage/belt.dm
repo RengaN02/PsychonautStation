@@ -810,7 +810,6 @@
 	icon = 'icons/psychonaut/obj/clothing/belts.dmi'
 	worn_icon = 'icons/psychonaut/mob/clothing/belts.dmi'
 	icon_state = "sheath_red"
-	base_icon_state = "sheath_red"
 	inhand_icon_state = "sheath"
 	worn_icon_state = "sheath_red"
 	w_class = WEIGHT_CLASS_BULKY
