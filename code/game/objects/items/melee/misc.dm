@@ -76,6 +76,17 @@
 	custom_materials = list(/datum/material/iron = HALF_SHEET_MATERIAL_AMOUNT)
 	wound_bonus = 10
 	bare_wound_bonus = 25
+	unique_reskin = list(
+		"Red" = "sabre_red",
+		"Black" = "sabre_black"
+	) 
+  
+  
+/obj/item/melee/sabre/reskin_obj(mob/M)
+	. = ..() 
+	update_appearance() 
+	inhand_icon_state = icon_state
+
 
 /obj/item/melee/sabre/Initialize(mapload)
 	. = ..()
