@@ -81,13 +81,6 @@
 		"Black" = "sabre_black"
 	) 
   
-  
-/obj/item/melee/sabre/reskin_obj(mob/M)
-	. = ..() 
-	update_appearance() 
-	inhand_icon_state = icon_state
-
-
 /obj/item/melee/sabre/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/jousting)
@@ -175,6 +168,11 @@
 		user.adjustBruteLoss(200)
 		user.death(FALSE)
 	REMOVE_TRAIT(src, TRAIT_NODROP, SABRE_SUICIDE_TRAIT)
+
+/obj/item/melee/sabre/reskin_obj(mob/M)
+	. = ..() 
+	update_appearance() 
+	inhand_icon_state = icon_state
 
 /obj/item/melee/beesword
 	name = "The Stinger"
