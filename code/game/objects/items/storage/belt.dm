@@ -807,11 +807,18 @@
 /obj/item/storage/belt/sabre
 	name = "sabre sheath"
 	desc = "An ornate sheath designed to hold an officer's blade."
-	icon_state = "sheath"
+	icon = 'icons/psychonaut/obj/clothing/belts.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/belts.dmi'
+	icon_state = "sheath_red"
+	base_icon_state = "sheath_red"
 	inhand_icon_state = "sheath"
-	worn_icon_state = "sheath"
+	worn_icon_state = "sheath_red"
 	w_class = WEIGHT_CLASS_BULKY
 	interaction_flags_click = parent_type::interaction_flags_click | NEED_DEXTERITY | NEED_HANDS
+	unique_reskin = list(
+		"Red" = "sheath_red",
+		"Black" = "sheath_black"
+	)
 
 /obj/item/storage/belt/sabre/Initialize(mapload)
 	. = ..()
@@ -837,14 +844,19 @@
 		balloon_alert(user, "it's empty!")
 	return CLICK_ACTION_SUCCESS
 
+/obj/item/storage/belt/sabre/reskin_obj(mob/M)
+	. = ..()
+	update_appearance()
+
 /obj/item/storage/belt/sabre/update_icon_state()
-	icon_state = initial(inhand_icon_state)
+	var/obj/item/I = contents[1]
+	icon_state = unique_reskin[current_skin]
 	inhand_icon_state = initial(inhand_icon_state)
-	worn_icon_state = initial(worn_icon_state)
+	worn_icon_state = unique_reskin[current_skin]
 	if(contents.len)
-		icon_state += "-sabre"
+		icon_state += "-[I.icon_state]"
 		inhand_icon_state += "-sabre"
-		worn_icon_state += "-sabre"
+		worn_icon_state += "-[I.icon_state]"
 	return ..()
 
 /obj/item/storage/belt/sabre/PopulateContents()
