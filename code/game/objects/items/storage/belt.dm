@@ -822,6 +822,7 @@
 /obj/item/storage/belt/sabre/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/update_icon_updates_onmob)
+	RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_alt_click))
 
 	atom_storage.max_slots = 1
 	atom_storage.rustle_sound = FALSE
@@ -833,7 +834,8 @@
 	if(length(contents))
 		. += span_notice("Alt-click it to quickly draw the blade.")
 
-/obj/item/storage/belt/sabre/click_alt(mob/user)
+/obj/item/storage/belt/sabre/on_alt_click(mob/user)
+	SIGNAL_HANDLER
 	if(length(contents))
 		var/obj/item/I = contents[1]
 		user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
@@ -848,11 +850,11 @@
 	update_appearance()
 
 /obj/item/storage/belt/sabre/update_icon_state()
-	var/obj/item/I = contents[1]
-	icon_state = unique_reskin[current_skin]
+	icon_state = unique_reskin[current_skin] || initial(icon_state)
 	inhand_icon_state = initial(inhand_icon_state)
-	worn_icon_state = unique_reskin[current_skin]
+	worn_icon_state = unique_reskin[current_skin] || initial(icon_state)
 	if(contents.len)
+		var/obj/item/I = contents[1]
 		icon_state += "-[I.icon_state]"
 		inhand_icon_state += "-sabre"
 		worn_icon_state += "-[I.icon_state]"
