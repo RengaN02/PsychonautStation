@@ -853,7 +853,7 @@
 			balloon_alert(user, "it's empty!")
 	return CLICK_ACTION_SUCCESS
 
-/obj/item/storage/belt/sabre/proc/changeskin(mob/M)
+/obj/item/storage/belt/sabre/proc/changeskin(mob/user)
 	if(!LAZYLEN(reskin_options))
 		return
 
