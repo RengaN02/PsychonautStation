@@ -121,9 +121,11 @@
 	return ..()
 
 /obj/item/melee/sabre/on_exit_storage(datum/storage/container)
+	container.parent.update_appearance()
 	playsound(container.parent, 'sound/items/unsheath.ogg', 25, TRUE)
 
 /obj/item/melee/sabre/on_enter_storage(datum/storage/container)
+	container.parent.update_appearance()
 	playsound(container.parent, 'sound/items/sheath.ogg', 25, TRUE)
 
 /obj/item/melee/sabre/suicide_act(mob/living/user)
