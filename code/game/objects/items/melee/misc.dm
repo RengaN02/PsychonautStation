@@ -170,7 +170,7 @@
 	REMOVE_TRAIT(src, TRAIT_NODROP, SABRE_SUICIDE_TRAIT)
 
 /obj/item/melee/sabre/reskin_obj(mob/M)
-	. = ..()
+	. = ..()
 	inhand_icon_state = icon_state
 	update_appearance()
 
