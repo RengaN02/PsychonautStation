@@ -78,7 +78,7 @@
 	bare_wound_bonus = 25
 	unique_reskin = list(
 		"Red" = "sabre_red",
-		"Black" = "sabre_black"
+		"Black" = "sabre_black",
 	)
 
 /obj/item/melee/sabre/Initialize(mapload)
