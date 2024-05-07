@@ -834,7 +834,7 @@
 	if(length(contents))
 		. += span_notice("Alt-click it to quickly draw the blade.")
 
-/obj/item/storage/belt/sabre/on_alt_click(datum/source, mob/user)
+/obj/item/storage/belt/sabre/proc/on_alt_click(datum/source, mob/user)
 	SIGNAL_HANDLER
 
 	if(!length(contents))
