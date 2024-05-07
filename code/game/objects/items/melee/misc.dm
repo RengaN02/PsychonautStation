@@ -76,7 +76,10 @@
 	custom_materials = list(/datum/material/iron = HALF_SHEET_MATERIAL_AMOUNT)
 	wound_bonus = 10
 	bare_wound_bonus = 25
-	unique_reskin = list("Red" = "sabre_red","Black" = "sabre_black") 
+	unique_reskin = list(
+		"Red" = "sabre_red",
+		"Black" = "sabre_black"
+	)
 
 /obj/item/melee/sabre/Initialize(mapload)
 	. = ..()
@@ -169,7 +172,7 @@
 /obj/item/melee/sabre/reskin_obj(mob/M)
 	. = ..()
 	inhand_icon_state = icon_state
-	update_appearance() 
+	update_appearance()
 
 /obj/item/melee/beesword
 	name = "The Stinger"
