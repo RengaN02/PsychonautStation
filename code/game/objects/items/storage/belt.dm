@@ -822,7 +822,7 @@
 /obj/item/storage/belt/sabre/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/update_icon_updates_onmob)
-	RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_alt_click))
+	RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_alt_click))
 
 	atom_storage.max_slots = 1
 	atom_storage.rustle_sound = FALSE
@@ -834,15 +834,16 @@
 	if(length(contents))
 		. += span_notice("Alt-click it to quickly draw the blade.")
 
-/obj/item/storage/belt/sabre/on_alt_click(mob/user)
+/obj/item/storage/belt/sabre/on_alt_click(datum/source, mob/user)
 	SIGNAL_HANDLER
-	if(length(contents))
-		var/obj/item/I = contents[1]
-		user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
-		user.put_in_hands(I)
-		update_appearance()
-	else
+
+	if(!length(contents))
 		balloon_alert(user, "it's empty!")
+		return NONE
+	var/obj/item/I = contents[1]
+	user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
+	user.put_in_hands(I)
+	update_appearance()
 	return CLICK_ACTION_SUCCESS
 
 /obj/item/storage/belt/sabre/reskin_obj(mob/M)
