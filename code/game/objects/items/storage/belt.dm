@@ -814,7 +814,8 @@
 	worn_icon_state = "sheath_red"
 	w_class = WEIGHT_CLASS_BULKY
 	interaction_flags_click = parent_type::interaction_flags_click | NEED_DEXTERITY | NEED_HANDS
-	unique_reskin = list(
+
+	var/reskin_options = list(
 		"Red" = "sheath_red",
 		"Black" = "sheath_black"
 	)
@@ -822,7 +823,6 @@
 /obj/item/storage/belt/sabre/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/update_icon_updates_onmob)
-	RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_alt_click))
 
 	atom_storage.max_slots = 1
 	atom_storage.rustle_sound = FALSE
@@ -834,26 +834,50 @@
 	if(length(contents))
 		. += span_notice("Alt-click it to quickly draw the blade.")
 
-/obj/item/storage/belt/sabre/proc/on_alt_click(datum/source, mob/user)
-	SIGNAL_HANDLER
+/obj/item/storage/belt/sabre/click_alt(mob/user)
+	if(length(contents))
+		var/obj/item/I = contents[1]
+		user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
+		user.put_in_hands(I)
+		update_appearance()
+	else
+		if(!current_skin)
+			if(!user.can_perform_action(src, NEED_DEXTERITY))
+				return NONE
 
-	if(!length(contents))
-		balloon_alert(user, "it's empty!")
-		return NONE
-	var/obj/item/I = contents[1]
-	user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
-	user.put_in_hands(I)
-	update_appearance()
+			if(!(obj_flags & INFINITE_RESKIN) && current_skin)
+				return NONE
+
+			INVOKE_ASYNC(src, PROC_REF(changeskin), user)
+		else
+			balloon_alert(user, "it's empty!")
 	return CLICK_ACTION_SUCCESS
 
-/obj/item/storage/belt/sabre/reskin_obj(mob/M)
-	. = ..()
+/obj/item/storage/belt/sabre/proc/changeskin(mob/M)
+	if(!LAZYLEN(reskin_options))
+		return
+
+	var/list/items = list()
+	for(var/reskin_option in reskin_options)
+		var/image/item_image = image(icon = src.icon, icon_state = reskin_options[reskin_option])
+		items += list("[reskin_option]" = item_image)
+	sort_list(items)
+
+	var/pick = show_radial_menu(user, src, items, custom_check = CALLBACK(src, PROC_REF(check_reskin_menu), user), radius = 38, require_near = TRUE)
+	if(!pick)
+		return
+	if(!reskin_options[pick])
+		return
+	current_skin = pick
+	icon_state = reskin_options[pick]
+	to_chat(user, "[src] is now skinned as '[pick].'")
+	SEND_SIGNAL(src, COMSIG_OBJ_RESKIN, user, pick)
 	update_appearance()
 
 /obj/item/storage/belt/sabre/update_icon_state()
-	icon_state = unique_reskin[current_skin] || initial(icon_state)
+	icon_state = reskin_options[current_skin] || initial(icon_state)
 	inhand_icon_state = initial(inhand_icon_state)
-	worn_icon_state = unique_reskin[current_skin] || initial(icon_state)
+	worn_icon_state = reskin_options[current_skin] || initial(icon_state)
 	if(contents.len)
 		var/obj/item/I = contents[1]
 		icon_state += "-[I.icon_state]"
