@@ -829,24 +829,19 @@
 	atom_storage.rustle_sound = FALSE
 	atom_storage.max_specific_storage = WEIGHT_CLASS_BULKY
 	atom_storage.set_holdable(/obj/item/melee/sabre)
-	
-/obj/item/storage/belt/sabre/Destroy()
-	UnregisterSignal(src, COMSIG_CLICK_ALT)
-	return ..()
 
 /obj/item/storage/belt/sabre/examine(mob/user)
 	. = ..()
 	if(length(contents))
 		. += span_notice("Alt-click it to quickly draw the blade.")
 
-/obj/item/storage/belt/sabre/proc/on_click_alt(datum/source, mob/user)
-	SIGNAL_HANDLER
-
+/obj/item/storage/belt/sabre/proc/click_alt(mob/user)
 	if(length(contents))
 		var/obj/item/I = contents[1]
 		user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
 		user.put_in_hands(I)
 		update_appearance()
+		return CLICK_ACTION_SUCCESS
 	else
 		if(!current_skin)
 			if(!user.can_perform_action(src, NEED_DEXTERITY))
@@ -856,9 +851,10 @@
 				return NONE
 
 			INVOKE_ASYNC(src, PROC_REF(changeskin), user)
+			return CLICK_ACTION_SUCCESS
 		else
 			balloon_alert(user, "it's empty!")
-	return CLICK_ACTION_SUCCESS
+			return NONE
 
 /obj/item/storage/belt/sabre/proc/changeskin(mob/user)
 	if(!LAZYLEN(reskin_options))
