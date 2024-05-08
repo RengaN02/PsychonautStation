@@ -823,18 +823,25 @@
 /obj/item/storage/belt/sabre/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/update_icon_updates_onmob)
+	RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_click_alt))
 
 	atom_storage.max_slots = 1
 	atom_storage.rustle_sound = FALSE
 	atom_storage.max_specific_storage = WEIGHT_CLASS_BULKY
 	atom_storage.set_holdable(/obj/item/melee/sabre)
+	
+/obj/item/storage/belt/sabre/Destroy()
+	UnregisterSignal(src, COMSIG_CLICK_ALT)
+	return ..()
 
 /obj/item/storage/belt/sabre/examine(mob/user)
 	. = ..()
 	if(length(contents))
 		. += span_notice("Alt-click it to quickly draw the blade.")
 
-/obj/item/storage/belt/sabre/click_alt(mob/user)
+/obj/item/storage/belt/sabre/proc/on_click_alt(datum/source, mob/user)
+	SIGNAL_HANDLER
+
 	if(length(contents))
 		var/obj/item/I = contents[1]
 		user.visible_message(span_notice("[user] takes [I] out of [src]."), span_notice("You take [I] out of [src]."))
