@@ -823,7 +823,6 @@
 /obj/item/storage/belt/sabre/Initialize(mapload)
 	. = ..()
 	AddElement(/datum/element/update_icon_updates_onmob)
-	RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_click_alt))
 
 	atom_storage.max_slots = 1
 	atom_storage.rustle_sound = FALSE
