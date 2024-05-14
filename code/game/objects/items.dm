@@ -264,7 +264,7 @@
 	if(LAZYLEN(embedding))
 		updateEmbedding()
 
-	if(unique_reskin)
+	if(unique_reskin && !(obj_flags & CUSTOM_RESKIN))
 		RegisterSignal(src, COMSIG_CLICK_ALT, PROC_REF(on_click_alt_reskin))
 		register_context()
 
