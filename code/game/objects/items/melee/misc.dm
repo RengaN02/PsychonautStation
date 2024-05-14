@@ -60,8 +60,7 @@
 	inhand_icon_state = "sabre_red"
 	lefthand_file = 'icons/psychonaut/mob/inhands/melee/swords_lefthand.dmi'
 	righthand_file = 'icons/psychonaut/mob/inhands/melee/swords_righthand.dmi'
-	obj_flags = CONDUCTS_ELECTRICITY
-	obj_flags = UNIQUE_RENAME
+	obj_flags = CONDUCTS_ELECTRICITY | UNIQUE_RENAME
 	force = 15
 	throwforce = 10
 	demolition_mod = 0.75 //but not metal
