@@ -96,7 +96,7 @@
 	RegisterSignal(src, COMSIG_OBJECT_ON_BANING, PROC_REF(bane_effects))
 
 /**
- * If the target reeks of maintenance, the blade can tear through their body with a total of 20 damage.
+ * If the target reeks of maintenance, the blade can tear through their body with a total of 20 damage
  */
 /obj/item/melee/sabre/proc/attempt_bane(element_owner, mob/living/carbon/criminal)
 	SIGNAL_HANDLER
