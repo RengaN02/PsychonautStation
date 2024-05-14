@@ -15,7 +15,7 @@
 #define INFINITE_RESKIN (1<<11) // We can reskin this item infinitely
 #define CONDUCTS_ELECTRICITY (1<<12) //! Can this object conduct electricity?
 #define NO_DEBRIS_AFTER_DECONSTRUCTION (1<<13) //! Atoms don't spawn anything when deconstructed. They just vanish
-#define CUSTOM_RESKIN (1<<14) // Atoms which have custom verbs for reskin_obj function.
+#define CUSTOM_RESKIN (1<<14) // Atoms which have custom verb/proc for reskin_obj function.
 
 // If you add new ones, be sure to add them to /obj/Initialize as well for complete mapping support
 
