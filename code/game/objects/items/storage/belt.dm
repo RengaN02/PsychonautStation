@@ -814,7 +814,7 @@
 	worn_icon_state = "sheath_red"
 	w_class = WEIGHT_CLASS_BULKY
 	interaction_flags_click = parent_type::interaction_flags_click | NEED_DEXTERITY | NEED_HANDS
-
+	obj_flags = parent_type::obj_flags | CUSTOM_RESKIN
 	unique_reskin = list(
 		"Red" = "sheath_red",
 		"Black" = "sheath_black"
