@@ -101,6 +101,27 @@
 	unit_name = "security barrier"
 	export_types = list(/obj/item/grenade/barrier, /obj/structure/barricade/security)
 
+/datum/export/large/particle_acceletor
+	cost = 350
+	unit_name = "particle accelerator part"
+	export_types = list(/obj/structure/particle_accelerator)
+
+/datum/export/large/particle_acceletor/controls
+	cost = 500
+	unit_name = "particle accelerator control console"
+	export_types = list(/obj/machinery/particle_accelerator/control_box)
+
+/datum/export/large/tesla_gen
+	cost = 4000
+	unit_name = "energy ball generator"
+	export_types = list(/obj/machinery/the_singularitygen/tesla)
+
+/datum/export/large/singulo_gen
+	cost = 4000
+	unit_name = "gravitational singularity generator"
+	export_types = list(/obj/machinery/the_singularitygen)
+	include_subtypes = FALSE
+
 /**
  * Gas canister exports.
  * I'm going to put a quick aside here as this has been a pain to balance for several years now, and I'd like to at least break how to keep gas exports tame.

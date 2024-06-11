@@ -436,6 +436,18 @@
 		/obj/item/stack/sheet/glass = 10,
 		/obj/item/stack/sheet/plasteel = 5)
 
+/obj/item/circuitboard/machine/rad_collector
+	name = "Radiation Collector"
+	greyscale_colors = CIRCUIT_COLOR_ENGINEERING
+	build_path = /obj/machinery/power/energy_accumulator/rad_collector
+	req_components = list(
+		/obj/item/stack/cable_coil = 5,
+		/obj/item/stock_parts/matter_bin = 1,
+		/obj/item/stack/sheet/plasmarglass = 2,
+		/obj/item/stock_parts/capacitor = 1
+	)
+	needs_anchored = FALSE
+
 //Generic
 /obj/item/circuitboard/machine/component_printer
 	name = "\improper Component Printer (Machine Board)"
@@ -1336,7 +1348,7 @@
 	build_path = /obj/machinery/pokerchip_exchanger
 	needs_anchored = FALSE
 	req_components = list()
-	
+
 /obj/item/circuitboard/machine/fishing_portal_generator
 	name = "Fishing Portal Generator"
 	greyscale_colors = CIRCUIT_COLOR_SERVICE
