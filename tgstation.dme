@@ -3866,6 +3866,7 @@
 #include "code\modules\client\preferences\window_flashing.dm"
 #include "code\modules\client\preferences\middleware\_middleware.dm"
 #include "code\modules\client\preferences\middleware\antags.dm"
+#include "code\modules\client\preferences\middleware\background.dm"
 #include "code\modules\client\preferences\middleware\jobs.dm"
 #include "code\modules\client\preferences\middleware\keybindings.dm"
 #include "code\modules\client\preferences\middleware\legacy_toggles.dm"
