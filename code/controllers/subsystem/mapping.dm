@@ -85,6 +85,12 @@ SUBSYSTEM_DEF(mapping)
 	/// list of lazy templates that have been loaded
 	var/list/loaded_lazy_templates
 
+	var/list/machines_delete_after = list()
+
+	var/list/random_engine_templates = list()
+	var/list/obj/effect/landmark/random_room/random_room_spawners = list()
+	var/list/datum/map_template/random_room/picked_rooms = list()
+
 /datum/controller/subsystem/mapping/PreInit()
 	..()
 #ifdef FORCE_MAP
@@ -159,6 +165,8 @@ SUBSYSTEM_DEF(mapping)
 	generate_station_area_list()
 	initialize_reserved_level(base_transit.z_value)
 	calculate_default_z_level_gravities()
+
+	RegisterSignal(SSmachines, COMSIG_SUBSYSTEM_POST_INITIALIZE, PROC_REF(machiness_post_init))
 
 	return SS_INIT_SUCCESS
 
@@ -243,23 +251,23 @@ SUBSYSTEM_DEF(mapping)
 	// Generate mining ruins
 	var/list/lava_ruins = levels_by_trait(ZTRAIT_LAVA_RUINS)
 	if (lava_ruins.len)
-		seedRuins(lava_ruins, CONFIG_GET(number/lavaland_budget), list(/area/lavaland/surface/outdoors/unexplored), themed_ruins[ZTRAIT_LAVA_RUINS], clear_below = TRUE, mineral_budget = 15, mineral_budget_update = OREGEN_PRESET_LAVALAND)
+		seedRuins(lava_ruins, CONFIG_GET(number/lavaland_budget), list(/area/lavaland/surface/outdoors/unexplored), themed_ruins[ZTRAIT_LAVA_RUINS], clear_below = TRUE, mineral_budget = 15, mineral_budget_update = OREGEN_PRESET_LAVALAND, ruins_type = ZTRAIT_LAVA_RUINS)
 
 	var/list/ice_ruins = levels_by_trait(ZTRAIT_ICE_RUINS)
 	if (ice_ruins.len)
 		// needs to be whitelisted for underground too so place_below ruins work
-		seedRuins(ice_ruins, CONFIG_GET(number/icemoon_budget), list(/area/icemoon/surface/outdoors/unexplored, /area/icemoon/underground/unexplored), themed_ruins[ZTRAIT_ICE_RUINS], clear_below = TRUE, mineral_budget = 4, mineral_budget_update = OREGEN_PRESET_TRIPLE_Z)
+		seedRuins(ice_ruins, CONFIG_GET(number/icemoon_budget), list(/area/icemoon/surface/outdoors/unexplored, /area/icemoon/underground/unexplored), themed_ruins[ZTRAIT_ICE_RUINS], clear_below = TRUE, mineral_budget = 4, mineral_budget_update = OREGEN_PRESET_TRIPLE_Z, ruins_type = ZTRAIT_ICE_RUINS)
 
 	var/list/ice_ruins_underground = levels_by_trait(ZTRAIT_ICE_RUINS_UNDERGROUND)
 	if (ice_ruins_underground.len)
-		seedRuins(ice_ruins_underground, CONFIG_GET(number/icemoon_budget), list(/area/icemoon/underground/unexplored), themed_ruins[ZTRAIT_ICE_RUINS_UNDERGROUND], clear_below = TRUE, mineral_budget = 21)
+		seedRuins(ice_ruins_underground, CONFIG_GET(number/icemoon_budget), list(/area/icemoon/underground/unexplored), themed_ruins[ZTRAIT_ICE_RUINS_UNDERGROUND], clear_below = TRUE, mineral_budget = 21, ruins_type = ZTRAIT_ICE_RUINS_UNDERGROUND)
 
 	// Generate deep space ruins
 	var/list/space_ruins = levels_by_trait(ZTRAIT_SPACE_RUINS)
 	if (space_ruins.len)
 		// Create a proportional budget by multiplying the amount of space ruin levels in the current map over the default amount
 		var/proportional_budget = round(CONFIG_GET(number/space_budget) * (space_ruins.len / DEFAULT_SPACE_RUIN_LEVELS))
-		seedRuins(space_ruins, proportional_budget, list(/area/space), themed_ruins[ZTRAIT_SPACE_RUINS], mineral_budget = 0)
+		seedRuins(space_ruins, proportional_budget, list(/area/space), themed_ruins[ZTRAIT_SPACE_RUINS], mineral_budget = 0, ruins_type = ZTRAIT_SPACE_RUINS)
 
 /// Sets up rivers, and things that behave like rivers. So lava/plasma rivers, and chasms
 /// It is important that this happens AFTER generating mineral walls and such, since we rely on them for river logic
@@ -363,7 +371,10 @@ Used by the AI doomsday and the self-destruct nuke.
 	multiz_levels = SSmapping.multiz_levels
 	loaded_lazy_templates = SSmapping.loaded_lazy_templates
 
-#define INIT_ANNOUNCE(X) to_chat(world, span_boldannounce("[X]")); log_world(X)
+	random_engine_templates = SSmapping.random_engine_templates
+
+#define INIT_ANNOUNCE(X) to_chat(world, span_boldannounce("[X]"), MESSAGE_TYPE_DEBUG); log_world(X)
+
 /datum/controller/subsystem/mapping/proc/LoadGroup(list/errorList, name, path, files, list/traits, list/default_traits, silent = FALSE, height_autosetup = TRUE)
 	. = list()
 	var/start_time = REALTIMEOFDAY
@@ -434,6 +445,12 @@ Used by the AI doomsday and the self-destruct nuke.
 	station_start = world.maxz + 1
 	INIT_ANNOUNCE("Loading [current_map.map_name]...")
 	LoadGroup(FailedZs, "Station", current_map.map_path, current_map.map_file, current_map.traits, ZTRAITS_STATION, height_autosetup = current_map.height_autosetup)
+
+	load_station_room_templates()
+
+	if(CONFIG_GET(flag/allow_randomized_rooms))
+		pick_room_type()
+		load_random_rooms()
 
 	if(SSdbcore.Connect())
 		var/datum/db_query/query_round_map_name = SSdbcore.NewQuery({"
@@ -581,13 +598,13 @@ ADMIN_VERB(load_away_mission, R_FUN, "Load Away Mission", "Load a specific away 
 			if(!mapfile)
 				return
 			away_name = "[mapfile] custom"
-			to_chat(user,span_notice("Loading [away_name]..."))
+			to_chat(user, span_notice("Loading [away_name]..."), MESSAGE_TYPE_DEBUG)
 			var/datum/map_template/template = new(mapfile, "Away Mission")
 			away_level = template.load_new_z(secret)
 		else
 			if(answer in GLOB.potentialRandomZlevels)
 				away_name = answer
-				to_chat(user,span_notice("Loading [away_name]..."))
+				to_chat(user, span_notice("Loading [away_name]..."), MESSAGE_TYPE_DEBUG)
 				var/datum/map_template/template = new(away_name, "Away Mission")
 				away_level = template.load_new_z(secret)
 			else
@@ -899,7 +916,7 @@ ADMIN_VERB(load_away_mission, R_FUN, "Load Away Mission", "Load a specific away 
 	else
 		start_time = REALTIMEOFDAY
 		var/beginning_message = "Loading all away missions..."
-		to_chat(world, span_boldannounce(beginning_message))
+		to_chat(world, span_boldannounce(beginning_message), MESSAGE_TYPE_DEBUG)
 		log_world(beginning_message)
 		log_mapping(beginning_message)
 
@@ -917,7 +934,7 @@ ADMIN_VERB(load_away_mission, R_FUN, "Load Away Mission", "Load a specific away 
 	if(!isnull(start_time))
 		var/tracked_time = (REALTIMEOFDAY - start_time) / 10
 		var/finished_message = "Loaded [number_of_away_missions] away missions in [tracked_time] second[tracked_time == 1 ? "" : "s"]!"
-		to_chat(world, span_boldannounce(finished_message))
+		to_chat(world, span_boldannounce(finished_message), MESSAGE_TYPE_DEBUG)
 		log_world(finished_message)
 		log_mapping(finished_message)
 
@@ -945,3 +962,66 @@ ADMIN_VERB(load_away_mission, R_FUN, "Load Away Mission", "Load a specific away 
 	var/number_of_remaining_levels = length(checkable_levels)
 	if(number_of_remaining_levels > 0)
 		CRASH("The following [number_of_remaining_levels] away mission(s) were not loaded: [checkable_levels.Join("\n")]")
+
+/datum/controller/subsystem/mapping/proc/machiness_post_init()
+	var/list/prioritys = typecacheof(list(/obj/machinery/meter, /obj/machinery/power/apc))
+	for(var/atom/prior_item in typecache_filter_list(machines_delete_after, prioritys))
+		if(istype(prior_item, /obj/machinery/power/apc))
+			var/obj/machinery/power/apc/apc = prior_item
+			QDEL_NULL(apc.terminal)
+		qdel(prior_item)
+		machines_delete_after -= prior_item
+	QDEL_LIST(machines_delete_after)
+
+/datum/controller/subsystem/mapping/proc/load_random_rooms()
+	load_random_engines()
+
+/datum/controller/subsystem/mapping/proc/load_station_room_templates()
+	for(var/item in subtypesof(/datum/map_template/random_room/random_engine))
+		var/datum/map_template/random_room/random_engine/room_type = item
+		var/datum/map_template/random_room/random_engine/E = new room_type()
+		map_templates[E.room_id] = E
+		if(current_map.map_name == E.station_name)
+			random_engine_templates[E.room_id] = E
+			if(E.coordinates.len && E.template_width && E.template_height && !random_room_spawners["engine"])
+				create_room_spawner(E, "engine")
+
+/datum/controller/subsystem/mapping/proc/create_room_spawner(datum/map_template/random_room/room, roomtype)
+	var/turf/target = locate(room.coordinates["x"], room.coordinates["y"], room.coordinates["z"])
+	var/obj/effect/landmark/random_room/room_spawner = new(target)
+	room_spawner.room_width = room.template_width
+	room_spawner.room_height = room.template_height
+	random_room_spawners[roomtype] = room_spawner
+	return TRUE
+
+/datum/controller/subsystem/mapping/proc/pick_room_type()
+	pick_engine(!isnull(current_map.picked_rooms["engine"]))
+
+/datum/controller/subsystem/mapping/proc/pick_engine(force = FALSE)
+	if(force)
+		picked_rooms["engine"] = random_engine_templates[current_map.picked_rooms["engine"]]
+		return TRUE
+	var/list/possible_engine_templates = list()
+	var/datum/map_template/random_room/random_engine/engine_candidate
+	shuffle_inplace(random_engine_templates)
+	for(var/ID in random_engine_templates)
+		engine_candidate = random_engine_templates[ID]
+		if(engine_candidate.weight == 0 || (engine_candidate.mappath && (random_room_spawners["engine"].room_height != engine_candidate.template_height || random_room_spawners["engine"].room_width != engine_candidate.template_width)))
+			engine_candidate = null
+			continue
+		possible_engine_templates[engine_candidate] = engine_candidate.weight
+	if(!possible_engine_templates.len)
+		return FALSE
+	picked_rooms["engine"] = pick_weight(possible_engine_templates)
+	return TRUE
+
+/datum/controller/subsystem/mapping/proc/load_random_engines()
+	var/start_time = REALTIMEOFDAY
+	if(random_room_spawners["engine"] && picked_rooms["engine"])
+		log_world("Loading random engine template [picked_rooms["engine"].name] ([picked_rooms["engine"].type]) at [AREACOORD(random_room_spawners["engine"])]")
+		if(picked_rooms["engine"].mappath)
+			var/datum/map_template/random_room/template = picked_rooms["engine"]
+			template.stationinitload(get_turf(random_room_spawners["engine"]), centered = template.centerspawner)
+	QDEL_NULL(random_room_spawners["engine"])
+	log_world("Loaded Random Engine in [(REALTIMEOFDAY - start_time)/10]s!")
+	return TRUE

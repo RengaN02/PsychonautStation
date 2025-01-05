@@ -11,10 +11,13 @@
 	var/obj/item/assembly/signaler/anomaly/anomaly_core = /obj/item/assembly/signaler/anomaly
 	var/area/impact_area
 
+	/// How long till we seppuku? Blocked by immortal
 	var/lifespan = ANOMALY_COUNTDOWN_TIMER
 	var/death_time
 
+	/// Color of the countdown effect
 	var/countdown_colour
+	/// Reference to the countdown effect
 	var/obj/effect/countdown/anomaly/countdown
 
 	/// Do we drop a core when we're neutralized?
@@ -63,6 +66,8 @@
 			countdown.start()
 
 /obj/effect/anomaly/process(seconds_per_tick)
+	if(!(datum_flags & DF_ISPROCESSING))
+		return
 	anomalyEffect(seconds_per_tick)
 	if(death_time < world.time && !immortal)
 		if(loc)
@@ -81,6 +86,8 @@
 
 /// Move in a direction
 /obj/effect/anomaly/proc/move_anomaly()
+	if(HAS_TRAIT(src, TRAIT_GRABBED_BY_KINESIS))
+		return
 	step(src, pick(GLOB.alldirs))
 
 /obj/effect/anomaly/proc/detonate()
@@ -128,7 +135,6 @@
 		return ITEM_INTERACT_SUCCESS
 	to_chat(user, span_notice("Analyzing... [src]'s unstable field is not fluctuating along a stable frequency."))
 	return ITEM_INTERACT_BLOCKING
-
 
 ///Stabilize an anomaly, letting it stay around forever or untill destabilizes by a player. An anomaly without a core can't be signalled, but can be destabilized
 /obj/effect/anomaly/proc/stabilize(anchor = FALSE, has_core = TRUE)

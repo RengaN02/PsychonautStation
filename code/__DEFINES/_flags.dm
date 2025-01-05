@@ -142,6 +142,8 @@ GLOBAL_LIST_INIT(bitflags, list(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 204
 #define NO_BOH (1<<18)
 /// This area prevents fishing from removing unique/limited loot from sources that're also used outside of it.
 #define UNLIMITED_FISHING (1<<19)
+/// This area is prevented from having gravity (ie. space, nearstation, or outside solars)
+#define NO_GRAVITY (1<<20)
 
 /*
 	These defines are used specifically with the atom/pass_flags bitmask
@@ -223,6 +225,7 @@ GLOBAL_LIST_INIT(bitflags, list(1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 204
 
 #define ZAP_DEFAULT_FLAGS ZAP_MOB_STUN | ZAP_MOB_DAMAGE | ZAP_OBJ_DAMAGE
 #define ZAP_FUSION_FLAGS ZAP_OBJ_DAMAGE | ZAP_MOB_DAMAGE | ZAP_MOB_STUN
+#define ZAP_EBALL_FLAGS ZAP_MOB_STUN | ZAP_MOB_DAMAGE | ZAP_OBJ_DAMAGE | ZAP_GENERATES_POWER
 #define ZAP_SUPERMATTER_FLAGS ZAP_GENERATES_POWER
 
 ///EMP will protect itself.
