@@ -596,5 +596,8 @@
 		if(iter_scar.is_visible(user))
 			. += iter_scar.get_examine_description(user)
 
+	if((mind?.assigned_role.job_flags & JOB_CREW_MANIFEST) && !isnull(client))
+		. += client.prefs.background_info["character_desc"]
+
 #undef ADD_NEWLINE_IF_NECESSARY
 #undef CARBON_EXAMINE_EMBEDDING_MAX_DIST

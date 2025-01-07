@@ -155,7 +155,7 @@
 		med_record_text += "<BR>\n<CENTER><B>Medical Data</B></CENTER><BR>\nBlood Type: [record.blood_type]<BR>\nDNA: [record.dna_string]<BR>\n<BR>\nPhysical Status: [record.physical_status]<BR>\nMental Status: [record.mental_status]<BR>\nMinor Disabilities: [record.minor_disabilities]<BR>\nDetails: [record.minor_disabilities_desc]<BR>\n<BR>\nMajor Disabilities: [record.major_disabilities]<BR>\nDetails: [record.major_disabilities_desc]<BR>\n<BR>\nImportant Notes:"
 		for(var/datum/medical_note/medical_note in record.medical_notes)
 			med_record_text += "<BR>\n\t[medical_note.content]"
-		med_record_text += "<BR>\n[record.medical_records]<BR>\n<BR>\n<CENTER><B>Comments/Log</B></CENTER><BR>"
+		med_record_text += "<BR>\n<BR>\n<CENTER><B>Comments/Log</B></CENTER><BR>"
 		med_record_text += "</TT>"
 		med_record_paper.add_raw_text(med_record_text)
 		med_record_paper.name = "paper - '[record.name]'"

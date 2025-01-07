@@ -84,7 +84,6 @@
 	/// Current arrest status
 	var/wanted_status = WANTED_NONE
 
-	// Flavor Texts
 	var/medical_records
 	var/security_records
 	var/employment_records
@@ -113,11 +112,11 @@
 	minor_disabilities_desc = "No disabilities have been diagnosed at the moment.",
 	physical_status = PHYSICAL_ACTIVE,
 	mental_status = MENTAL_STABLE,
+	quirk_notes,
 	medical_records = "No further details.",
 	security_records = "No further details.",
 	employment_records = "No further details.",
 	exploit_records = "No further details.",
-	quirk_notes,
 )
 	. = ..()
 	src.lock_ref = lock_ref
@@ -128,6 +127,7 @@
 	src.physical_status = physical_status
 	src.mental_status = mental_status
 	src.quirk_notes = quirk_notes
+
 	src.medical_records = medical_records
 	src.security_records = security_records
 	src.employment_records = employment_records

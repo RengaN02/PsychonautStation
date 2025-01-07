@@ -1,7 +1,7 @@
 import { SyntheticEvent } from 'react';
+import { Box, Section, Stack, TextArea } from 'tgui-core/components';
 
 import { useBackend } from '../../backend';
-import { Box, Section, Stack, TextArea } from '../../components';
 import { PreferencesMenuData } from './data';
 import { ServerPreferencesFetcher } from './ServerPreferencesFetcher';
 
@@ -27,7 +27,7 @@ export const BackgroundPage = () => {
                   <TextArea
                     width="100%"
                     height="100px"
-                    onInput={(e) => setBackgroundInfo(e, 'character_desc')}
+                    onChange={(e) => setBackgroundInfo(e, 'character_desc')}
                     value={data.background_info['character_desc'] || ''}
                   />
                 </Section>
@@ -39,7 +39,9 @@ export const BackgroundPage = () => {
                       <TextArea
                         width="100%"
                         height="100px"
-                        onInput={(e) => setBackgroundInfo(e, 'medical_records')}
+                        onChange={(e) =>
+                          setBackgroundInfo(e, 'medical_records')
+                        }
                         value={data.background_info['medical_records'] || ''}
                       />
                     </Section>
@@ -49,7 +51,7 @@ export const BackgroundPage = () => {
                       <TextArea
                         width="100%"
                         height="100px"
-                        onInput={(e) =>
+                        onChange={(e) =>
                           setBackgroundInfo(e, 'security_records')
                         }
                         value={data.background_info['security_records'] || ''}
@@ -65,7 +67,7 @@ export const BackgroundPage = () => {
                       <TextArea
                         width="100%"
                         height="100px"
-                        onInput={(e) =>
+                        onChange={(e) =>
                           setBackgroundInfo(e, 'employment_records')
                         }
                         value={data.background_info['employment_records'] || ''}
@@ -77,7 +79,9 @@ export const BackgroundPage = () => {
                       <TextArea
                         width="100%"
                         height="100px"
-                        onInput={(e) => setBackgroundInfo(e, 'exploit_records')}
+                        onChange={(e) =>
+                          setBackgroundInfo(e, 'exploit_records')
+                        }
                         value={data.background_info['exploit_records'] || ''}
                       />
                     </Section>
