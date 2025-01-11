@@ -1004,3 +1004,44 @@
 	message_admins("[ADMIN_LOOKUPFLW(voidwalker)] has been made into a Voidwalker by the midround ruleset.")
 	log_dynamic("[key_name(voidwalker)] was spawned as a Voidwalker by the midround ruleset.")
 	return voidwalker
+
+/// Midround Good Cop / Bad Cop Ruleset (From Living)
+/datum/dynamic_ruleset/midround/from_living/cops
+	name = "Good Cop / Bad Cop"
+	midround_ruleset_style = MIDROUND_RULESET_STYLE_HEAVY
+	antag_datum = /datum/antagonist/cop
+	antag_flag = ROLE_COP
+	exclusive_roles = list(JOB_DETECTIVE, JOB_SECURITY_OFFICER, JOB_SECURITY_OFFICER_MEDICAL, JOB_SECURITY_OFFICER_ENGINEERING, JOB_SECURITY_OFFICER_SCIENCE, JOB_SECURITY_OFFICER_SUPPLY)
+	minimum_players = 20
+	weight = 10
+	cost = 0
+	required_candidates = 2
+	var/datum/team/cop_team/cop_team
+
+/datum/dynamic_ruleset/midround/from_living/cops/trim_candidates()
+	..()
+	candidates = living_players
+	for(var/mob/living/player as anything in candidates)
+		var/turf/player_turf = get_turf(player)
+		if(!player_turf || !is_station_level(player_turf.z))
+			candidates -= player
+			continue
+
+		if(player.mind && (player.mind.special_role || player.mind.can_roll_midround()))
+			candidates -= player
+
+/datum/dynamic_ruleset/midround/from_living/cops/execute()
+	if(!candidates || candidates.len < 2)
+		return FALSE
+	cop_team = new
+	for(var/i in 1 to required_candidates)
+		var/mob/living/carbon/human/selected_cop = pick_n_take(candidates)
+		assigned += selected_cop.mind
+		selected_cop.mind.special_role = antag_flag
+		if (assigned.len == 1)
+			var/datum/antagonist/cop/good/new_role = new
+			selected_cop.mind.add_antag_datum(new_role, cop_team)
+		else
+			var/datum/antagonist/cop/bad/new_role = new
+			selected_cop.mind.add_antag_datum(new_role, cop_team)
+	return TRUE

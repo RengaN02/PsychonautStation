@@ -587,18 +587,18 @@
 		to_chat(owner, span_warning("You start having a bad feeling..."))
 		owner.add_mood_event("fireaxe", /datum/mood_event/axe_missing)
 		return
-		
+
 	if(!isarea(axe_location))
 		owner.add_mood_event("fireaxe", /datum/mood_event/axe_gone)
 		return
-		
+
 	if(istype(axe_location, /area/station/command))
 		to_chat(owner, span_notice("You feel a sense of relief..."))
 		if(istype(GLOB.bridge_axe.loc, /obj/structure/fireaxecabinet))
 			return
 		owner.add_mood_event("fireaxe", /datum/mood_event/axe_neutral)
 		return
-		
+
 	to_chat(owner, span_warning("You start having a bad feeling..."))
 	owner.add_mood_event("fireaxe", /datum/mood_event/axe_missing)
 
@@ -701,3 +701,39 @@
 	while(!ismob(axe_loc) && !isarea(axe_loc) && !isnull(axe_loc))
 		axe_loc = axe_loc.loc
 	return axe_loc
+
+/datum/brain_trauma/special/shareddelusion
+	name = "Shared Delusion"
+	desc = "Patient perceives vivid hallucinations of specific individuals they deeply care for, believing these people to be their close friends. They interact with these figures as if they are real, valuing their well-being and opinions."
+	scan_desc = "imaginary companionship"
+	gain_text = span_warning("You feel an overwhelming warmth in your chest as familiar faces occupy your mind.")
+	lose_text = span_notice("The imagined bonds fade, leaving you feeling alone but more focused.")
+	resilience = TRAUMA_RESILIENCE_ABSOLUTE
+	random_gain = FALSE
+	var/list/mob/living/friends = list()
+	var/time_spent_away = 0
+
+/datum/brain_trauma/special/shareddelusion/on_lose()
+	..()
+	owner.clear_mood_event("creeping")
+
+/datum/brain_trauma/special/shareddelusion/on_life(seconds_per_tick, times_fired)
+	if(length(friends))
+		out_of_view("friends") // THEYY NEEED FRIENDSS
+		return
+	var/list/viewing_list = view(12, owner)
+	var/viewing = TRUE
+	for(var/mob/living/friend as anything in friends)
+		if(friend.stat == DEAD || !(friend in viewing_list))
+			viewing = FALSE
+			out_of_view(friend.name)
+	if(viewing)
+		time_spent_away = 0
+		owner.clear_mood_event("creeping")
+
+/datum/brain_trauma/special/shareddelusion/proc/out_of_view(friend_name)
+	time_spent_away += 20
+	if(time_spent_away > 300) //1 sıfır daha eklencek
+		owner.add_mood_event("creeping", /datum/mood_event/notcreepingsevere, friend_name)
+	else
+		owner.add_mood_event("creeping", /datum/mood_event/notcreeping, friend_name)
