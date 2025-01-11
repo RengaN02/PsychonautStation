@@ -17,24 +17,6 @@
 	. = ..()
 	team.update_members()
 
-/datum/antagonist/cop/get_preview_icon()
-	var/mob/living/carbon/human/dummy/consistent/goodcop = new
-	var/mob/living/carbon/human/dummy/consistent/badcop = new
-
-	var/icon/goodcop_icon = render_preview_outfit(/datum/outfit/job/security, goodcop)
-	goodcop_icon.Shift(WEST, 8)
-
-	var/icon/badcop_icon = render_preview_outfit(/datum/outfit/job/security, badcop)
-	badcop_icon.Shift(EAST, 8)
-
-	var/icon/final_icon = goodcop_icon
-	final_icon.Blend(badcop_icon, ICON_OVERLAY)
-
-	qdel(goodcop)
-	qdel(badcop)
-
-	return finish_preview_icon(final_icon)
-
 /datum/antagonist/cop/create_team(datum/team/cop_team/new_team)
 	if(!new_team)
 		return
