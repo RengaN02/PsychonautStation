@@ -711,29 +711,36 @@
 	resilience = TRAUMA_RESILIENCE_ABSOLUTE
 	random_gain = FALSE
 	var/list/mob/living/friends = list()
+	var/list/mood_list = list()
 	var/time_spent_away = 0
 
 /datum/brain_trauma/special/shareddelusion/on_lose()
 	..()
-	owner.clear_mood_event("creeping")
+	clear_moods()
 
 /datum/brain_trauma/special/shareddelusion/on_life(seconds_per_tick, times_fired)
-	if(length(friends))
-		out_of_view("friends") // THEYY NEEED FRIENDSS
+	if(!length(friends))
 		return
 	var/list/viewing_list = view(12, owner)
 	var/viewing = TRUE
 	for(var/mob/living/friend as anything in friends)
 		if(friend.stat == DEAD || !(friend in viewing_list))
 			viewing = FALSE
-			out_of_view(friend.name)
+			out_of_view(friend)
 	if(viewing)
 		time_spent_away = 0
-		owner.clear_mood_event("creeping")
+		clear_moods()
 
-/datum/brain_trauma/special/shareddelusion/proc/out_of_view(friend_name)
+/datum/brain_trauma/special/shareddelusion/proc/out_of_view(mob/living/friend)
 	time_spent_away += 20
-	if(time_spent_away > 300) //1 sıfır daha eklencek
-		owner.add_mood_event("creeping", /datum/mood_event/notcreepingsevere, friend_name)
+	var/mood_ref = "creeping_[REF(friend)]"
+	if(time_spent_away > 3000)
+		owner.add_mood_event(mood_ref, /datum/mood_event/notcreepingsevere, friend.name)
 	else
-		owner.add_mood_event("creeping", /datum/mood_event/notcreeping, friend_name)
+		owner.add_mood_event(mood_ref, /datum/mood_event/notcreeping, friend.name)
+	mood_list |= mood_ref
+
+/datum/brain_trauma/special/shareddelusion/proc/clear_moods()
+	for(var/mood_ref as anything in mood_list)
+		owner.clear_mood_event(mood_ref)
+		mood_list -= mood_ref

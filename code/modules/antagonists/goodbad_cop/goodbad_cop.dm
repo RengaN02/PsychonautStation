@@ -4,6 +4,7 @@
 	antagpanel_category = ANTAG_GROUP_CREW
 	job_rank = ROLE_COP
 	count_against_dynamic_roll_chance = FALSE
+	hud_icon = 'icons/psychonaut/mob/huds/antag_hud.dmi'
 	/// Brain trauma that gives the moods
 	var/datum/brain_trauma/special/shareddelusion/trauma
 
@@ -13,7 +14,8 @@
 	objectives += team.objectives
 	var/mob/living/carbon/C = owner.current
 	trauma = C.gain_trauma(/datum/brain_trauma/special/shareddelusion)
-	return ..()
+	. = ..()
+	team.update_members()
 
 /datum/antagonist/cop/get_preview_icon()
 	var/mob/living/carbon/human/dummy/consistent/goodcop = new
@@ -60,36 +62,61 @@
 
 /datum/antagonist/cop/good
 	name = "Good Cop"
+	antag_hud_name = "goodcop"
 	show_in_antagpanel = TRUE
 
 /datum/antagonist/cop/good/apply_innate_effects(mob/living/mob_override)
-	var/mob/living/subject = owner.current || mob_override
-	ADD_TRAIT(subject, TRAIT_EMPATH, COP_ROLE)
+	var/mob/living/carbon/C = owner.current || mob_override
+	ADD_TRAIT(C, TRAIT_EMPATH, COP_ROLE)
+	add_team_hud(C, /datum/antagonist/cop)
 
 /datum/antagonist/cop/good/remove_innate_effects(mob/living/mob_override)
-	var/mob/living/subject = owner.current || mob_override
-	REMOVE_TRAIT(subject, TRAIT_EMPATH, COP_ROLE)
+	var/mob/living/carbon/C = owner.current || mob_override
+	REMOVE_TRAIT(C, TRAIT_EMPATH, COP_ROLE)
 
 /datum/antagonist/cop/bad
 	name = "Bad Cop"
+	antag_hud_name = "badcop"
 	show_in_antagpanel = TRUE
 
 /datum/antagonist/cop/bad/apply_innate_effects(mob/living/mob_override)
-	var/mob/living/subject = owner.current || mob_override
-	ADD_TRAIT(subject, TRAIT_NICE_SHOT, COP_ROLE)
+	var/mob/living/carbon/C = owner.current || mob_override
+	ADD_TRAIT(C, TRAIT_NICE_SHOT, COP_ROLE)
+	add_team_hud(C, /datum/antagonist/cop)
 
 /datum/antagonist/cop/bad/remove_innate_effects(mob/living/mob_override)
-	var/mob/living/subject = owner.current || mob_override
-	REMOVE_TRAIT(subject, TRAIT_NICE_SHOT, COP_ROLE)
+	var/mob/living/carbon/C = owner.current || mob_override
+	REMOVE_TRAIT(C, TRAIT_NICE_SHOT, COP_ROLE)
+
+// Admin Only
+/datum/antagonist/cop/goof
+	name = "Goof Cop"
+	antag_hud_name = "goofcop"
+	show_in_antagpanel = TRUE
+
+/datum/antagonist/cop/goof/apply_innate_effects(mob/living/mob_override)
+	var/mob/living/carbon/C = owner.current || mob_override
+	if(!istype(C))
+		return
+	C.dna.add_mutation(/datum/mutation/human/clumsy)
+	add_team_hud(C, /datum/antagonist/cop)
+
+/datum/antagonist/cop/goof/remove_innate_effects(mob/living/mob_override)
+	var/mob/living/carbon/C = owner.current || mob_override
+	if(!istype(C))
+		return
+	C.dna.remove_mutation(/datum/mutation/human/clumsy)
 
 /datum/team/cop_team
-	name = "Good Cop / Bad Cop"
 	member_name = "Cop"
 	show_roundend_report = FALSE
+	var/team_number
+	var/static/team_count = 1
 
-/datum/team/cop_team/add_member(datum/mind/new_member)
+/datum/team/cop_team/New()
 	..()
-	update_members()
+	team_number = team_count++
+	name = "Cop Team #[team_number]"
 
 /datum/team/cop_team/remove_member(datum/mind/member)
 	..()
@@ -111,3 +138,4 @@
 		if(isnull(trauma))
 			continue
 		trauma.friends = member_mobs - C
+		trauma.clear_moods()
