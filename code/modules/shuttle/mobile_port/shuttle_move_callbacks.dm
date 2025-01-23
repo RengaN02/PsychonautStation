@@ -52,6 +52,19 @@ All ShuttleMove procs go here
 
 	if(!shuttle_depth)
 		CRASH("A turf queued to move via shuttle somehow had no skipover in baseturfs. [src]([type]):[loc]")
+	if(newT.lgroup)
+		newT.lgroup.remove_from_group(newT)
+	if(newT.liquids)
+		if(newT.liquids.immutable)
+			newT.liquids.remove_turf(src)
+		else
+			qdel(newT.liquids, TRUE)
+
+	if(lgroup)
+		lgroup.remove_from_group(src)
+	if(liquids)
+		liquids.ChangeToNewTurf(newT)
+		newT.reasses_liquids()
 	newT.CopyOnTop(src, 1, shuttle_depth, TRUE)
 	newT.blocks_air = TRUE
 	newT.air_update_turf(TRUE, FALSE)
@@ -239,7 +252,7 @@ All ShuttleMove procs go here
 	. = ..()
 	if(pipe_vision_img)
 		pipe_vision_img.loc = loc
-		
+
 	var/missing_nodes = FALSE
 	for(var/i in 1 to device_type)
 		if(nodes[i])

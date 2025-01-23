@@ -405,22 +405,33 @@
 	melee = 10
 	acid = 50
 
-/obj/item/reagent_containers/cup/bucket/attackby(obj/O, mob/user, params)
-	if(istype(O, /obj/item/mop))
-		if(reagents.total_volume < 1)
-			user.balloon_alert(user, "empty!")
+/obj/item/reagent_containers/cup/bucket/attackby(obj/mop, mob/living/user, params)
+	if(istype(mop, /obj/item/mop))
+		var/is_right_clicking = LAZYACCESS(params2list(params), RIGHT_CLICK)
+		if(is_right_clicking)
+			if(mop.reagents.total_volume == 0)
+				user.balloon_alert(user, "mop is dry!")
+				return
+			if(reagents.total_volume == reagents.maximum_volume)
+				user.balloon_alert(user, "mop is full!")
+				return
+			mop.reagents.remove_all(mop.reagents.total_volume * SQUEEZING_DISPERSAL_RATIO)
+			mop.reagents.trans_to(src, mop.reagents.total_volume, transferred_by = user)
+			user.balloon_alert(user, "mop squeezed")
 		else
-			reagents.trans_to(O, 5, transferred_by = user)
-			user.balloon_alert(user, "doused [O]")
-			playsound(loc, 'sound/effects/slosh.ogg', 25, TRUE)
-		return
-	else if(isprox(O)) //This works with wooden buckets for now. Somewhat unintended, but maybe someone will add sprites for it soon(TM)
-		to_chat(user, span_notice("You add [O] to [src]."))
-		qdel(O)
+			if(reagents.total_volume < 1)
+				user.balloon_alert(user, "container empty!")
+			else
+				reagents.trans_to(mop, 5, transferred_by = user)
+				user.balloon_alert(user, "mop wet")
+				playsound(loc, 'sound/effects/slosh.ogg', 25, TRUE)
+
+	else if(isprox(mop)) //This works with wooden buckets for now. Somewhat unintended, but maybe someone will add sprites for it soon(TM)
+		to_chat(user, span_notice("You add [mop] to [src]."))
+		qdel(mop)
 		var/obj/item/bot_assembly/cleanbot/new_cleanbot_ass = new(null, src)
 		user.put_in_hands(new_cleanbot_ass)
 		return
-
 	return ..()
 
 /obj/item/reagent_containers/cup/bucket/equipped(mob/user, slot)

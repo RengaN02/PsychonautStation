@@ -32,6 +32,9 @@
 /// Cleans decals such as cobwebs off the floor
 #define CLEAN_TYPE_HARD_DECAL (1 << 7)
 
+/// Cleans all the liquids from a turf, or "evaporates" them
+#define CLEAN_TYPE_LIQUIDS (1 << 8)
+
 // Different cleaning methods.
 // Use these when calling the wash proc for your cleaning apparatus
 #define CLEAN_WASH (CLEAN_TYPE_BLOOD | CLEAN_TYPE_DISEASE | CLEAN_TYPE_ACID | CLEAN_TYPE_LIGHT_DECAL)

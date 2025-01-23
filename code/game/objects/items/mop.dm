@@ -37,6 +37,7 @@
 /obj/item/mop/Initialize(mapload)
 	. = ..()
 	AddComponent(/datum/component/cleaner, mopspeed, pre_clean_callback=CALLBACK(src, PROC_REF(should_clean)), on_cleaned_callback=CALLBACK(src, PROC_REF(apply_reagents)))
+	AddComponent(/datum/component/liquids_interaction, on_interaction_callback=CALLBACK(src, PROC_REF(attack_on_liquids_turf)))
 	create_reagents(max_reagent_volume)
 	GLOB.janitor_devices += src
 
@@ -46,6 +47,10 @@
 
 ///Checks whether or not we should clean.
 /obj/item/mop/proc/should_clean(datum/cleaning_source, atom/atom_to_clean, mob/living/cleaner)
+	var/turf/turf_to_clean = atom_to_clean
+	if(isturf(atom_to_clean) && turf_to_clean.liquids)
+		return CLEAN_BLOCKED|CLEAN_DONT_BLOCK_INTERACTION
+
 	if(clean_blacklist[atom_to_clean.type])
 		return CLEAN_BLOCKED|CLEAN_DONT_BLOCK_INTERACTION
 	if(reagents.total_volume < 0.1)
@@ -71,6 +76,22 @@
 	if(cleaner?.mind)
 		val2remove = round(cleaner.mind.get_skill_modifier(/datum/skill/cleaning, SKILL_SPEED_MODIFIER), 0.1)
 	reagents.remove_all(val2remove) //reaction() doesn't use up the reagents
+
+/obj/item/mop/proc/attack_on_liquids_turf(turf/tile, mob/user, obj/effect/abstract/liquid_turf/liquids)
+	if(!in_range(user, tile))
+		return FALSE
+
+	var/free_space = reagents.maximum_volume - reagents.total_volume
+	if(free_space <= 0)
+		to_chat(user, span_warning("Your [src] can't absorb any more liquid!"))
+		return TRUE
+
+	var/datum/reagents/tempr = liquids.take_reagents_flat(free_space)
+	tempr.trans_to(reagents, tempr.total_volume)
+	to_chat(user, span_notice("You soak \the [src] with some liquids."))
+	qdel(tempr)
+	user.changeNext_move(CLICK_CD_RANGE) // This used to be CLICK_CD_MELEE, which is painfully slow
+	return TRUE
 
 /obj/item/mop/cyborg/Initialize(mapload)
 	. = ..()

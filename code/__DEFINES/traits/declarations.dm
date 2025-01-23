@@ -271,6 +271,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SILICON_EMOTES_ALLOWED "silicon_emotes_allowed"
 /// Makes you immune to welding flashes
 #define TRAIT_NOTOOLFLASH "notoolflash"
+/// One can breath under water, you get me?
+#define TRAIT_WATER_BREATHING "water_breathing"
 
 /// This trait designate that the mob was originally a monkey
 #define TRAIT_BORN_MONKEY "born_as_a_monkey"

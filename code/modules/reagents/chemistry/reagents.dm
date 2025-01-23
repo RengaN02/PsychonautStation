@@ -92,6 +92,14 @@
 	/// When ordered in a restaurant, what custom order do we create?
 	var/restaurant_order = /datum/custom_order/reagent/drink
 
+	var/evaporates = FALSE
+	///How much fire power does the liquid have, for burning on simulated liquids. Not enough fire power/unit of entire mixture may result in no fire
+	var/liquid_fire_power = 0
+	///How fast does the liquid burn on simulated turfs, if it does
+	var/liquid_fire_burnrate = 0
+	///Whether a fire from this requires oxygen in the atmosphere
+	var/fire_needs_oxygen = TRUE
+
 /datum/reagent/New()
 	SHOULD_CALL_PARENT(TRUE)
 	. = ..()
@@ -195,7 +203,7 @@ Primarily used in reagents/reaction_agents
 /// Called when this reagent is first added to a mob
 /datum/reagent/proc/on_mob_add(mob/living/affected_mob, amount)
 	// Scale the overdose threshold of the chem by the difference between the default and creation purity.
-	overdose_threshold += (src.creation_purity - initial(purity)) * overdose_threshold	
+	overdose_threshold += (src.creation_purity - initial(purity)) * overdose_threshold
 	if(added_traits)
 		affected_mob.add_traits(added_traits, "base:[type]")
 
@@ -321,3 +329,9 @@ Primarily used in reagents/reaction_agents
 			reagent_strings += "[capitalize_names ? capitalize(reagent.name) : reagent.name][names_only ? null : ", [reagent.volume]"]"
 
 	return reagent_strings.Join(join_text)
+
+/// Like add_reagent but you can enter a list. Adds them with no_react = TRUE. Format it like this: list(/datum/reagent/toxin = 10, "beer" = 15)
+/datum/reagents/proc/add_noreact_reagent_list(list/list_reagents, list/data=null)
+	for(var/r_id in list_reagents)
+		var/amt = list_reagents[r_id]
+		add_reagent(r_id, amt, data, no_react = TRUE)

@@ -63,6 +63,8 @@
 		reagents.add_reagent(/datum/reagent/blood, disease_amount, data)
 	add_initial_reagents()
 
+	AddComponent(/datum/component/liquids_interaction, on_interaction_callback=CALLBACK(src, PROC_REF(attack_on_liquids_turf)))
+
 /obj/item/reagent_containers/examine(mob/user)
 	. = ..()
 	if(has_variable_transfer_amount)
@@ -245,12 +247,16 @@
 		return
 
 	else
-		if(isturf(target) && reagents.reagent_list.len && thrown_by)
-			log_combat(thrown_by, target, "splashed (thrown) [english_list(reagents.reagent_list)]", "in [AREACOORD(target)]")
-			thrown_by.log_message("splashed (thrown) [english_list(reagents.reagent_list)] on [target].", LOG_ATTACK)
-			message_admins("[ADMIN_LOOKUPFLW(thrown_by)] splashed (thrown) [english_list(reagents.reagent_list)] on [target] in [ADMIN_VERBOSEJMP(target)].")
+		if(isturf(target))
+			var/turf/T = target
+			T.add_liquid_from_reagents(reagents)
+			if(reagents.reagent_list.len && thrown_by)
+				log_combat(thrown_by, target, "splashed (thrown) [english_list(reagents.reagent_list)]", "in [AREACOORD(target)]")
+				log_game("[key_name(thrown_by)] splashed (thrown) [english_list(reagents.reagent_list)] on [target] in [AREACOORD(target)].")
+				message_admins("[ADMIN_LOOKUPFLW(thrown_by)] splashed (thrown) [english_list(reagents.reagent_list)] on [target] in [ADMIN_VERBOSEJMP(target)].")
+		else
+			reagents.expose(target, TOUCH)
 		visible_message(span_notice("[src] spills its contents all over [target]."))
-		reagents.expose(target, TOUCH)
 		if(QDELETED(src))
 			return
 
@@ -303,3 +309,30 @@
 	. = ..()
 	if(!initial && (slot & ITEM_SLOT_HANDS) && reagent_container_liquid_sound && reagents.total_volume > 0)
 		playsound(src, reagent_container_liquid_sound, LIQUID_SLOSHING_SOUND_VOLUME, vary = TRUE, ignore_walls = FALSE)
+
+/obj/item/reagent_containers/proc/attack_on_liquids_turf(obj/item/reagent_containers/my_beaker, turf/T, mob/living/user, obj/effect/abstract/liquid_turf/liquids)
+	if(user.combat_mode)
+		return FALSE
+	if(!my_beaker.spillable)
+		return FALSE
+	if(!user.Adjacent(T))
+		return FALSE
+	if(liquids.fire_state) //Use an extinguisher first
+		to_chat(user, "<span class='warning'>You can't scoop up anything while it's on fire!</span>")
+		return TRUE
+	if(liquids.height == 1)
+		to_chat(user, "<span class='warning'>The puddle is too shallow to scoop anything up!</span>")
+		return TRUE
+	var/free_space = my_beaker.reagents.maximum_volume - my_beaker.reagents.total_volume
+	if(free_space <= 0)
+		to_chat(user, "<span class='warning'>You can't fit any more liquids inside [my_beaker]!</span>")
+		return TRUE
+	var/desired_transfer = my_beaker.amount_per_transfer_from_this
+	if(desired_transfer > free_space)
+		desired_transfer = free_space
+	var/datum/reagents/tempr = liquids.take_reagents_flat(desired_transfer)
+	tempr.trans_to(my_beaker.reagents, tempr.total_volume)
+	to_chat(user, "<span class='notice'>You scoop up around [my_beaker.amount_per_transfer_from_this] units of liquids with [my_beaker].</span>")
+	qdel(tempr)
+	user.changeNext_move(CLICK_CD_MELEE)
+	return TRUE

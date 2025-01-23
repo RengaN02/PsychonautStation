@@ -43,3 +43,10 @@
 
 ///Called when turf no longer blocks light from passing through
 #define COMSIG_TURF_NO_LONGER_BLOCK_LIGHT "turf_no_longer_block_light"
+
+///from base of /turf/handle_fall(): (mob/faller)
+#define COMSIG_TURF_MOB_FALL "turf_mob_fall"
+///from base of /obj/effect/abstract/liquid_turf/Initialize() (/obj/effect/abstract/liquid_turf/liquids)
+#define COMSIG_TURF_LIQUIDS_CREATION "turf_liquids_creation"
+/// From base of /turf/proc/liquids_change(new_state)
+#define COMSIG_TURF_LIQUIDS_CHANGE "turf_liquids_change"

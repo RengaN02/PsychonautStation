@@ -19,6 +19,7 @@
 	new /obj/item/storage/photo_album/ce(src)
 	new /obj/item/storage/box/skillchips/engineering(src)
 	new /obj/item/storage/box/stickers/chief_engineer(src)
+	new /obj/item/construction/plumbing/engineering(src)
 
 /obj/structure/closet/secure_closet/engineering_chief/populate_contents_immediate()
 	. = ..()
@@ -76,7 +77,7 @@
 	new /obj/item/clothing/glasses/meson/engine(src)
 	new /obj/item/storage/box/emptysandbags(src)
 	new /obj/item/storage/bag/construction(src)
-
+	new /obj/item/construction/plumbing/engineering(src)
 
 /obj/structure/closet/secure_closet/atmospherics
 	name = "atmospheric technician's locker"

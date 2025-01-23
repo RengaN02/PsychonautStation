@@ -659,6 +659,10 @@
 	fire = 80
 	acid = 70
 
+/obj/structure/table/reinforced/Initialize()
+	. = ..()
+	AddElement(/datum/element/liquids_height, 20)
+
 /obj/structure/table/reinforced/add_context(atom/source, list/context, obj/item/held_item, mob/living/user)
 	. = ..()
 

@@ -70,6 +70,10 @@
 	if(istype(potential_spine))
 		damage_softening_multiplier *= potential_spine.athletics_boost_multiplier
 
+	var/liquid_damage_softening = (impacted_turf.liquids && impacted_turf.liquids.liquid_state >= LIQUID_STATE_WAIST)
+	if(liquid_damage_softening)
+		damage_softening_multiplier *= 3/4
+
 	// If you are incapped, you probably can't brace yourself
 	var/can_help_themselves = !INCAPACITATED_IGNORING(src, INCAPABLE_RESTRAINTS)
 	if(levels <= 1 && can_help_themselves)
@@ -81,7 +85,10 @@
 				add_movespeed_modifier(/datum/movespeed_modifier/landed_on_feet)
 				addtimer(CALLBACK(src, TYPE_PROC_REF(/mob, remove_movespeed_modifier), /datum/movespeed_modifier/landed_on_feet), levels * 3 SECONDS)
 			else
-				Knockdown(levels * 4 SECONDS)
+				if(liquid_damage_softening)
+					Knockdown(levels * 2 SECONDS)
+				else
+					Knockdown(levels * 4 SECONDS)
 				emote("spin")
 
 			visible_message(
@@ -122,7 +129,10 @@
 		apply_damage(incoming_damage, BRUTE, spread_damage = TRUE)
 
 	if(!skip_knockdown)
-		Knockdown(levels * 5 SECONDS)
+		if(liquid_damage_softening)
+			Knockdown(levels * 2.5 SECONDS)
+		else
+			Knockdown(levels * 5 SECONDS)
 	return .
 
 /// Modifier for mobs landing on their feet after a fall

@@ -227,6 +227,7 @@
 	var/cooling_temperature = 2
 	chemical_flags = REAGENT_CAN_BE_SYNTHESIZED|REAGENT_CLEANS
 	default_container = /obj/item/reagent_containers/cup/glass/waterbottle
+	evaporates = TRUE
 
 /datum/glass_style/shot_glass/water
 	required_drink_type = /datum/reagent/water
@@ -1327,6 +1328,8 @@
 	burning_volume = 0.2
 	chemical_flags = REAGENT_CAN_BE_SYNTHESIZED
 	addiction_types = list(/datum/addiction/alcohol = 4)
+	liquid_fire_power = 10
+	liquid_fire_burnrate = 0.1
 
 /datum/glass_style/drinking_glass/fuel
 	required_drink_type = /datum/reagent/fuel
@@ -2834,6 +2837,15 @@
 	color = "#E6E6DA"
 	taste_mult = 0
 	chemical_flags = REAGENT_CAN_BE_SYNTHESIZED
+
+// So, vomit cleanup kits use sawdust
+// We don't really have sawdust, and adding another reagent would be needless bloat
+// Hence, cellulose can clean up liquids, I also put it in cleaner grenades, for your convenience~
+/datum/reagent/cellulose/expose_turf(turf/exposed_turf, reac_volume)
+	. = ..()
+	if(reac_volume < 0.6)
+		return
+	exposed_turf.wash(CLEAN_TYPE_LIQUIDS)
 
 // "Second wind" reagent generated when someone suffers a wound. Epinephrine, adrenaline, and stimulants are all already taken so here we are
 /datum/reagent/determination

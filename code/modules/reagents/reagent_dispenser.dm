@@ -79,7 +79,8 @@
 	. = ..()
 	if(. && atom_integrity > 0)
 		if(tank_volume && (damage_flag == BULLET || damage_flag == LASER))
-			boom()
+			var/guaranteed_violent = (damage_flag == BULLET || damage_flag == LASER)
+			boom(damage_type, guaranteed_violent)
 
 /obj/structure/reagent_dispensers/attackby(obj/item/attacking_item, mob/user, params)
 	if(attacking_item.is_refillable())
@@ -161,7 +162,7 @@
  * This is most dangerous for fuel tanks, which will explosion().
  * Other dispensers will scatter their contents within range.
  */
-/obj/structure/reagent_dispensers/proc/boom()
+/obj/structure/reagent_dispensers/proc/boom(damage_type = BRUTE, guaranteed_violent = FALSE)
 	if(QDELETED(src))
 		return // little bit of sanity sauce before we wreck ourselves somehow
 	var/datum/reagent/fuel/volatiles = reagents.has_reagent(/datum/reagent/fuel)
@@ -174,6 +175,9 @@
 			visible_message(span_danger("\The [src] ruptures!"))
 		// Leave it up to future terrorists to figure out the best way to mix reagents with fuel for a useful boom here
 		chem_splash(loc, null, 2 + (reagents.total_volume + fuel_amt) / 1000, list(reagents), extra_heat=(fuel_amt / 50),adminlog=(fuel_amt<25))
+
+	if(damage_type != BURN && !guaranteed_violent)
+		return
 
 	if(fuel_amt) // with that done, actually explode
 		visible_message(span_danger("\The [src] explodes!"))
@@ -242,7 +246,7 @@
 	name = "high-capacity water tank"
 	desc = "A highly pressurized water tank made to hold gargantuan amounts of water."
 	icon_state = "water_high" //I was gonna clean my room...
-	tank_volume = 100000
+	tank_volume = 5000
 
 /obj/structure/reagent_dispensers/foamtank
 	name = "firefighting foam tank"
@@ -269,24 +273,24 @@
 		icon_state = "fuel_fools"
 
 /obj/structure/reagent_dispensers/fueltank/blob_act(obj/structure/blob/B)
-	boom()
+	boom(guaranteed_violent = TRUE)
 
 /obj/structure/reagent_dispensers/fueltank/ex_act()
-	boom()
+	boom(guaranteed_violent = TRUE)
 	return TRUE
 
 /obj/structure/reagent_dispensers/fueltank/fire_act(exposed_temperature, exposed_volume)
-	boom()
+	boom(damage_type = BURN, guaranteed_violent = TRUE)
 
 /obj/structure/reagent_dispensers/fueltank/zap_act(power, zap_flags)
 	. = ..() //extend the zap
 	if(ZAP_OBJ_DAMAGE & zap_flags)
-		boom()
+		boom(guaranteed_violent = TRUE)
 
 /obj/structure/reagent_dispensers/fueltank/bullet_act(obj/projectile/hitting_projectile)
 	if(hitting_projectile.damage > 0 && ((hitting_projectile.damage_type == BURN) || (hitting_projectile.damage_type == BRUTE)))
 		log_bomber(hitting_projectile.firer, "detonated a", src, "via projectile")
-		boom()
+		boom(damage_type = BURN, guaranteed_violent = TRUE)
 		return hitting_projectile.on_hit(src, 0)
 
 	// we override parent like this because otherwise we won't actually properly log the fact that a projectile caused this welding tank to explode.
@@ -325,7 +329,7 @@
 		span_danger("[user] catastrophically fails at refilling [user.p_their()] [attacking_item.name]!"),
 		span_userdanger("That was stupid of you."))
 	log_bomber(user, "detonated a", src, "via [attacking_item.name]")
-	boom()
+	boom(guaranteed_violent = TRUE)
 
 /obj/structure/reagent_dispensers/fueltank/large
 	name = "high capacity fuel tank"

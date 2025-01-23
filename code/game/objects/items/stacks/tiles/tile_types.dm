@@ -1335,3 +1335,41 @@
 	turf_type = /turf/open/floor/glass/reinforced/plasma
 	merge_type = /obj/item/stack/tile/rglass/plasma
 	mats_per_unit = list(/datum/material/iron = SHEET_MATERIAL_AMOUNT * 0.125, /datum/material/alloy/plasmaglass = SHEET_MATERIAL_AMOUNT * 0.25)
+
+/obj/item/stack/tile/iron/elevated
+	name = "elevated floor tile"
+	singular_name = "elevated floor tile"
+	turf_type = /turf/open/floor/iron/elevated
+
+/obj/item/stack/tile/iron/lowered
+	name = "lowered floor tile"
+	singular_name = "lowered floor tile"
+	turf_type = /turf/open/floor/iron/lowered
+
+/obj/item/stack/tile/iron/pool
+	name = "pool floor tile"
+	singular_name = "pool floor tile"
+	turf_type = /turf/open/floor/iron/pool
+	tile_reskin_types = list(
+		/obj/item/stack/tile/iron/pool,
+		/obj/item/stack/tile/iron/pool/cobble,
+		/obj/item/stack/tile/iron/pool/cobble/side,
+		/obj/item/stack/tile/iron/pool/cobble/corner
+	)
+
+/obj/item/stack/tile/iron/pool/cobble
+	name = "cobblestone pool floor tile"
+	singular_name = "cobblestone pool floor tile"
+	turf_type = /turf/open/floor/iron/pool/cobble
+
+/obj/item/stack/tile/iron/pool/cobble/side
+	name = "cobblestone side pool floor tile"
+	singular_name = "cobblestone side pool floor tile"
+	turf_type = /turf/open/floor/iron/pool/cobble/side
+	tile_rotate_dirs = list(SOUTH, NORTH, EAST, WEST)
+
+/obj/item/stack/tile/iron/pool/cobble/corner
+	name = "cobblestone corner pool floor tile"
+	singular_name = "cobblestone corner pool floor tile"
+	turf_type = /turf/open/floor/iron/pool/cobble/corner
+	tile_rotate_dirs = list(SOUTH, NORTH, EAST, WEST)
