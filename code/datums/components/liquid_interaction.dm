@@ -9,7 +9,7 @@
 	if(!istype(parent, /obj/item))
 		return COMPONENT_INCOMPATIBLE
 
-	interaction_callback = on_interaction_callback
+	interaction_callback = CALLBACK(parent, on_interaction_callback)
 
 /datum/component/liquids_interaction/RegisterWithParent()
 	RegisterSignal(parent, COMSIG_ITEM_INTERACTING_WITH_ATOM, PROC_REF(item_interaction)) //The only signal allowing item -> turf interaction

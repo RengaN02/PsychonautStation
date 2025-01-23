@@ -63,7 +63,7 @@
 		reagents.add_reagent(/datum/reagent/blood, disease_amount, data)
 	add_initial_reagents()
 
-	AddComponent(/datum/component/liquids_interaction, on_interaction_callback=CALLBACK(src, PROC_REF(attack_on_liquids_turf)))
+	AddComponent(/datum/component/liquids_interaction, on_interaction_callback=PROC_REF(attack_on_liquids_turf))
 
 /obj/item/reagent_containers/examine(mob/user)
 	. = ..()
