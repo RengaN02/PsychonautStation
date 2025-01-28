@@ -479,3 +479,12 @@
 
 /obj/item/modular_computer/pda/clear/get_messenger_ending()
 	return "Sent from my crystal PDA"
+
+/obj/item/modular_computer/pda/blueshield //for now functionally the same as sec but with lifeline. But having it here means if we want to give a fancy pda or a CC command PDA we most certainly.
+	name = "blueshield PDA"
+	greyscale_colors = "#EA3232#0000cc"
+	starting_programs = list(
+		/datum/computer_file/program/crew_manifest,
+		/datum/computer_file/program/robocontrol,
+		/datum/computer_file/program/radar/lifeline,
+	)

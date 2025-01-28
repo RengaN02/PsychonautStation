@@ -30,6 +30,7 @@
 #define ACCESS_CHANGE_IDS "change_ids"
 /// Access used for the Captain's personal quarters in mapping, as well as what allows one to order emergency shuttles.
 #define ACCESS_CAPTAIN "captain"
+#define ACCESS_BLUESHIELD "blueshield"
 /// Access used for the Head of Personnel's personal quarters in mapping, as well as the security console and other HoP-related things.
 #define ACCESS_HOP "hop"
 
@@ -364,6 +365,7 @@
 	ACCESS_HOP, \
 	ACCESS_QM, \
 	ACCESS_RD, \
+	ACCESS_BLUESHIELD, \
 )
 
 /// Captains private rooms. Do not use direct, access via SSid_access.get_flag_access_list(ACCESS_FLAG_CAPTAIN)
@@ -526,6 +528,7 @@
 	ACCESS_RC_ANNOUNCE, \
 	ACCESS_TELEPORTER, \
 	ACCESS_VAULT, \
+	ACCESS_BLUESHIELD, \
 )
 /// Name for the Centcom region.
 #define REGION_CENTCOM "Central Command"
@@ -570,6 +573,7 @@
 	/obj/item/modular_computer/pda/atmos = list(REGION_ENGINEERING), \
 	/obj/item/modular_computer/pda/chemist = list(REGION_MEDBAY), \
 	/obj/item/modular_computer/pda/geneticist = list(REGION_RESEARCH), \
+	/obj/item/modular_computer/pda/blueshield = list(REGION_COMMAND), \
 )
 
 /// All regions that make up the station area. Helper define to quickly designate a region as part of the station or not. Access via SSid_access.station_regions.

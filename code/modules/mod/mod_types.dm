@@ -667,4 +667,16 @@
 /obj/item/mod/control/pre_equipped/empty/ninja
 	theme = /datum/mod_theme/ninja
 
+/obj/item/mod/control/pre_equipped/blueshield
+	theme = /datum/mod_theme/blueshield
+	applied_cell = /obj/item/stock_parts/power_store/cell/super
+	applied_modules = list(
+		/obj/item/mod/module/storage,
+		/obj/item/mod/module/magnetic_harness,
+		/obj/item/mod/module/flashlight,
+		/obj/item/mod/module/projectile_dampener,
+		/obj/item/mod/module/quick_carry,
+		/obj/item/mod/module/holster,
+	)
+
 INITIALIZE_IMMEDIATE(/obj/item/mod/control/pre_equipped/empty)

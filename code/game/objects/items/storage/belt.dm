@@ -375,6 +375,15 @@
 	. = ..()
 	atom_storage.max_slots = 6
 
+/obj/item/storage/belt/security/blueshield
+	name = "\improper the blueshields's security belt"
+	desc = "A modified security toolbelt designed to help hold more in exchange for it's baton holster."
+
+/obj/item/storage/belt/security/blueshield/Initialize(mapload)
+	. = ..()
+	atom_storage.max_slots = 7
+	atom_storage.set_holdable(list(), list(/obj/item/melee/baton))
+
 /obj/item/storage/belt/mining
 	name = "explorer's webbing"
 	desc = "A versatile chest rig, cherished by miners and hunters alike."

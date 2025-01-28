@@ -680,3 +680,24 @@
 	desc = "A heavy jacket hood made from 'synthetic' animal furs, with custom colors."
 	greyscale_config = /datum/greyscale_config/winter_hoods
 	greyscale_config_worn = /datum/greyscale_config/winter_hoods/worn
+
+/obj/item/clothing/suit/hooded/wintercoat/blueshield
+	name = "blueshield's winter coat"
+	icon = 'icons/psychonaut/obj/clothing/suits/wintercoat.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/suits/wintercoat.dmi'
+	icon_state = "coatblueshield"
+	desc = "A comfy kevlar-lined coat with blue highlights, fit to keep the blueshield armored and warm."
+	hoodtype = /obj/item/clothing/head/hooded/winterhood/blueshield
+	allowed = list(/obj/item/melee/baton/security/loaded)
+	armor_type = /datum/armor/suit_armor
+
+/obj/item/clothing/suit/hooded/wintercoat/blueshield/Initialize(mapload)
+	. = ..()
+	allowed += GLOB.security_vest_allowed
+
+/obj/item/clothing/head/hooded/winterhood/blueshield
+	icon = 'icons/psychonaut/obj/clothing/head/winterhood.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/head/winterhood.dmi'
+	icon_state = "hood_blueshield"
+	desc = "A comfy kevlar-lined hood to go with the comfy kevlar-lined coat."
+	armor_type = /datum/armor/suit_armor

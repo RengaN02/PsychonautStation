@@ -484,3 +484,10 @@
 	desc = "An envirohelmet with extended blue light filters for bitrunning plasmamen."
 	icon_state = "bitrunner_envirohelm"
 
+/obj/item/clothing/head/helmet/space/plasmaman/blueshield
+	name = "blueshield envirosuit helmet"
+	desc = "A plasmaman containment helmet designed for certified blueshields, who's job guarding heads should not include self-combustion... most of the time."
+	icon = 'icons/psychonaut/obj/clothing/head/plasmaman_hats.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/head/plasmaman_head.dmi'
+	icon_state = "bs_envirohelm"
+	armor_type = /datum/armor/suit_armor

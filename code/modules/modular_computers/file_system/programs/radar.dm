@@ -239,7 +239,7 @@
 	filedesc = "Lifeline"
 	extended_desc = "This program allows for tracking of crew members via their suit sensors."
 	program_flags = PROGRAM_ON_NTNET_STORE | PROGRAM_REQUIRES_NTNET
-	download_access = list(ACCESS_MEDICAL)
+	download_access = list(ACCESS_MEDICAL, ACCESS_BLUESHIELD)
 	program_icon = "heartbeat"
 	circuit_comp_type = /obj/item/circuit_component/mod_program/radar/medical
 

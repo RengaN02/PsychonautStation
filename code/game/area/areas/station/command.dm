@@ -99,3 +99,8 @@
 	name = "\improper Corporate Private Dock"
 	icon_state = "command"
 	sound_environment = SOUND_AREA_SMALL_SOFTFLOOR
+
+/area/station/command/blueshield_quarters
+	name = "\improper Blueshield's Office"
+	icon = 'icons/psychonaut/area/areas_station.dmi'
+	icon_state = "blueshield_room"

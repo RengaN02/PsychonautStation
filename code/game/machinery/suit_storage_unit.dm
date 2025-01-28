@@ -178,6 +178,11 @@
 /obj/machinery/suit_storage_unit/industrial/loader
 	mod_type = /obj/item/mod/control/pre_equipped/loader
 
+/obj/machinery/suit_storage_unit/blueshield
+	mask_type = /obj/item/clothing/mask/gas/atmos
+	storage_type = /obj/item/tank/jetpack/oxygen
+	mod_type = /obj/item/mod/control/pre_equipped/blueshield
+
 /obj/machinery/suit_storage_unit/Initialize(mapload)
 	. = ..()
 

@@ -840,3 +840,18 @@
 	greyscale_config_worn = /datum/greyscale_config/beret_badge/worn
 	greyscale_colors = "#43523d#a2abb0"
 	armor_type = /datum/armor/cosmetic_sec
+
+/obj/item/clothing/head/beret/blueshield
+	name = "blueshield's beret"
+	desc = "A blue beret made of durathread with a genuine golden badge, denoting its owner as a Blueshield Lieuteneant. It seems to be padded with nano-kevlar, making it tougher than standard reinforced berets."
+	greyscale_config = /datum/greyscale_config/beret_badge/psychonaut
+	greyscale_config_worn = /datum/greyscale_config/beret_badge/worn
+	greyscale_colors = "#3A4E7D#DEB63D"
+	worn_icon_state = "beret_badge"
+	icon_state = "beret_badge_shield"
+	armor_type = /datum/armor/cosmetic_sec
+
+/obj/item/clothing/head/beret/blueshield/navy
+	name = "navy blueshield's beret"
+	desc = "A navy-blue beret made of durathread with a silver badge, denoting its owner as a Blueshield Lieuteneant. It seems to be padded with nano-kevlar, making it tougher than standard reinforced berets."
+	greyscale_colors = "#3C485A#BBBBBB"

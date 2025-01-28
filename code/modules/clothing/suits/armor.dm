@@ -878,3 +878,27 @@
 	fire = 20
 	acid = 40
 	wound = 10
+
+/obj/item/clothing/suit/armor/vest/blueshield
+	icon = 'icons/psychonaut/obj/clothing/suits/armor.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/suits/armor.dmi'
+	name = "blueshield's armor"
+	desc = "A tight-fitting kevlar-lined vest with a blue badge on the chest of it."
+	icon_state = "blueshieldarmor"
+	body_parts_covered = CHEST
+	unique_reskin = list(
+		"Slim" = "blueshieldarmor",
+		"Marine" = "bs_marine",
+		"Bulky" = "vest_black",
+	)
+
+/obj/item/clothing/suit/armor/vest/blueshield/jacket
+	name = "blueshield's jacket"
+	desc = "An expensive kevlar-lined jacket with a golden badge on the chest and \"NT\" emblazoned on the back. It weighs surprisingly little, despite how heavy it looks."
+	icon_state = "blueshield"
+	body_parts_covered = CHEST|ARMS
+	unique_reskin = null
+
+/obj/item/clothing/suit/armor/vest/blueshield/jacket/Initialize(mapload)
+	. = ..()
+	AddComponent(/datum/component/toggle_icon)

@@ -126,7 +126,7 @@ ADMIN_VERB(admin_change_map_templates, R_SERVER, "Change Map Templates", "Set th
 	var/change_engine = tgui_alert(user,"Do you want to modify the engine?", "Map Engine", list("Yes", "No"))
 	if(change_engine == "Yes")
 		var/list/engine_list = list()
-		for(var/datum/map_template/random_room/random_engine/engine_template as anything in subtypesof(/datum/map_template/random_room/random_engine))
+		for(var/datum/map_template/modular_room/random_engine/engine_template as anything in subtypesof(/datum/map_template/modular_room/random_engine))
 			if(engine_template.station_name != next_map.map_name)
 				continue
 			engine_list[engine_template.name] = engine_template.room_id

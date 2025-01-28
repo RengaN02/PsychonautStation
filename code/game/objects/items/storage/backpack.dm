@@ -243,6 +243,16 @@
 	. = ..()
 	atom_storage.max_total_storage = 26
 
+/obj/item/storage/backpack/blueshield
+	name = "blueshield backpack"
+	desc = "A robust backpack issued to Nanotrasen's finest."
+	icon = 'icons/psychonaut/obj/clothing/backpacks.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/back.dmi'
+	lefthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_lefthand.dmi'
+	righthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_righthand.dmi'
+	icon_state = "backpack_blueshield"
+	inhand_icon_state = "backpack_blueshield"
+
 // MEAT MEAT MEAT MEAT MEAT
 
 /obj/item/storage/backpack/meat
@@ -407,6 +417,16 @@
 
 /obj/item/storage/backpack/satchel/flat/empty/PopulateContents()
 	return
+
+/obj/item/storage/backpack/satchel/blueshield
+	name = "blueshield satchel"
+	desc = "A robust satchel issued to Nanotrasen's finest."
+	icon = 'icons/psychonaut/obj/clothing/backpacks.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/back.dmi'
+	lefthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_lefthand.dmi'
+	righthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_righthand.dmi'
+	icon_state = "satchel_blueshield"
+	inhand_icon_state = "satchel_blueshield"
 
 /obj/item/storage/backpack/duffelbag
 	name = "duffel bag"
@@ -806,6 +826,16 @@
 	new /obj/item/knife/combat/survival(src)
 	new /obj/item/flashlight/seclite(src)
 
+/obj/item/storage/backpack/duffelbag/blueshield
+	name = "blueshield duffelbag"
+	desc = "A robust duffelbag issued to Nanotrasen's finest."
+	icon = 'icons/psychonaut/obj/clothing/backpacks.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/back.dmi'
+	lefthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_lefthand.dmi'
+	righthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_righthand.dmi'
+	icon_state = "duffel_blueshield"
+	inhand_icon_state = "duffel_blueshield"
+
 /*
  * Messenger Bag Types
  */
@@ -892,3 +922,13 @@
 	desc = "The latest in storage 'technology' from Honk Co. Hey, how does this fit so much with such a small profile anyway? The wearer will definitely never tell you."
 	icon_state = "messenger_clown"
 	inhand_icon_state = "messenger_clown"
+
+/obj/item/storage/backpack/messenger/blueshield
+	name = "blueshield's messenger bag"
+	desc = "An exclusive messenger bag issued to Nanotrasen's finest."
+	icon = 'icons/psychonaut/obj/clothing/backpacks.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/back.dmi'
+	lefthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_lefthand.dmi'
+	righthand_file = 'icons/psychonaut/mob/inhands/clothing/backpack_righthand.dmi'
+	icon_state = "messenger_blueshield"
+	inhand_icon_state = "messenger_blueshield"

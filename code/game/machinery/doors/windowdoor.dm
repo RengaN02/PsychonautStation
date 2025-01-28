@@ -47,6 +47,10 @@
 	if(LAZYLEN(req_access))
 		icon_state = "[icon_state]"
 		base_state = icon_state
+		if(req_access.Find(ACCESS_CAPTAIN) && LAZYLEN(req_access) == 1)
+			LAZYREMOVE(req_access, ACCESS_CAPTAIN)
+			req_one_access += ACCESS_BLUESHIELD
+			req_one_access += ACCESS_CAPTAIN
 
 	if(unres_sides)
 		//remove unres_sides from directions it can't be bumped from

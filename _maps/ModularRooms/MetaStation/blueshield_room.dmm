@@ -1,0 +1,74 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/open/floor/iron/dark,
+/area/station/command/blueshield_quarters)
+"j" = (
+/obj/structure/cable,
+/turf/open/floor/iron/dark,
+/area/station/command/blueshield_quarters)
+"k" = (
+/obj/machinery/door/airlock/command{
+	name = "Command Desk"
+	},
+/obj/effect/mapping_helpers/airlock/access/any/command/blueshield,
+/obj/structure/cable,
+/turf/open/floor/iron/dark,
+/area/station/command/blueshield_quarters)
+"l" = (
+/obj/machinery/light/directional/north,
+/obj/machinery/suit_storage_unit/blueshield,
+/turf/open/floor/iron/dark,
+/area/station/command/blueshield_quarters)
+"t" = (
+/obj/effect/spawner/structure/window/reinforced,
+/obj/machinery/door/poddoor/preopen{
+	id = "bridge blast";
+	name = "Bridge Blast Door"
+	},
+/obj/structure/cable,
+/obj/structure/curtain,
+/turf/open/floor/plating,
+/area/station/command/blueshield_quarters)
+"K" = (
+/obj/structure/dresser,
+/obj/structure/cable,
+/obj/machinery/power/apc/auto_name/directional/south,
+/turf/open/floor/iron/dark,
+/area/station/command/blueshield_quarters)
+"L" = (
+/obj/structure/bed,
+/obj/item/bedsheet/ian,
+/turf/open/floor/iron/dark,
+/area/station/command/blueshield_quarters)
+"X" = (
+/turf/closed/wall/r_wall,
+/area/station/command/blueshield_quarters)
+
+(1,1,1) = {"
+X
+X
+k
+X
+X
+"}
+(2,1,1) = {"
+X
+a
+j
+K
+X
+"}
+(3,1,1) = {"
+X
+l
+a
+L
+t
+"}
+(4,1,1) = {"
+X
+X
+t
+X
+X
+"}

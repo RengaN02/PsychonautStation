@@ -65,11 +65,17 @@
 /obj/effect/mapping_helpers/airlock/access/any/command/captain/get_access()
 	var/list/access_list = ..()
 	access_list += ACCESS_CAPTAIN
+	access_list += ACCESS_BLUESHIELD
 	return access_list
 
 /obj/effect/mapping_helpers/airlock/access/any/command/maintenance/get_access()
 	var/list/access_list = ..()
 	access_list += list(ACCESS_COMMAND, ACCESS_MAINT_TUNNELS)
+	return access_list
+
+/obj/effect/mapping_helpers/airlock/access/any/command/blueshield/get_access()
+	var/list/access_list = ..()
+	access_list += ACCESS_BLUESHIELD
 	return access_list
 
 // -------------------- Engineering access helpers

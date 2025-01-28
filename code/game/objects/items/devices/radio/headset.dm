@@ -414,6 +414,27 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	. = ..()
 	make_syndie()
 
+/obj/item/radio/headset/headset_bs
+	name = "\proper the blueshield's headset"
+	desc = "The headset of the guy who keeps the administration alive."
+	icon = 'icons/psychonaut/obj/radio.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/ears.dmi'
+	icon_state = "bshield_headset"
+	worn_icon_state = "bshield_headset"
+	keyslot = /obj/item/encryptionkey/heads/blueshield
+	keyslot2 = null
+
+/obj/item/radio/headset/headset_bs/alt
+	name = "\proper the blueshield's bowman headset"
+	desc = "The headset of the guy who keeps the administration alive. Protects your ears from flashbangs."
+	icon_state = "bshield_headset_alt"
+	worn_icon_state = "bshield_headset_alt"
+
+/obj/item/radio/headset/headset_bs/alt/Initialize(mapload)
+	. = ..()
+	AddComponent(/datum/component/wearertargeting/earprotection, list(ITEM_SLOT_EARS))
+
+
 /obj/item/radio/headset/screwdriver_act(mob/living/user, obj/item/tool)
 	if(keyslot || keyslot2)
 		for(var/ch_name in channels)
