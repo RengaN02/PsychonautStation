@@ -662,3 +662,6 @@ GLOBAL_LIST_INIT(english_to_zombie, list())
 	liked_foodtypes = GORE | MEAT | BUGS | GROSS
 	disliked_foodtypes = VEGETABLES | FRUIT
 	say_mod = "chitters"
+
+/obj/item/organ/tongue/arachnid/get_possible_languages()
+	return ..() + /datum/language/buzzwords
