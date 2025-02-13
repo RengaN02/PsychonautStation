@@ -273,26 +273,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			if(!character_preview_view)
 				return FALSE
 
-			if(!COOLDOWN_FINISHED(parent, export_character_icon))
-				tgui_alert(usr, "You must wait [DisplayTimeText(COOLDOWN_TIMELEFT(parent, export_character_icon))] before exporting your character icon again!", "Export Character Icon")
-				return FALSE
-
-			COOLDOWN_START(parent, export_character_icon, (CONFIG_GET(number/seconds_cooldown_for_character_icon_export) * (1 SECONDS)))
-
-			var/icon/output_icon = icon('icons/effects/effects.dmi', "nothing")
-
-			character_preview_view.setDir(SOUTH)
-
-			for (var/direction in GLOB.cardinals)
-				var/icon/partial = getFlatIcon(character_preview_view, defdir = direction, no_anim = TRUE)
-				output_icon.Insert(partial, dir = direction)
-
-			var/time = world.timeofday
-			var/finalpath = "tmp/character_icon_[parent.ckey]_[time].png"
-
-			fcopy(output_icon, finalpath)
-
-			DIRECT_OUTPUT(usr, ftp(file(finalpath)))
+			send_icon_to_client(parent, character_preview_view, "preferences_icon_[parent.ckey]")
 
 	for (var/datum/preference_middleware/preference_middleware as anything in middleware)
 		var/delegation = preference_middleware.action_delegations[action]

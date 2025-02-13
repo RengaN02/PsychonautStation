@@ -3044,24 +3044,7 @@ GLOBAL_LIST_EMPTY(fire_appearances)
 	set name = "Export Character Icon"
 	set category = "OOC"
 
-	if(!COOLDOWN_FINISHED(client, export_character_icon))
-		tgui_alert(usr, "You must wait [DisplayTimeText(COOLDOWN_TIMELEFT(client, export_character_icon))] before exporting your character icon again!", "Export Character Icon")
-		return FALSE
+	if(isnull(client))
+		return
 
-	COOLDOWN_START(client, export_character_icon, (CONFIG_GET(number/seconds_cooldown_for_character_icon_export) * (1 SECONDS)))
-
-	var/mutable_appearance/living_appearance = new(appearance)
-	living_appearance.setDir(SOUTH)
-	var/icon/output_icon = icon('icons/effects/effects.dmi', "nothing")
-
-	for (var/direction in GLOB.cardinals)
-		var/icon/partial = getFlatIcon(living_appearance, defdir = direction, no_anim = TRUE)
-		output_icon.Insert(partial, dir = direction)
-
-	var/time = world.timeofday
-	var/finalpath = "tmp/character_icon_[real_name]_[time].png"
-
-	fcopy(output_icon, finalpath)
-
-	DIRECT_OUTPUT(usr, ftp(file(finalpath)))
-	qdel(living_appearance)
+	send_icon_to_client(client, appearance, "character_icon_[real_name]")

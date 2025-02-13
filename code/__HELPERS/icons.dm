@@ -1282,3 +1282,31 @@ GLOBAL_LIST_EMPTY(transformation_animation_objects)
 		if(PLANE_TO_TRUE(underlay.plane) != base_plane)
 			appearance.underlays -= underlay
 	return appearance
+
+
+/proc/send_icon_to_client(client/user, icon/icon_to_export, icon_name = "atom_icon")
+	if(isnull(user) || isnull(icon_to_export))
+		return
+
+	if(!COOLDOWN_FINISHED(user, export_icon_cooldown))
+		tgui_alert(user, "You must wait [DisplayTimeText(COOLDOWN_TIMELEFT(user, export_icon_cooldown))] before exporting icon again!", "Export Icon")
+		return FALSE
+
+	COOLDOWN_START(user, export_icon_cooldown, (CONFIG_GET(number/seconds_cooldown_for_icon_export) * (1 SECONDS)))
+
+	var/icon/output_icon = icon('icons/effects/effects.dmi', "nothing")
+	var/mutable_appearance/atom_appearance = new(icon_to_export)
+	atom_appearance.setDir(SOUTH)
+
+	for (var/direction in GLOB.cardinals)
+		var/icon/partial = getFlatIcon(atom_appearance, defdir = direction, no_anim = TRUE)
+		output_icon.Insert(partial, dir = direction)
+
+	var/time = world.timeofday
+	var/finalpath = "tmp/[icon_name]_[time].png"
+
+	fcopy(output_icon, finalpath)
+	DIRECT_OUTPUT(user, ftp(finalpath))
+
+	qdel(atom_appearance)
+	fdel(finalpath)
