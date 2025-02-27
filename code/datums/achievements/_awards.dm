@@ -51,6 +51,7 @@
 		"achievement_type" = "award",
 		"achievement_name" = name,
 		"achievement_description" = desc,
+		"achievement_name": icon_state,
 	)
 
 ///Get raw numerical achievement value from the database
