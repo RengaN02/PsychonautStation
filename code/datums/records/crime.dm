@@ -26,11 +26,16 @@
 	var/fine
 	/// Amount of money paid for the crime
 	var/paid
+	/// The time (in minutes) it takes for the citation to escalate to an arrest warrant.
+	var/escalate_time
 
-/datum/crime/citation/New(name = "Citation", details = "No details provided.", author = "Anonymous", fine = 0)
+/datum/crime/citation/New(name = "Citation", details = "No details provided.", author = "Anonymous", datum/record/crew/target, fine = 0, escalate_time = 0)
 	. = ..()
 	src.fine = fine
 	src.paid = 0
+	src.escalate_time = escalate_time
+	if(escalate_time)
+		addtimer(CALLBACK(src, PROC_REF(escalate), target), escalate_time MINUTES)
 
 /// Pays off a fine and attempts to fix any weird values.
 /datum/crime/citation/proc/pay_fine(amount)
@@ -66,3 +71,12 @@
 		break
 
 	return TRUE
+
+/// Escalates the citation to an arrest warrant if unpaid
+/datum/crime/citation/proc/escalate(datum/record/crew/target)
+	if(fine)
+		target.crimes |= src
+		target.citations -= src
+		target.wanted_status = WANTED_ARREST
+		update_matching_security_huds(target.name)
+		details += "\n(Escalated from citation by Automated Security System) \n Outstanding fine: [fine] credits"

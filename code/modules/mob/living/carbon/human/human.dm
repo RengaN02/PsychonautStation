@@ -335,10 +335,11 @@
 					var/max_fine = CONFIG_GET(number/maxfine)
 					var/citation_name = tgui_input_text(human_user, "Citation crime", "Security HUD", max_length = MAX_MESSAGE_LEN)
 					var/fine = tgui_input_number(human_user, "Citation fine", "Security HUD", 50, max_fine, 5)
+					var/escalate_time = tgui_input_number(human_user, "Escalation time", "Security HUD", 0, 60, 0)
 					if(!fine || !target_record || !citation_name || !allowed_access || !isnum(fine) || fine > max_fine || fine <= 0 || !human_user.canUseHUD() || !HAS_TRAIT(human_user, TRAIT_SECURITY_HUD))
 						return
 
-					var/datum/crime/citation/new_citation = new(name = citation_name, author = allowed_access, fine = fine)
+					var/datum/crime/citation/new_citation = new(name = citation_name, author = allowed_access, target = target_record, fine = fine, escalate_time = escalate_time)
 
 					target_record.citations += new_citation
 					new_citation.alert_owner(usr, src, target_record.name, "You have been fined [fine] credits for '[citation_name]'. Fines may be paid at security.")

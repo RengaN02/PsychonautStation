@@ -228,7 +228,7 @@
 
 		return TRUE
 
-	var/datum/crime/citation/new_citation = new(name = input_name, details = input_details, author = usr, fine = params["fine"])
+	var/datum/crime/citation/new_citation = new(name = input_name, details = input_details, author = usr, target = target, fine = params["fine"], escalate_time = params["escalate_time"])
 
 	target.citations += new_citation
 	new_citation.alert_owner(user, src, target.name, "You have been issued a [params["fine"]]cr citation for [input_name]. Fines are payable at Security.")

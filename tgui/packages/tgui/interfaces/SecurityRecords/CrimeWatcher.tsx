@@ -223,6 +223,7 @@ const CrimeAuthor = (props) => {
   const [crimeName, setCrimeName] = useState('');
   const [crimeDetails, setCrimeDetails] = useState('');
   const [crimeFine, setCrimeFine] = useState(0);
+  const [escalateTime, setEscalateTime] = useState(0);
   const [selectedTab, setSelectedTab] = useLocalState<SECURETAB>(
     'selectedTab',
     SECURETAB.Crimes,
@@ -238,6 +239,7 @@ const CrimeAuthor = (props) => {
       details: crimeDetails,
       fine: crimeFine,
       name: crimeName,
+      escalate_time: escalateTime,
     });
     reset();
   };
@@ -247,11 +249,12 @@ const CrimeAuthor = (props) => {
     setCrimeDetails('');
     setCrimeFine(0);
     setCrimeName('');
+    setEscalateTime(0);
     setSelectedTab(crimeFine ? SECURETAB.Citations : SECURETAB.Crimes);
   };
 
   return (
-    <Stack fill vertical>
+    <Stack vertical>
       <Stack.Item color="label">
         Name
         <Input
@@ -279,6 +282,16 @@ const CrimeAuthor = (props) => {
           maxValue={1000}
         />
       </Stack.Item>
+      {crimeFine > 0 && (
+        <Stack.Item color="label">
+          Escalate (leave blank if you dont want to escalate)
+          <RestrictedInput
+            onChange={(_, value) => setEscalateTime(value)}
+            fluid
+            maxValue={60}
+          />
+        </Stack.Item>
+      )}
       <Stack.Item>
         <Button.Confirm
           content="Create"
