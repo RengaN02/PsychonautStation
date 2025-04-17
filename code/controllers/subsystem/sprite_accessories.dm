@@ -59,6 +59,8 @@ SUBSYSTEM_DEF(accessories) // just 'accessories' for brevity
 	var/list/arachnid_appendages_list
 	var/list/ipc_chassis_list
 
+	var/list/headcrab_list
+
 /datum/controller/subsystem/accessories/PreInit() // this stuff NEEDS to be set up before GLOB for preferences and stuff to work so this must go here. sorry
 	setup_lists()
 	init_hair_gradients()
@@ -112,6 +114,7 @@ SUBSYSTEM_DEF(accessories) // just 'accessories' for brevity
 	pod_hair_list = init_sprite_accessory_subtypes(/datum/sprite_accessory/pod_hair)[DEFAULT_SPRITE_LIST]
 	arachnid_appendages_list = init_sprite_accessory_subtypes(/datum/sprite_accessory/arachnid_appendages)[DEFAULT_SPRITE_LIST]
 	ipc_chassis_list = init_sprite_accessory_subtypes(/datum/sprite_accessory/ipc_chassis)[DEFAULT_SPRITE_LIST]
+	headcrab_list = init_sprite_accessory_subtypes(/datum/sprite_accessory/headcrab)[DEFAULT_SPRITE_LIST]
 /// This proc just initializes all /datum/sprite_accessory/hair_gradient into an list indexed by gradient-style name
 /datum/controller/subsystem/accessories/proc/init_hair_gradients()
 	hair_gradients_list = list()

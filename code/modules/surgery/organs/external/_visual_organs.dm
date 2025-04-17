@@ -338,3 +338,76 @@ Unlike normal organs, we're actually inside a persons limbs at all times
 	if((human.head?.flags_inv & HIDEHAIR) || (human.wear_mask?.flags_inv & HIDEHAIR))
 		return FALSE
 	return TRUE
+
+/obj/item/organ/headcrab
+	name = "headcrab"
+	desc = "A crab in head??"
+	zone = BODY_ZONE_HEAD
+	slot = ORGAN_SLOT_EXTERNAL_HEADCRAB
+	use_mob_sprite_as_obj_sprite = TRUE
+	bodypart_overlay = /datum/bodypart_overlay/mutant/headcrab
+	var/mob/living/basic/headcrab/hc
+
+/obj/item/organ/headcrab/on_mob_insert(mob/living/carbon/receiver, special = FALSE, movement_flags)
+	. = ..()
+	receiver.Paralyze(3 SECONDS)
+	receiver.emote("scream")
+	infect()
+	if(hc)
+		hc.crabbed_someone = TRUE
+		RegisterSignal(hc, COMSIG_LIVING_DEATH, PROC_REF(on_headcrab_death))
+		RegisterSignal(owner, COMSIG_CARBON_LIMB_DAMAGED, PROC_REF(on_limb_damage))
+		RegisterSignal(target, COMSIG_ATOM_ATTACKBY, PROC_REF(on_attackby))
+		RegisterSignals(target, list(COMSIG_ATOM_ATTACK_HAND, COMSIG_ATOM_ATTACK_PAW, COMSIG_MOB_ATTACK_ALIEN), PROC_REF(on_attack_generic))
+
+/obj/item/organ/headcrab/on_mob_remove(mob/living/carbon/organ_owner, special, movement_flags)
+	. = ..()
+	if(hc)
+		hc.forceMove(get_turf(src))
+		hc.crabbed_someone = FALSE
+		hc.adjustOxyLoss(hc.health)
+
+/obj/item/organ/headcrab/on_life(seconds_per_tick, times_fired)
+	. = ..()
+	if(!owner)
+		return
+	if(!hc && hc.health <= 0)
+		return
+	if(!iszombie(owner) && owner.stat != DEAD)
+		owner.apply_damage(0.5 * seconds_per_tick, OXY, zone)
+		if(!owner.get_organ_slot(ORGAN_SLOT_ZOMBIE) && !HAS_TRAIT(owner, TRAIT_NO_ZOMBIFY) && SPT_PROB(25, seconds_per_tick))
+			infect()
+
+/obj/item/organ/headcrab/proc/infect()
+	if(!owner)
+		return
+	var/is_head_protected = FALSE
+	for(var/obj/item/clothing/equipped in owner.get_equipped_items())
+		if((equipped.body_parts_covered & HEAD) && (equipped.get_armor_rating(BIO) == 100))
+			is_head_protected = TRUE
+			break
+	if(!is_head_protected)
+		try_to_zombie_infect(owner)
+
+/obj/item/organ/headcrab/proc/on_headcrab_death(mob/living/carbon/receiver, special = FALSE, movement_flags)
+	SIGNAL_HANDLER
+	if(!hc)
+		return
+	Remove(owner)
+
+/obj/item/organ/headcrab/default
+	sprite_accessory_override = /datum/sprite_accessory/headcrab/default
+
+/datum/bodypart_overlay/mutant/headcrab
+	layers = EXTERNAL_FRONT
+	feature_key = "headcrab"
+
+/datum/bodypart_overlay/mutant/headcrab/get_global_feature_list()
+	return SSaccessories.headcrab_list
+
+/**
+ * TODO
+ * kafaya kim hasar alınca headcrabde hasar alıcak, kişinin kendine vurmasını engelle.
+ * headcrab host ile iletisime gecebilsin. brain_gain_trauma
+ * headcrabın languagesini değiştir.
+ */

@@ -270,7 +270,7 @@
 
 /datum/action/innate/change_monitor/Grant(mob/grant_to)
 	. = ..()
-	RegisterSignal(grant_to, COMSIG_LIVING_DEATH, PROC_REF(on_dead))
+	RegisterSignal(grant_to, COMSIG_LIVING_DEATH, PROC_REF(on_death))
 	RegisterSignal(grant_to, COMSIG_LIVING_REVIVE, PROC_REF(on_revive))
 
 /datum/action/innate/change_monitor/Remove(mob/M)
@@ -331,7 +331,7 @@
 		qdel(overlay)
 	C.update_body_parts()
 
-/datum/action/innate/change_monitor/proc/on_dead(mob/living/carbon/C, gibbed)
+/datum/action/innate/change_monitor/proc/on_death(mob/living/carbon/C, gibbed)
 	SIGNAL_HANDLER
 	if(!istype(C))
 		return

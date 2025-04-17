@@ -2517,3 +2517,10 @@
 	name = "Morpheus Cyberkinetics (Custom)"
 	color_src = MUTANT_COLOR
 	icon_state = "mcgipc"
+
+/datum/sprite_accessory/headcrab
+	icon = 'icons/psychonaut/mob/nonhuman-player/headcrab.dmi'
+
+/datum/sprite_accessory/headcrab/default
+	name = "Headcrab"
+	icon_state = "headcrab_worn"
