@@ -212,11 +212,11 @@
 	hc.Shake(duration = 8 DECISECONDS)
 	ADD_TRAIT(hc, TRAIT_IMMOBILIZED, REF(src))
 
-	sleep(4 DECISECONDS)
+	sleep(2.5 DECISECONDS)
 	target_turf.color = null
 	target_turf = get_turf(target_atom)
 	target_turf.color = sanitize_hexcolor("[pick("7F", "FF")][pick("7F", "FF")][pick("7F", "FF")]")
-	sleep(4 DECISECONDS)
+	sleep(2.5 DECISECONDS)
 
 	REMOVE_TRAIT(hc, TRAIT_IMMOBILIZED, REF(src))
 	target_turf.color = null

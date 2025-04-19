@@ -355,13 +355,14 @@ Unlike normal organs, we're actually inside a persons limbs at all times
 	infect()
 	if(hc)
 		hc.crabbed_someone = TRUE
-		RegisterSignal(hc, COMSIG_LIVING_DEATH, PROC_REF(on_headcrab_death))
 		RegisterSignal(owner, COMSIG_CARBON_LIMB_DAMAGED, PROC_REF(on_limb_damage))
-		RegisterSignal(target, COMSIG_ATOM_ATTACKBY, PROC_REF(on_attackby))
-		RegisterSignals(target, list(COMSIG_ATOM_ATTACK_HAND, COMSIG_ATOM_ATTACK_PAW, COMSIG_MOB_ATTACK_ALIEN), PROC_REF(on_attack_generic))
+		RegisterSignal(owner, COMSIG_MOB_ITEM_ATTACK, PROC_REF(on_mob_attack))
+		RegisterSignal(owner, COMSIG_LIVING_UNARMED_ATTACK, PROC_REF(on_mob_punch))
+		RegisterSignal(owner, COMSIG_ATOM_EXAMINE, PROC_REF(on_examining))
 
 /obj/item/organ/headcrab/on_mob_remove(mob/living/carbon/organ_owner, special, movement_flags)
 	. = ..()
+	UnregisterSignal(organ_owner, list(COMSIG_CARBON_LIMB_DAMAGED, COMSIG_MOB_ITEM_ATTACK, COMSIG_LIVING_UNARMED_ATTACK, COMSIG_ATOM_EXAMINE))
 	if(hc)
 		hc.forceMove(get_turf(src))
 		hc.crabbed_someone = FALSE
@@ -395,6 +396,43 @@ Unlike normal organs, we're actually inside a persons limbs at all times
 		return
 	Remove(owner)
 
+/obj/item/organ/headcrab/proc/on_limb_damage(mob/living/our_mob, limb, brute, burn)
+	SIGNAL_HANDLER
+	if(!hc)
+		return
+	var/obj/item/bodypart/affecting_limb = limb
+	if(isnull(affecting_limb) || !istype(affecting_limb) || affecting_limb.body_zone != BODY_ZONE_HEAD)
+		return
+	if (brute != 0)
+		hc.adjustBruteLoss(brute, updating_health = FALSE)
+	if (burn != 0)
+		hc.adjustFireLoss(burn, updating_health = FALSE)
+	if (brute != 0 || burn != 0)
+		hc.updatehealth()
+
+/obj/item/organ/headcrab/proc/on_mob_attack(mob/living/target, mob/living/attacker, params)
+	SIGNAL_HANDLER
+	if(!hc)
+		return
+	if(target == attacker && attacker.zone_selected == BODY_ZONE_HEAD)
+		to_chat(attacker, span_danger("You hesitate, as if something deep within your mind prevents you from attacking your head."))
+		return COMPONENT_SKIP_ATTACK
+
+/obj/item/organ/headcrab/proc/on_mob_punch(mob/living/target, mob/living/attacker, params)
+	SIGNAL_HANDLER
+	if(!hc)
+		return
+	if(target == attacker && attacker.zone_selected == BODY_ZONE_HEAD)
+		to_chat(attacker, span_danger("You hesitate, as if something deep within your mind prevents you from attacking your head."))
+		return COMPONENT_SKIP_ATTACK
+
+/obj/item/organ/headcrab/proc/on_examining(mob/source, atom/target, list/examine_strings)
+	SIGNAL_HANDLER
+	if(!hc)
+		return
+	if(hc.health <= 0)
+		examine_strings += span_notice("The headcrab lies still. Its claws dangle uselessly, and its carapace is dull and lifeless.")
+
 /obj/item/organ/headcrab/default
 	sprite_accessory_override = /datum/sprite_accessory/headcrab/default
 
@@ -407,7 +445,6 @@ Unlike normal organs, we're actually inside a persons limbs at all times
 
 /**
  * TODO
- * kafaya kim hasar alınca headcrabde hasar alıcak, kişinin kendine vurmasını engelle.
  * headcrab host ile iletisime gecebilsin. brain_gain_trauma
  * headcrabın languagesini değiştir.
  */

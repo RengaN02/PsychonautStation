@@ -542,6 +542,38 @@
 	name = real_name
 	human_image = icon('icons/mob/simple/lavaland/lavaland_monsters.dmi', icon_state = "curseblob")
 
+/datum/brain_trauma/special/imaginary_friend/headcrab_friend
+	name = "Headcrab Companion"
+	desc = "Patient believes they are accompanied by a friendly headcrab."
+	gain_text = span_notice("You feel a small, comforting weight on your shoulder.")
+	lose_text = span_warning("You feel a sudden emptiness, as if something has left you.")
+	random_gain = FALSE
+
+/datum/brain_trauma/special/imaginary_friend/headcrab_friend/make_friend()
+	friend = new /mob/eye/imaginary_friend/headcrab(get_turf(owner), src)
+
+/datum/brain_trauma/special/imaginary_friend/headcrab_friend/reroll_friend()
+	if(friend.client) //reconnected
+		return
+	friend_initialized = FALSE
+	QDEL_NULL(friend)
+	make_friend()
+
+/mob/eye/imaginary_friend/headcrab
+	name = "headcrab companion"
+	real_name = "headcrab companion"
+	desc = "A small, friendly headcrab that only exists in the mind of its host."
+
+/mob/eye/imaginary_friend/headcrab/greet()
+	to_chat(src, span_notice("<b>You are the headcrab companion of [owner]!</b>"))
+	to_chat(src, span_notice("You are here to manipulate your host, subtly influencing their thoughts and actions."))
+	to_chat(src, span_notice("You cannot directly influence the world around you, but you can see what [owner] cannot."))
+
+/mob/eye/imaginary_friend/headcrab/setup_friend()
+	real_name = "Headcrabby"
+	name = real_name
+	human_image = icon('icons/mob/monsters/headcrab.dmi', icon_state = "headcrab")
+
 #undef IMAGINARY_FRIEND_RANGE
 #undef IMAGINARY_FRIEND_SPEECH_RANGE
 #undef IMAGINARY_FRIEND_EXTENDED_SPEECH_RANGE
