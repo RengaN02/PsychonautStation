@@ -1033,3 +1033,5 @@ GLOBAL_LIST_EMPTY(possible_items)
 	var/area/target_area = get_area(target)
 
 	return (istype(user_area, dropoff) && istype(target_area, dropoff))
+
+/datum/objective/major_traitor

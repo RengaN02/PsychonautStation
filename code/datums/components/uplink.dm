@@ -173,6 +173,13 @@
 
 	if(uplink_handler.primary_objectives)
 		var/list/primary_objectives = list()
+		var/static/list/non_rerollable = list(
+			/datum/objective/escape,
+			/datum/objective/survive,
+			/datum/objective/martyr,
+			/datum/objective/exile,
+			/datum/objective/custom,
+		)
 		for(var/datum/objective/task as anything in uplink_handler.primary_objectives)
 			var/list/task_data = list()
 			if(length(primary_objectives) > length(GLOB.phonetic_alphabet))
@@ -180,6 +187,8 @@
 			else
 				task_data["task_name"] = "DIRECTIVE [uppertext(GLOB.phonetic_alphabet[length(primary_objectives) + 1])]"
 			task_data["task_text"] = task.explanation_text
+			task_data["task_ref"] = REF(task)
+			task_data["is_rerollable"] = !is_type_in_list(task, non_rerollable)
 			primary_objectives += list(task_data)
 		data["primary_objectives"] = primary_objectives
 
@@ -218,6 +227,7 @@
 	data["shop_locked"] = uplink_handler.shop_locked
 	data["purchased_items"] = length(uplink_handler.purchase_log?.purchase_log)
 	data["can_renegotiate"] = user.mind == uplink_handler.owner && uplink_handler.can_replace_objectives?.Invoke() == TRUE
+	data["objective_rerolls"] = uplink_handler.objective_rerolls
 	return data
 
 /datum/component/uplink/ui_static_data(mob/user)
@@ -267,6 +277,12 @@
 			lock_uplink()
 		if("renegotiate_objectives")
 			uplink_handler.replace_objectives?.Invoke()
+			SStgui.update_uis(src)
+		if("reroll_objective")
+			var/datum/objective/objective = locate(params["ref"]) in uplink_handler.primary_objectives
+			if(!objective)
+				return
+			uplink_handler.reroll_major_objective?.Invoke(objective)
 			SStgui.update_uis(src)
 	return TRUE
 

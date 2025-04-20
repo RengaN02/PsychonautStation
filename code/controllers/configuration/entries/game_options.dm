@@ -91,6 +91,10 @@
 	default = 2
 	min_val = 0
 
+/datum/config_entry/number/traitor_major_reroll
+	default = 1
+	min_val = 0
+
 /datum/config_entry/flag/reactionary_explosions //If we use reactionary explosions, explosions that react to walls and doors
 
 /datum/config_entry/flag/protect_roles_from_antagonist //If security and such can be traitor/cult/other

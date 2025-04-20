@@ -36,6 +36,10 @@
 	var/datum/callback/replace_objectives
 	///Reference to a contractor hub that the infiltrator can run, if they purchase it.
 	var/datum/contractor_hub/contractor_hub
+	/// The number of remaining objective rerolls available for this uplink handler.
+	var/major_rerolls = 0
+	/// Callback which performs that operation
+	var/datum/callback/reroll_major_objective
 
 /datum/uplink_handler/Destroy(force)
 	can_replace_objectives = null

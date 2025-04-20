@@ -73,6 +73,9 @@
 		uplink_handler.can_replace_objectives = CALLBACK(src, PROC_REF(can_change_objectives))
 		uplink_handler.replace_objectives = CALLBACK(src, PROC_REF(submit_player_objective))
 
+		uplink_handler.major_rerolls = CONFIG_GET(number/traitor_major_reroll)
+		uplink_handler.reroll_major_objective = CALLBACK(src, PROC_REF(reroll_major_objective))
+
 		if(uplink_handler.progression_points < SStraitor.current_global_progression)
 			uplink_handler.progression_points = SStraitor.current_global_progression * SStraitor.newjoin_progression_coeff
 
@@ -316,6 +319,27 @@
 					<b>The code responses were:</b> [span_redtext("[responses]")]<br>"
 
 	return message
+
+/datum/antagonist/traitor/proc/reroll_major_objective(datum/objective/objective, force = FALSE)
+	if(uplink_handler.major_rerolls <= 0 && !force)
+		return
+	var/static/list/blacklisted_objectives = list(
+		/datum/objective/escape,
+		/datum/objective/survive,
+		/datum/objective/martyr,
+		/datum/objective/exile,
+		/datum/objective/custom,
+	)
+	if (is_type_in_list(objective, blacklisted_objectives) && !force)
+		return
+	var/objective_index = objectives.Find(objective)
+	if(objective_index <= 0)
+		return
+	objectives -= objective
+	var/datum/objective/new_objective = pick(subtypesof(/datum/objective/major_traitor))
+	objectives.Insert(objective_index, new_objective)
+	uplink_handler.major_rerolls--
+	owner.announce_objectives()
 
 /datum/outfit/traitor
 	name = "Traitor (Preview only)"
