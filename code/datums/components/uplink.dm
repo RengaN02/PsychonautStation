@@ -188,8 +188,10 @@
 				task_data["task_name"] = "DIRECTIVE [uppertext(GLOB.phonetic_alphabet[length(primary_objectives) + 1])]"
 			task_data["task_text"] = task.explanation_text
 			task_data["task_ref"] = REF(task)
+			task_data["task_activateable"] = task.can_be_activated
 			task_data["task_prime"] = (uplink_handler.prime_objective == task)
-			task_data["task_rerollable"] = ((!isnull(uplink_handler.prime_objective) && uplink_handler.prime_objective == task) || isnull(uplink_handler.prime_objective)) && !is_type_in_list(task, non_rerollable) && uplink_handler.prime_rerolls > 0
+			task_data["task_rerollable"] = ((!isnull(uplink_handler.prime_objective) && uplink_handler.prime_objective == task) || isnull(uplink_handler.prime_objective)) && !is_type_in_list(task, non_rerollable) && uplink_handler.prime_rerolls > 0 && uplink_handler.can_roll_prime
+
 			primary_objectives += list(task_data)
 		data["primary_objectives"] = primary_objectives
 
@@ -278,11 +280,18 @@
 		if("renegotiate_objectives")
 			uplink_handler.replace_objectives?.Invoke()
 			SStgui.update_uis(src)
-		if("reroll_objective")
+		if("reroll_prime_objective")
 			var/datum/objective/objective = locate(params["ref"]) in uplink_handler.primary_objectives
 			if(!objective)
 				return
 			uplink_handler.reroll_prime_objective?.Invoke(objective, FALSE, ui.user)
+			SStgui.update_uis(src)
+		if("activate_prime_objective")
+			var/datum/objective/prime/objective = uplink_handler.prime_objective
+			if(!objective || !istype(objective))
+				return
+			objective.on_activate(ui.user)
+			uplink_handler.can_roll_prime = FALSE
 			SStgui.update_uis(src)
 	return TRUE
 

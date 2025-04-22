@@ -16,6 +16,8 @@ GLOBAL_LIST(admin_objective_list) //Prefilled admin assignable objective list
 	var/martyr_compatible = FALSE //If the objective is compatible with martyr objective, i.e. if you can still do it while dead.
 	///can this be granted by admins?
 	var/admin_grantable = FALSE
+	///can this be activated?
+	var/can_be_activated = FALSE
 
 /datum/objective/New(text)
 	if(text)
@@ -59,6 +61,9 @@ GLOBAL_LIST(admin_objective_list) //Prefilled admin assignable objective list
 		target = new_target.mind
 
 	update_explanation_text()
+
+/datum/objective/proc/on_activate(mob/living/user)
+	return
 
 /**
  * Checks if the passed mind is considered "escaped".
@@ -1037,3 +1042,8 @@ GLOBAL_LIST_EMPTY(possible_items)
 /datum/objective/prime
 	var/list/job_weights = list()
 	var/default_weight = 1
+
+/datum/objective/prime/artwork
+	name = "artwork"
+	explanation_text = "You are an artist! The station is your canvas. Create a masterpiece!"
+	job_weights = list(JOB_CURATOR = 4, JOB_ASSISTANT = 2)

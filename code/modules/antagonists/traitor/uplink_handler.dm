@@ -36,12 +36,14 @@
 	var/datum/callback/replace_objectives
 	///Reference to a contractor hub that the infiltrator can run, if they purchase it.
 	var/datum/contractor_hub/contractor_hub
+
 	/// The number of remaining objective rerolls available for this uplink handler.
 	var/prime_rerolls = 0
 	/// Callback which performs that operation
 	var/datum/callback/reroll_prime_objective
 	///the prime objective the traitor has to accomplish, it used to make sure we don't get a second prime objective
 	var/datum/objective/prime_objective
+	var/can_roll_prime = TRUE
 
 /datum/uplink_handler/Destroy(force)
 	can_replace_objectives = null

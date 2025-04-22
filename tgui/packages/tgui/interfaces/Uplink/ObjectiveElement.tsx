@@ -32,11 +32,13 @@ export const ObjectiveElement = (props: ObjectiveElementProps) => {
         >
           <Box className="UplinkObjective__Titlebar__Content">
             <Box className="UplinkObjective__Titlebar__Title">{name}</Box>
-            {(rerollable === 1 || prime === 1) && (
+            {rerollable === 1 && (
               <Button
                 className="UplinkObjective__Titlebar__RerollButton"
                 color=" "
-                onClick={() => act('reroll_objective', { ref: reference })}
+                onClick={() =>
+                  act('reroll_prime_objective', { ref: reference })
+                }
               >
                 Prime
               </Button>
