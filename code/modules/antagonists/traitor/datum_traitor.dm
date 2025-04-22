@@ -321,12 +321,14 @@
 
 	return message
 
-/datum/antagonist/traitor/proc/reroll_prime_objective(datum/objective/objective, force = FALSE)
+/datum/antagonist/traitor/proc/reroll_prime_objective(datum/objective/objective, force = FALSE, mob/living/user)
 	if(uplink_handler.prime_rerolls <= 0 && !force)
 		return
 	if (isnull(owner) || isnull(owner.current))
 		return
 	var/mob/living/owner_mob = owner.current
+	if(isnull(user))
+		user = owner_mob
 	var/static/list/blacklisted_objectives = list(
 		/datum/objective/escape,
 		/datum/objective/survive,
@@ -353,8 +355,8 @@
 	uplink_handler.prime_rerolls--
 	owner.announce_objectives()
 
-	log_game("[key_name(owner_mob)] rerolled a prime objective: [new_objective.explanation_text]")
-	message_admins("[ADMIN_LOOKUPFLW(owner_mob)] has rerolled a prime objective: [span_syndradio("[new_objective.explanation_text]")] | [ADMIN_SYNDICATE_REPLY(owner_mob)]")
+	log_game("[key_name(user)] rerolled a prime objective[user != owner_mob ? " (in [key_name(owner_mob)]'s uplink)" : ""]: [new_objective.explanation_text]")
+	message_admins("[ADMIN_LOOKUPFLW(user)] has rerolled a prime objective[user != owner_mob ? " (in [ADMIN_LOOKUPFLW(owner_mob)]'s uplink)" : ""]: [span_syndradio("[new_objective.explanation_text]")] | [ADMIN_SMITE(user)] | [ADMIN_SYNDICATE_REPLY(user)]")
 
 /datum/outfit/traitor
 	name = "Traitor (Preview only)"

@@ -282,7 +282,7 @@
 			var/datum/objective/objective = locate(params["ref"]) in uplink_handler.primary_objectives
 			if(!objective)
 				return
-			uplink_handler.reroll_prime_objective?.Invoke(objective)
+			uplink_handler.reroll_prime_objective?.Invoke(objective, FALSE, ui.user)
 			SStgui.update_uis(src)
 	return TRUE
 
