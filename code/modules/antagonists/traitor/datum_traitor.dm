@@ -324,6 +324,9 @@
 /datum/antagonist/traitor/proc/reroll_prime_objective(datum/objective/objective, force = FALSE)
 	if(uplink_handler.prime_rerolls <= 0 && !force)
 		return
+	if (isnull(owner) || isnull(owner.current))
+		return FALSE
+	var/mob/living/owner_mob = owner.current
 	var/static/list/blacklisted_objectives = list(
 		/datum/objective/escape,
 		/datum/objective/survive,
