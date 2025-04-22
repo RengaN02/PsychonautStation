@@ -227,7 +227,7 @@
 	data["shop_locked"] = uplink_handler.shop_locked
 	data["purchased_items"] = length(uplink_handler.purchase_log?.purchase_log)
 	data["can_renegotiate"] = user.mind == uplink_handler.owner && uplink_handler.can_replace_objectives?.Invoke() == TRUE
-	data["objective_rerolls"] = uplink_handler.major_rerolls
+	data["prime_rerolls"] = uplink_handler.prime_rerolls
 	return data
 
 /datum/component/uplink/ui_static_data(mob/user)
@@ -282,7 +282,7 @@
 			var/datum/objective/objective = locate(params["ref"]) in uplink_handler.primary_objectives
 			if(!objective)
 				return
-			uplink_handler.reroll_major_objective?.Invoke(objective)
+			uplink_handler.reroll_prime_objective?.Invoke(objective)
 			SStgui.update_uis(src)
 	return TRUE
 
