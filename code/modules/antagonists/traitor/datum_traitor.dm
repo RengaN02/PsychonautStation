@@ -49,6 +49,9 @@
 	///the final objective the traitor has to accomplish, be it escaping, hijacking, or just martyrdom.
 	var/datum/objective/ending_objective
 
+	///the prime objective the traitor has to accomplish, it used to make sure we don't get a second prime objective
+	var/datum/objective/prime_objective
+
 /datum/antagonist/traitor/New(give_objectives = TRUE)
 	. = ..()
 	src.give_objectives = give_objectives
@@ -324,6 +327,8 @@
 /datum/antagonist/traitor/proc/reroll_prime_objective(datum/objective/objective, force = FALSE, mob/living/user)
 	if(uplink_handler.prime_rerolls <= 0 && !force)
 		return
+	if(!isnull(prime_objective) && prime_objective != objective)
+		return
 	if (isnull(owner) || isnull(owner.current))
 		return
 	var/mob/living/owner_mob = owner.current
@@ -339,7 +344,7 @@
 	if (is_type_in_list(objective, blacklisted_objectives) && !force)
 		return
 	var/objective_index = objectives.Find(objective)
-	if(objective_index <= 0)
+	if(objective_index == 0)
 		return
 	objectives -= objective
 
@@ -352,6 +357,8 @@
 	new_objective.owner = owner
 
 	objectives.Insert(objective_index, new_objective)
+	prime_objective = new_objective
+
 	uplink_handler.prime_rerolls--
 	owner.announce_objectives()
 
