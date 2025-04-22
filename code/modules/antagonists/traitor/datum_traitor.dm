@@ -2,6 +2,7 @@
 #define FLAVOR_FACTION_SYNDICATE "syndicate"
 ///all the employers that are Nanotrasen
 #define FLAVOR_FACTION_NANOTRASEN "nanotrasen"
+#define JOB_DEFAULT "Default"
 
 /datum/antagonist/traitor
 	name = "\improper Traitor"
@@ -336,7 +337,15 @@
 	if(objective_index <= 0)
 		return
 	objectives -= objective
-	var/datum/objective/new_objective = pick(subtypesof(/datum/objective/major_traitor))
+
+	var/list/weighted_list = SStraitor.prime_objectives_by_job[owner.assigned_role.title]
+	if(!weighted_list || !weighted_list.len)
+		weighted_list = SStraitor.prime_objectives_by_job[JOB_DEFAULT]
+
+	var/datum/objective/objective_type = pick_weight(weighted_list)
+	var/datum/objective/prime/new_objective = new objective_type()
+	new_objective.owner = owner
+
 	objectives.Insert(objective_index, new_objective)
 	uplink_handler.major_rerolls--
 	owner.announce_objectives()
@@ -364,5 +373,6 @@
 
 		H.update_held_items()
 
+#undef JOB_DEFAULT
 #undef FLAVOR_FACTION_SYNDICATE
 #undef FLAVOR_FACTION_NANOTRASEN
