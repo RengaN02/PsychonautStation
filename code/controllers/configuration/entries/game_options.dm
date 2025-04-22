@@ -91,7 +91,7 @@
 	default = 2
 	min_val = 0
 
-/datum/config_entry/number/traitor_major_reroll
+/datum/config_entry/number/traitor_prime_reroll
 	default = 1
 	min_val = 0
 
