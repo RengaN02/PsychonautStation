@@ -26,6 +26,9 @@ export const PrimaryObjectiveMenu = (props: PrimaryObjectiveMenuProps) => {
               key={prim_obj.id}
               name={prim_obj['task_name']}
               description={prim_obj['task_text']}
+              reference={prim_obj['task_ref']}
+              rerollable={prim_obj['task_rerollable']}
+              prime={prim_obj['task_prime']}
             />
           </Stack.Item>
         ))}

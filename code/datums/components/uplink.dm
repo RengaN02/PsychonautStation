@@ -188,10 +188,10 @@
 				task_data["task_name"] = "DIRECTIVE [uppertext(GLOB.phonetic_alphabet[length(primary_objectives) + 1])]"
 			task_data["task_text"] = task.explanation_text
 			task_data["task_ref"] = REF(task)
-			task_data["is_rerollable"] = !is_type_in_list(task, non_rerollable)
+			task_data["task_prime"] = (uplink_handler.prime_objective == task)
+			task_data["task_rerollable"] = ((!isnull(uplink_handler.prime_objective) && uplink_handler.prime_objective == task) || isnull(uplink_handler.prime_objective)) && !is_type_in_list(task, non_rerollable) && uplink_handler.prime_rerolls > 0
 			primary_objectives += list(task_data)
 		data["primary_objectives"] = primary_objectives
-
 
 	var/list/stock_list = uplink_handler.item_stock.Copy()
 	var/list/extra_purchasable_stock = list()

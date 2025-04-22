@@ -34,6 +34,12 @@ $bestGradient: linear-gradient(
   hsl(330, 43%, 26%),
   hsl(330, 34%, 45%)
 );
+$primeGradient: linear-gradient(
+  to right,
+  hsl(281, 34%, 45%),
+  hsl(288, 43%, 26%),
+  hsl(281, 34%, 45%)
+);
 
 $_rep_map: (
   'bad': $badGradient,
@@ -42,6 +48,7 @@ $_rep_map: (
   'very-good': $veryGoodGradient,
   'super-good': $superGoodGradient,
   'best': $bestGradient,
+  'prime': $primeGradient,
 );
 
 @each $reputation-name, $gradient-value in $_rep_map {
@@ -75,6 +82,38 @@ $_rep_map: (
   border-bottom: none;
   border-top-left-radius: var(--border-radius-huge);
   border-top-right-radius: var(--border-radius-huge);
+  position: relative;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  &__Title {
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  &__RerollButton {
+    position: absolute;
+    right: var(--space-l);
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: hsla(0, 0%, 0%, 0.158);
+    font-weight: normal;
+    white-space: nowrap;
+    &:hover {
+      background-color: hsla(0, 0%, 0%, 0.315);
+    }
+  }
+}
+
+@media (max-width: 275px) {
+  .UplinkObjective__Titlebar__RerollButton {
+    display: none;
+  }
 }
 
 .UplinkObjective__EmptyObjective {

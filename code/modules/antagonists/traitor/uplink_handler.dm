@@ -40,6 +40,8 @@
 	var/prime_rerolls = 0
 	/// Callback which performs that operation
 	var/datum/callback/reroll_prime_objective
+	///the prime objective the traitor has to accomplish, it used to make sure we don't get a second prime objective
+	var/datum/objective/prime_objective
 
 /datum/uplink_handler/Destroy(force)
 	can_replace_objectives = null
