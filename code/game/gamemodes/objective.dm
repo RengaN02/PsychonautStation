@@ -1037,19 +1037,3 @@ GLOBAL_LIST_EMPTY(possible_items)
 /datum/objective/prime
 	var/list/job_weights = list()
 	var/default_weight = 1
-
-/datum/objective/prime/engineer
-	name = "engineer"
-	explanation_text = "Prime the station's engines for a catastrophic failure."
-	job_weights = list(
-		JOB_STATION_ENGINEER = 3,
-		JOB_ATMOSPHERIC_TECHNICIAN = 2
-	)
-
-/datum/objective/prime/scientist
-	name = "scientist"
-	explanation_text = "Prime the station's science department for a catastrophic failure."
-	job_weights = list(
-		JOB_SCIENTIST = 4,
-		JOB_ATMOSPHERIC_TECHNICIAN = 2
-	)
