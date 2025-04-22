@@ -350,6 +350,9 @@
 	uplink_handler.prime_rerolls--
 	owner.announce_objectives()
 
+	log_game("[key_name(owner_mob)] rerolled a prime objective: [new_objective.explanation_text]")
+	message_admins("[ADMIN_LOOKUPFLW(owner_mob)] has rerolled a prime objective: [span_syndradio("[new_objective.explanation_text]")] | [ADMIN_SYNDICATE_REPLY(owner_mob)]")
+
 /datum/outfit/traitor
 	name = "Traitor (Preview only)"
 
