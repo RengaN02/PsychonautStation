@@ -582,6 +582,20 @@
 	desc = "A yellow and blue winter coat hood."
 	icon_state = "hood_atmos"
 
+/obj/item/clothing/suit/hooded/wintercoat/engineering/signal_tech
+	name = "engineering winter coat"
+	desc = "A surprisingly heavy yellow winter coat with reflective green stripes. It has a small antennae for its zipper tab, and the inside layer is covered with a radiation-resistant silver-nylon blend. Because heat insulation is clearly not a priority."
+	icon = 'icons/psychonaut/obj/clothing/suits/wintercoat.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/suits/wintercoat.dmi'
+	icon_state = "coat_signal_tech"
+	hoodtype = /obj/item/clothing/head/hooded/winterhood/engineering/signal_tech
+
+/obj/item/clothing/head/hooded/winterhood/engineering/signal_tech
+	desc = "A yellow winter coat hood. Definitely not enough to keep you warm near the telecommunications servers."
+	icon = 'icons/psychonaut/obj/clothing/head/winterhood.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/head/winterhood.dmi'
+	icon_state = "winterhood_signal_tech"
+
 // Cargo Technician
 /obj/item/clothing/suit/hooded/wintercoat/cargo
 	name = "cargo winter coat"

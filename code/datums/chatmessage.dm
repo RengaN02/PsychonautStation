@@ -338,6 +338,9 @@
 		speaker = v.source
 		spans |= "virtual-speaker"
 
+	if(!speaker)
+		return
+
 	// Ignore virtual speaker (most often radio messages) from ourselves
 	if (originalSpeaker != src && speaker == src)
 		return

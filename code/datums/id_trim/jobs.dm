@@ -388,6 +388,7 @@
 		ACCESS_MINISAT,
 		ACCESS_RC_ANNOUNCE,
 		ACCESS_TCOMMS,
+		ACCESS_TCOMMS_ADMIN,
 		ACCESS_TECH_STORAGE,
 		)
 	minimal_wildcard_access = list(
@@ -1081,6 +1082,39 @@
 	job = /datum/job/scientist
 	honorifics = list("Researcher")
 	honorific_positions = HONORIFIC_POSITION_FIRST | HONORIFIC_POSITION_LAST | HONORIFIC_POSITION_FIRST_FULL | HONORIFIC_POSITION_NONE
+
+/datum/id_trim/job/signal_technician
+	assignment = JOB_SIGNAL_TECHNICIAN
+	intern_alt_name = "Junior Signal Technician"
+	trim_icon = 'icons/psychonaut/obj/card.dmi'
+	trim_state = "trim_signaltech"
+	department_color = COLOR_ENGINEERING_ORANGE
+	subdepartment_color = COLOR_ENGINEERING_ORANGE
+	sechud_icon_state = SECHUD_SIGNAL_TECHINICAN
+	minimal_access = list(
+		ACCESS_AUX_BASE,
+		ACCESS_CONSTRUCTION,
+		ACCESS_ENGINEERING,
+		ACCESS_ENGINE_EQUIP,
+		ACCESS_EXTERNAL_AIRLOCKS,
+		ACCESS_MAINT_TUNNELS,
+		ACCESS_MECH_ENGINE,
+		ACCESS_MINERAL_STOREROOM,
+		ACCESS_MINISAT,
+		ACCESS_TCOMMS,
+		ACCESS_TCOMMS_ADMIN,
+		ACCESS_TECH_STORAGE,
+		ACCESS_RC_ANNOUNCE,
+	)
+	extra_access = list(
+		ACCESS_ATMOSPHERICS,
+	)
+	template_access = list(
+		ACCESS_CAPTAIN,
+		ACCESS_CHANGE_IDS,
+		ACCESS_CE,
+	)
+	job = /datum/job/signal_technician
 
 /datum/id_trim/job/brig_physician
 	assignment = "Brig Physician"

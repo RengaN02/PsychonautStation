@@ -146,6 +146,8 @@ GLOBAL_LIST_INIT(freqtospan, list(
 	//Radio freq/name display
 	var/freqpart = radio_freq ? "\[[get_radio_name(radio_freq)]\] " : ""
 	//Speaker name
+	var/realnamepart = "[speaker.GetVoice(TRUE)]"
+	//Speaker name
 	var/namepart
 	var/list/stored_name = list(null)
 
@@ -179,7 +181,7 @@ GLOBAL_LIST_INIT(freqtospan, list(
 
 	messagepart = " <span class='message'>[messagepart]</span></span>"
 
-	return "[spanpart1][spanpart2][freqpart][languageicon][compose_track_href(speaker, namepart)][namepart][compose_job(speaker, message_language, raw_message, radio_freq)][endspanpart][messagepart]"
+	return "[spanpart1][spanpart2][freqpart][languageicon][compose_track_href(speaker, realnamepart)][namepart][compose_job(speaker, message_language, raw_message, radio_freq)][endspanpart][messagepart]"
 
 /atom/movable/proc/compose_track_href(atom/movable/speaker, message_langs, raw_message, radio_freq)
 	return ""
@@ -319,6 +321,8 @@ GLOBAL_LIST_INIT(freqtospan, list(
 	var/atom/movable/source
 	var/obj/item/radio/radio
 
+	var/realvoice
+
 INITIALIZE_IMMEDIATE(/atom/movable/virtualspeaker)
 /atom/movable/virtualspeaker/Initialize(mapload, atom/movable/M, _radio)
 	. = ..()
@@ -326,6 +330,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/virtualspeaker)
 	source = M
 	if(istype(M))
 		name = radio.anonymize ? "Unknown" : M.GetVoice()
+		realvoice = name
 		verb_say = M.get_default_say_verb()
 		verb_ask = M.verb_ask
 		verb_exclaim = M.verb_exclaim
@@ -353,6 +358,12 @@ INITIALIZE_IMMEDIATE(/atom/movable/virtualspeaker)
 		job = "Machine"
 	else  // Unidentifiable mob
 		job = "Unknown"
+
+/atom/movable/virtualspeaker/GetVoice(bool) // MONKESTATION ADDITION -- NTSL (this entire proc)
+	if(bool && realvoice)
+		return realvoice
+	else
+		return "[src]"
 
 /atom/movable/virtualspeaker/GetJob()
 	return job
