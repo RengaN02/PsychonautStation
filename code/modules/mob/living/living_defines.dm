@@ -241,3 +241,7 @@
 	/// First element is the current martial art - any other elements are "saved" for if they unlearn the first one
 	/// Reference handling is done by the martial arts themselves
 	var/list/datum/martial_art/martial_arts
+	var/outgoing_damage_mod = 1
+	/// The pain controller datum - tracks, processes, and handles pain.
+	/// Only intialized on humans (currently), here for ease of access / future compatibillity?
+	var/datum/pain/pain_controller

@@ -16,6 +16,9 @@
 		/obj/item/healthanalyzer/simple = 2,
 		/obj/item/stack/medical/bone_gel = 2,
 		/obj/item/storage/box/bandages = 1,
+		/obj/item/shock_blanket/emergency = 2,
+		/obj/item/temperature_pack/cold = 1,
+		/obj/item/temperature_pack/heat = 1,
 	)
 	contraband = list(
 		/obj/item/reagent_containers/applicator/pill/tox = 2,

@@ -66,8 +66,13 @@
 	var/obj/item/organ/lungs = get_organ_slot(ORGAN_SLOT_LUNGS)
 	var/is_on_internals = FALSE
 
-	if(SEND_SIGNAL(src, COMSIG_CARBON_ATTEMPT_BREATHE, seconds_per_tick, times_fired) & COMSIG_CARBON_BLOCK_BREATH)
+	var/pre_sig_return = SEND_SIGNAL(src, COMSIG_CARBON_ATTEMPT_BREATHE, seconds_per_tick, times_fired)
+	if(pre_sig_return & COMSIG_CARBON_BLOCK_BREATH)
 		return
+
+	if(losebreath < 1)
+		if(pre_sig_return & COMSIG_CARBON_SKIP_BREATH)
+			losebreath = max(losebreath, 1)
 
 	SEND_SIGNAL(src, COMSIG_CARBON_PRE_BREATHE, seconds_per_tick, times_fired)
 

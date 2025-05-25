@@ -27,12 +27,15 @@
 
 /obj/item/storage/pill_bottle/PopulateContents()
 	SHOULD_NOT_OVERRIDE(TRUE)
-
+	PopulateExtra()
 	if(!spawn_count)
 		return
 
 	for(var/i in 1 to spawn_count)
 		new spawn_type(src)
+
+/obj/item/storage/pill_bottle/proc/PopulateExtra()
+	return
 
 /obj/item/storage/pill_bottle/multiver
 	name = "bottle of multiver pills"
