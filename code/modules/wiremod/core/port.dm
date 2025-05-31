@@ -13,6 +13,9 @@
 	/// The port type. Ports can only connect to each other if the type matches
 	var/datatype
 
+	// Used for TGUI datatype handling
+	var/parent_datatype
+
 	/// The value that's currently in the port. It's of the above type.
 	var/value
 
@@ -94,6 +97,9 @@
 		handler = GLOB.circuit_datatypes[type_to_set]
 		// We can't leave this port without a type or else it'll just keep spewing out unnecessary and unneeded runtimes as well as leaving the circuit in a broken state.
 		stack_trace("[src] port attempted to be set to an incompatible datatype! (target datatype to set: [type_to_set])")
+
+	if(!isnull(handler.parent_datatype))
+		parent_datatype = handler.parent_datatype
 
 	datatype = type_to_set
 	datatype_handler = handler

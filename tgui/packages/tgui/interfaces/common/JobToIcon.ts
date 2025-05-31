@@ -53,6 +53,7 @@ export const JOB2ICON = {
   'Security Officer (Science)': 'shield-halved',
   'Security Officer': 'shield-halved',
   'Shaft Miner': 'digging',
+  'Signal Technician': 'signal',
   'Station Engineer': 'gears',
   Synthetic: 'handshake-angle',
   'Syndicate Operative': 'dragon',

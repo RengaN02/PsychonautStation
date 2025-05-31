@@ -34,6 +34,8 @@
 	if (log_entries.len >= MAX_LOG_ENTRIES)
 		log_entries.Cut(1, 2)
 
+	signal.data["server"] = src;
+
 	// Don't create a log if the frequency is banned from being logged
 	if(!(signal.frequency in banned_frequencies))
 		var/datum/comm_log_entry/log = new
@@ -57,9 +59,14 @@
 		log.name = "data packet ([md5(identifier)])"
 		log_entries.Add(log)
 
-	var/can_send = relay_information(signal, /obj/machinery/telecomms/hub)
-	if(!can_send)
-		relay_information(signal, /obj/machinery/telecomms/broadcaster)
+	var/obj/machinery/telecomms/traffic/traffic_controller = pick(links_by_telecomms_type?[/obj/machinery/telecomms/traffic])
+
+	if(traffic_controller && traffic_controller.on && traffic_controller.active_servers[src])
+		relay_information(signal, /obj/machinery/telecomms/traffic)
+	else
+		var/can_send = relay_information(signal, /obj/machinery/telecomms/hub)
+		if(!can_send)
+			relay_information(signal, /obj/machinery/telecomms/broadcaster)
 
 	use_energy(idle_power_usage)
 
