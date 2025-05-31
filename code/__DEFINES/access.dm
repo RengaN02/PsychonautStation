@@ -64,6 +64,8 @@
 #define ACCESS_TECH_STORAGE "tech_storage"
 /// Access to the telecomms satellite, machinery, and tablets.
 #define ACCESS_TCOMMS "tcomms"
+/// Access to the NTSL console. It's important because only the signal technician and CE should have it.
+#define ACCESS_TCOMMS_ADMIN "tcomms_admin"
 /// Access to the Auxiliary Base Room, as well as the ability over launching it.
 #define ACCESS_AUX_BASE "aux_base"
 /// Access to all external "space facing" airlocks on the station. Used such that people don't easily "jump ship", or restict free ingress/egress to only a few points on the station.
@@ -351,6 +353,7 @@
 	ACCESS_MINISAT, \
 	ACCESS_RC_ANNOUNCE, \
 	ACCESS_TCOMMS, \
+	ACCESS_TCOMMS_ADMIN, \
 	ACCESS_TECH_STORAGE, \
 	ACCESS_TELEPORTER, \
 	ACCESS_VAULT, \
@@ -494,6 +497,7 @@
 	ACCESS_MECH_ENGINE, \
 	ACCESS_MINISAT, \
 	ACCESS_TCOMMS, \
+	ACCESS_TCOMMS_ADMIN, \
 	ACCESS_TECH_STORAGE, \
 )
 /// Name for the Supply region.
@@ -570,6 +574,7 @@
 	/obj/item/modular_computer/pda/atmos = list(REGION_ENGINEERING), \
 	/obj/item/modular_computer/pda/chemist = list(REGION_MEDBAY), \
 	/obj/item/modular_computer/pda/geneticist = list(REGION_RESEARCH), \
+	/obj/item/modular_computer/pda/signal = list(REGION_ENGINEERING), \
 )
 
 /// All regions that make up the station area. Helper define to quickly designate a region as part of the station or not. Access via SSid_access.station_regions.

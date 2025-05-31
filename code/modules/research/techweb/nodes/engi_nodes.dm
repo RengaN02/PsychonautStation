@@ -107,6 +107,7 @@
 		"s_filter",
 		"s_transmitter",
 		"s_treatment",
+		"s_traffic",
 	)
 	research_costs = list(TECHWEB_POINT_TYPE_GENERIC = TECHWEB_TIER_5_POINTS)
 

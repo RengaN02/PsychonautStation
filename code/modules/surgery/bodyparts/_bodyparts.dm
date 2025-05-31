@@ -1362,12 +1362,17 @@
 /obj/item/bodypart/proc/apply_gauze(obj/item/stack/medical/gauze/new_gauze)
 	if(!istype(new_gauze) || !new_gauze.absorption_capacity || !new_gauze.use(1))
 		return
-	var/newly_gauzed = !current_gauze
-	QDEL_NULL(current_gauze)
+	if(!isnull(current_gauze))
+		remove_gauze(drop_location())
+
 	current_gauze = new new_gauze.type(src, 1)
-	current_gauze.gauzed_bodypart = src
-	if(newly_gauzed)
-		SEND_SIGNAL(src, COMSIG_BODYPART_GAUZED, current_gauze, new_gauze)
+	current_gauze.worn_icon_state = "[body_zone][rand(1, 3)]"
+	if(can_bleed() && (generic_bleedstacks || cached_bleed_rate))
+		current_gauze.add_mob_blood(owner)
+		if(!QDELETED(new_gauze))
+			new_gauze.add_mob_blood(owner)
+	SEND_SIGNAL(src, COMSIG_BODYPART_GAUZED, current_gauze, new_gauze)
+	owner.update_damage_overlays()
 
 /**
  * seep_gauze() is for when a gauze wrapping absorbs blood or pus from wounds, lowering its absorption capacity.
@@ -1381,9 +1386,17 @@
 	if(!current_gauze)
 		return
 	current_gauze.absorption_capacity -= seep_amt
-	if(current_gauze.absorption_capacity <= 0)
-		owner.visible_message(span_danger("\The [current_gauze.name] on [owner]'s [name] falls away in rags."), span_warning("\The [current_gauze.name] on your [name] falls away in rags."), vision_distance=COMBAT_MESSAGE_RANGE)
-		QDEL_NULL(current_gauze)
+	current_gauze.update_appearance(UPDATE_NAME)
+	if(current_gauze.absorption_capacity > 0)
+		return
+	owner.visible_message(
+		span_danger("[current_gauze] on [owner]'s [name] falls away in rags."),
+		span_warning("[current_gauze] on your [name] falls away in rags."),
+		vision_distance = COMBAT_MESSAGE_RANGE,
+	)
+	remove_gauze(drop_location())
+	owner.update_damage_overlays()
+
 
 ///A multi-purpose setter for all things immediately important to the icon and iconstate of the limb.
 /obj/item/bodypart/proc/change_appearance(icon, id, greyscale, dimorphic)

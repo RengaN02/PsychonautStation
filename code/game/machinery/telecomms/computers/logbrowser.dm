@@ -23,6 +23,10 @@
 	req_access = list(ACCESS_TCOMMS)
 	circuit = /obj/item/circuitboard/computer/comm_server
 
+/obj/machinery/computer/telecomms/server/Initialize(mapload, obj/item/circuitboard/C)
+	. = ..()
+	light_color = LIGHT_COLOR_GREEN
+
 /obj/machinery/computer/telecomms/server/ui_data(mob/user)
 	var/list/data = list(
 		"screen" = screen,

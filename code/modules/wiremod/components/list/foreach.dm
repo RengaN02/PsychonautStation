@@ -40,14 +40,18 @@
 		element.set_datatype(new_datatype)
 
 /obj/item/circuit_component/foreach/populate_ports()
-	list_to_iterate = add_input_port("List Input", PORT_TYPE_LIST(PORT_TYPE_ANY))
 	next_index = add_input_port("Next Index", PORT_TYPE_SIGNAL, trigger = PROC_REF(trigger_next_index))
 	reset_index = add_input_port("Reset And Trigger", PORT_TYPE_SIGNAL, trigger = PROC_REF(restart))
 
-	element = add_output_port("Element", PORT_TYPE_ANY)
+	populate_custom_ports()
+
 	current_index = add_output_port("Index", PORT_TYPE_NUMBER)
 	on_next_index = add_output_port("Next Index", PORT_TYPE_SIGNAL)
 	on_finished = add_output_port("On Finished", PORT_TYPE_SIGNAL)
+
+/obj/item/circuit_component/foreach/proc/populate_custom_ports()
+	list_to_iterate = add_input_port("List Input", PORT_TYPE_LIST(PORT_TYPE_ANY))
+	element = add_output_port("Element", PORT_TYPE_ANY)
 
 /obj/item/circuit_component/foreach/proc/restart(datum/port/input/port)
 	CIRCUIT_TRIGGER
@@ -63,7 +67,28 @@
 	if(current_actual_index > length(to_check))
 		on_finished.set_output(COMPONENT_SIGNAL)
 		return
-	element.set_output(to_check[current_actual_index])
+
+	set_element_value(to_check)
+
 	current_index.set_output(current_actual_index)
 	on_next_index.set_output(COMPONENT_SIGNAL)
 	current_actual_index += 1
+
+/obj/item/circuit_component/foreach/proc/set_element_value(list/to_check)
+	element.set_output(to_check[current_actual_index])
+
+/obj/item/circuit_component/foreach/assoc
+	display_name = "For Each Associative Component"
+	desc = "A component that loops through each element in a associative list."
+	/// The current element key from the list
+	var/datum/port/output/element_key
+
+/obj/item/circuit_component/foreach/assoc/populate_custom_ports()
+	list_to_iterate = add_input_port("List Input", PORT_TYPE_ASSOC_LIST(PORT_TYPE_STRING, PORT_TYPE_ANY))
+	element_key = add_output_port("Element Key", PORT_TYPE_STRING)
+	element = add_output_port("Element Value", PORT_TYPE_ANY)
+
+/obj/item/circuit_component/foreach/assoc/set_element_value(list/to_check)
+	var/key = to_check[current_actual_index]
+	element_key.set_output(key)
+	element.set_output(to_check[key])

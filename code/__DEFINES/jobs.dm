@@ -77,6 +77,7 @@
 #define JOB_STATION_ENGINEER "Station Engineer"
 #define JOB_ATMOSPHERIC_TECHNICIAN "Atmospheric Technician"
 #define JOB_WORKER "Worker"
+#define JOB_SIGNAL_TECHNICIAN "Signal Technician"
 //Medical
 #define JOB_CORONER "Coroner"
 #define JOB_MEDICAL_DOCTOR "Medical Doctor"

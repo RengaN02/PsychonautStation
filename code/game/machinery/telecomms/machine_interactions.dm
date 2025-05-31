@@ -172,6 +172,9 @@
 	LAZYADDASSOCLIST(links_by_telecomms_type, new_connection.telecomms_type, new_connection)
 	LAZYADDASSOCLIST(new_connection.links_by_telecomms_type, telecomms_type, src)
 
+	after_add_link(new_connection)
+	new_connection.after_add_link(src)
+
 	if(user)
 		user.log_message("linked [src] for [new_connection].", LOG_GAME)
 	return TRUE
@@ -184,15 +187,23 @@
 	if(old_connection in links)
 		links -= old_connection
 		LAZYREMOVEASSOC(links_by_telecomms_type, old_connection.telecomms_type, old_connection)
+		after_remove_link(old_connection)
 
 	if(src in old_connection.links)
 		old_connection.links -= src
 		LAZYREMOVEASSOC(old_connection.links_by_telecomms_type, telecomms_type, src)
+		old_connection.after_remove_link(src)
 
 	if(user)
 		user.log_message("unlinked [src] and [old_connection].", LOG_GAME)
 
 	return TRUE
+
+/obj/machinery/telecomms/proc/after_add_link(obj/machinery/telecomms/new_connection)
+	return
+
+/obj/machinery/telecomms/proc/after_remove_link(obj/machinery/telecomms/old_connection)
+	return
 
 /**
  * Wrapper for adding additional options to a machine's interface.

@@ -193,6 +193,10 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	name = "Chief Medical Officer"
 	icon_state = "Chief Medical Officer"
 
+/obj/effect/landmark/start/signal_technician
+	icon = 'icons/psychonaut/mob/landmarks.dmi'
+	name = JOB_SIGNAL_TECHNICIAN
+	icon_state = JOB_SIGNAL_TECHNICIAN
 
 /obj/effect/landmark/start/psychologist
 	name = "Psychologist"

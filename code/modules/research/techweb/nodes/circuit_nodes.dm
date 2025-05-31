@@ -89,6 +89,11 @@
 		"comp_wirenet_receive",
 		"comp_wirenet_send",
 		"comp_wirenet_send_literal",
+		"comp_tolist",
+		"comp_tolist_assoc",
+		"comp_foreach_assoc",
+		"comp_sig_create",
+		"comp_sig_broadcast"
 	)
 
 /datum/techweb_node/circuit_shells

@@ -31,6 +31,7 @@ export const Telecomms = (props) => {
     currfrequency,
     broadcasting,
     receiving,
+    connected_servers,
   } = data;
   const linked = data.linked || [];
   const frequencies = data.frequencies || [];
@@ -149,6 +150,30 @@ export const Telecomms = (props) => {
                   icon={broadcasting ? 'microphone' : 'microphone-slash'}
                   color={broadcasting ? '' : 'bad'}
                   onClick={() => act('broadcast')}
+                />
+              </Section>
+            )}
+            {type === 'traffic' && (
+              <Section title="Traffic Control">
+                {connected_servers.map((nt_server, index) => (
+                  <Box key={index}>
+                    <Button.Checkbox
+                      mb={0.5}
+                      checked={nt_server.server_active}
+                      content={nt_server.server_name}
+                      onClick={() =>
+                        act('toggle_server', {
+                          server_ref: nt_server.server_ref,
+                        })
+                      }
+                    />
+                  </Box>
+                ))}
+                <Button
+                  content={'Panel'}
+                  icon={'microphone-slash'}
+                  color={'bad'}
+                  onClick={() => act('open_circuit')}
                 />
               </Section>
             )}
