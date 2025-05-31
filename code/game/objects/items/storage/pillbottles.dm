@@ -27,7 +27,6 @@
 
 /obj/item/storage/pill_bottle/PopulateContents()
 	SHOULD_NOT_OVERRIDE(TRUE)
-
 	if(!spawn_count)
 		return
 

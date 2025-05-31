@@ -314,3 +314,10 @@
 	uniform = /obj/item/clothing/under/plasmaman/medical
 	gloves = /obj/item/clothing/gloves/color/plasmaman/white
 	head = /obj/item/clothing/head/helmet/space/plasmaman/medical
+
+/datum/outfit/plasmaman/signal_tech
+	name = "Signal Technician Plasmaman"
+
+	uniform = /obj/item/clothing/under/plasmaman/engineering/signal_tech
+	gloves = /obj/item/clothing/gloves/color/plasmaman/engineer
+	head = /obj/item/clothing/head/helmet/space/plasmaman/signal_tech

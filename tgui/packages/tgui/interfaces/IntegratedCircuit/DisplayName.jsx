@@ -7,17 +7,17 @@ import {
 
 export const DisplayName = (props) => {
   const { port, isOutput, componentId, portIndex, act, ...rest } = props;
-
-  const InputComponent = FUNDAMENTAL_DATA_TYPES[port.type || 'unknown'];
-  const TypeDisplayHandler = DATATYPE_DISPLAY_HANDLERS[port.type || 'unknown'];
+  const port_type = port.parent_tyoe !== null ? port.parent_tyoe : port.type;
+  const InputComponent = FUNDAMENTAL_DATA_TYPES[port_type || 'unknown'];
+  const TypeDisplayHandler = DATATYPE_DISPLAY_HANDLERS[port_type || 'unknown'];
 
   const hasInput =
     !isOutput &&
     !port.connected_to?.length &&
-    (componentId || port.type === 'option') &&
+    (componentId || port_type === 'option') &&
     InputComponent;
 
-  const displayType = TypeDisplayHandler ? TypeDisplayHandler(port) : port.type;
+  const displayType = TypeDisplayHandler ? TypeDisplayHandler(port) : port_type;
 
   return (
     <Box {...rest}>

@@ -12,3 +12,10 @@
 	if(QDELETED(object))
 		return null
 	return object
+
+/datum/circuit_datatype/datum/vocal_signal
+	datatype = PORT_SUBTYPE_VOCAL_SIGNAL
+	parent_datatype = PORT_TYPE_DATUM
+	color = "red"
+	datatype_flags = NONE
+	can_receive_from = list()

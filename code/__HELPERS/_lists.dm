@@ -1344,3 +1344,14 @@
 	while(islist(result))
 		result = pick(result)
 	return result
+
+/proc/is_assoc_list(list/thelist)
+	if(!islist(thelist))
+		return FALSE
+	if(!length(thelist))
+		return FALSE
+	for(var/key in thelist)
+		var/value = thelist[key]
+		if(isnull(value))
+			return FALSE// return to only check first value, continue to check until you find one
+		return TRUE

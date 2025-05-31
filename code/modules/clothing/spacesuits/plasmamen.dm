@@ -353,6 +353,15 @@
 	armor_type = /datum/armor/space_plasmaman/engineering_atmos
 	max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT // Same protection as the Atmospherics Hardhat
 
+/obj/item/clothing/head/helmet/space/plasmaman/signal_tech
+	name = "signal technician plasma envirosuit helmet"
+	desc = "A space-worthy helmet specially designed for signal technician plasmamen, the usual purple stripes being replaced by a unique bright green."
+	icon = 'icons/psychonaut/obj/clothing/head/plasmaman_hats.dmi'
+	worn_icon = 'icons/psychonaut/mob/clothing/head/plasmaman_head.dmi'
+	icon_state = "signal_tech_envirohelm"
+	inhand_icon_state = null
+	armor_type = /datum/armor/space_plasmaman/engineering_atmos
+
 /obj/item/clothing/head/helmet/space/plasmaman/chief_engineer
 	name = "chief engineer's plasma envirosuit helmet"
 	desc = "A special containment helmet designed for the Chief Engineer, the usual purple stripes being replaced by the chief's green. Has improved thermal shielding."
