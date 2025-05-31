@@ -99,11 +99,6 @@
 /// Beyond this temperature, being on fire will increase body temperature by less and less
 #define BODYTEMP_FIRE_TEMP_SOFTCAP 1200
 
-/// Beyond this point a mob is considered hyperthermic
-#define HYPERTHERMIA (BODYTEMP_NORMAL + 10 + 273)
-/// Beyond this point a mob is considered hypothermic
-#define HYPOTHERMIA (BODYTEMP_NORMAL - 10 - 273)
-
 /// The amount of pressure damage someone takes is equal to (pressure / HAZARD_HIGH_PRESSURE)*PRESSURE_DAMAGE_COEFFICIENT, with the maximum of MAX_PRESSURE_DAMAGE
 #define PRESSURE_DAMAGE_COEFFICIENT 2
 #define MAX_HIGH_PRESSURE_DAMAGE 2

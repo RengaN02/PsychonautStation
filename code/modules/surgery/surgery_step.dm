@@ -25,14 +25,7 @@
 	var/datum/mood_event/surgery/surgery_success_mood_event = /datum/mood_event/surgery/success
 	///Which mood event to give the consious patient when surgery fails. Lasts muuuuuch longer.
 	var/datum/mood_event/surgery/surgery_failure_mood_event = /datum/mood_event/surgery/failure
-	/// Moodlet given if a surgery is done without anesthetics
-	var/surgery_moodlet = /datum/mood_event/surgery
-	/// Pain overlay flashed if a surgery is done without anesthetics
-	var/pain_overlay_severity = 1
-	/// How much pain this gives (given out in display_pain, so this might be given out twice)
-	var/pain_amount = 0
-	/// What type of pain this gives
-	var/pain_type = BRUTE
+
 
 /datum/surgery_step/proc/try_op(mob/user, mob/living/target, target_zone, obj/item/tool, datum/surgery/surgery, try_to_fail = FALSE)
 	var/success = FALSE
@@ -326,33 +319,18 @@
  * * pain_message - The message to be displayed
  * * mechanical_surgery - Boolean flag that represents if a surgery step is done on a mechanical limb (therefore does not force scream)
  */
-/datum/surgery_step/proc/display_pain(mob/living/target, pain_message, mechanical_surgery = FALSE, target_zone)
-	// Only feels pain if we feels pain
-	if(pain_amount <= 0 || isnull(target_zone) || !target.can_feel_pain())
-		return FALSE
-
-	// No pain from mechanics but still show the message (usually)
-	if(mechanical_surgery)
-		if(prob(70))
-			target.pain_message(span_userdanger(pain_message))
-		return FALSE
-
-	target.cause_pain(target_zone, pain_amount, pain_type)
-
-	if(target.IsSleeping() || target.stat >= UNCONSCIOUS)
-		if(target.has_status_effect(/datum/status_effect/grouped/anesthetic))
-			target.add_mood_event("surgery", /datum/mood_event/anesthetic)
-		return FALSE
-	if(ispath(surgery_moodlet))
-		target.add_mood_event("surgery", surgery_moodlet)
-	if(isnum(pain_overlay_severity))
-		target.flash_pain_overlay(pain_overlay_severity)
-	// No message if the pain emote fails
-	if(!target.pain_emote())
-		return FALSE
-	if(!target.pain_message(span_userdanger(pain_message)))
-		return FALSE
-	return TRUE
+/datum/surgery_step/proc/display_pain(mob/living/target, pain_message, mechanical_surgery = FALSE)
+	if(target.stat < UNCONSCIOUS)
+		if(HAS_TRAIT(target, TRAIT_ANALGESIA))
+			if(!pain_message)
+				return
+			to_chat(target, span_notice("You feel a dull, numb sensation as your body is surgically operated on."))
+		else
+			if(!pain_message)
+				return
+			to_chat(target, span_userdanger(pain_message))
+			if(prob(30) && !mechanical_surgery)
+				target.emote("scream")
 
 #undef SURGERY_SPEED_TRAIT_ANALGESIA
 #undef SURGERY_SPEED_DISSECTION_MODIFIER

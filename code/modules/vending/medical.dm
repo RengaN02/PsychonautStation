@@ -21,9 +21,6 @@
 		/obj/item/clothing/glasses/eyepatch/medical = 2,
 		/obj/item/storage/box/bandages = 2,
 		/obj/item/pinpointer/crew = 2,
-		/obj/item/shock_blanket/emergency = 3,
-		/obj/item/temperature_pack/cold = 2,
-		/obj/item/temperature_pack/heat = 2,
 	)
 	contraband = list(
 		/obj/item/storage/box/gum/happiness = 3,
@@ -92,7 +89,6 @@
 		/obj/item/reagent_containers/medigel/libital = 2,
 		/obj/item/reagent_containers/medigel/aiuri = 2,
 		/obj/item/reagent_containers/medigel/sterilizine = 1,
-		/obj/item/storage/pill_bottle/painkillers = 2,
 	)
 	contraband = list(
 		/obj/item/reagent_containers/applicator/pill/tox = 3,

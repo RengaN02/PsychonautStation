@@ -92,11 +92,6 @@
 	/// When ordered in a restaurant, what custom order do we create?
 	var/restaurant_order = /datum/custom_order/reagent/drink
 
-	/// Modifier applied by this reagent to the mob's pain.
-	/// This is both a multiplicative modifier to their overall received pain,
-	/// and an additive modifier to their per tick pain decay rate.
-	var/pain_modifier = null
-
 /datum/reagent/New()
 	SHOULD_CALL_PARENT(TRUE)
 	. = ..()
@@ -213,27 +208,16 @@ Primarily used in reagents/reaction_agents
 	affected_mob.clear_mood_event("[type]_overdose")
 	REMOVE_TRAITS_IN(affected_mob, "base:[type]")
 
-	if(!isnull(pain_modifier) && affected_mob.can_feel_pain())
-		affected_mob.clear_alert("numbed")
-
 /// Called when this reagent first starts being metabolized by a liver
 /datum/reagent/proc/on_mob_metabolize(mob/living/affected_mob)
 	SHOULD_CALL_PARENT(TRUE)
 	if(metabolized_traits)
 		affected_mob.add_traits(metabolized_traits, "metabolize:[type]")
-	if(isnull(pain_modifier) || !istype(affected_mob))
-		return
-	if(affected_mob.set_pain_mod("[PAIN_MOD_CHEMS]-[name]", pain_modifier) && !affected_mob.can_feel_pain())
-		// If the painkiller's strong enough give them an alert
-		affected_mob.throw_alert("numbed", /atom/movable/screen/alert/numbed)
 
 /// Called when this reagent stops being metabolized by a liver
 /datum/reagent/proc/on_mob_end_metabolize(mob/living/affected_mob)
 	SHOULD_CALL_PARENT(TRUE)
 	REMOVE_TRAITS_IN(affected_mob, "metabolize:[type]")
-	if(isnull(pain_modifier) || !istype(affected_mob))
-		return
-	affected_mob.unset_pain_mod("[PAIN_MOD_CHEMS]-[name]")
 
 /**
  * Called when a reagent is inside of a mob when they are dead if the reagent has the REAGENT_DEAD_PROCESS flag

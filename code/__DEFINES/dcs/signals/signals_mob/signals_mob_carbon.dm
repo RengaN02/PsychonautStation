@@ -100,8 +100,6 @@
 #define COMSIG_CARBON_ATTEMPT_BREATHE "carbon_attempt_breathe"
 	// Prevents the breath
 	#define COMSIG_CARBON_BLOCK_BREATH (1 << 0)
-	// Prevents the breath
-	#define COMSIG_CARBON_SKIP_BREATH (1 << 1)
 ///Called when a carbon breathes, before the breath has actually occurred
 #define COMSIG_CARBON_PRE_BREATHE "carbon_pre_breathe"
 ///Called when a carbon updates their mood

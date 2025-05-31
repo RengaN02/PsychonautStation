@@ -38,9 +38,6 @@
 	GLOB.human_list += src
 	ADD_TRAIT(src, TRAIT_CAN_MOUNT_HUMANS, INNATE_TRAIT)
 	ADD_TRAIT(src, TRAIT_CAN_MOUNT_CYBORGS, INNATE_TRAIT)
-	var/datum/pain/new_pain_controller = new(src)
-	if(!QDELETED(new_pain_controller))
-		pain_controller = new_pain_controller
 
 /mob/living/carbon/human/proc/setup_physiology()
 	physiology = new()

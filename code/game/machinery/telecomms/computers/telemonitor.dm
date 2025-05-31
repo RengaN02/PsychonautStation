@@ -24,7 +24,6 @@
 /obj/machinery/computer/telecomms/monitor/Initialize(mapload, obj/item/circuitboard/C)
 	. = ..()
 	LAZYINITLIST(machine_refs)
-	light_color = LIGHT_COLOR_GREEN
 
 /obj/machinery/computer/telecomms/monitor/ui_assets(mob/user)
 	return list(

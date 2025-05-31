@@ -1504,6 +1504,4 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// Trait given when we escape into our shell
 #define TRAIT_SHELL_RETREATED "shell_retreated"
 
-/// Skip a breath once in every x breaths (where x is ticks between breaths)
-#define TRAIT_LABOURED_BREATHING "laboured_breathing"
 // END TRAIT DEFINES
