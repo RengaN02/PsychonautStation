@@ -16,6 +16,9 @@ GLOBAL_LIST_INIT_TYPED(circuit_datatypes, /datum/circuit_datatype, generate_circ
 	/// The key. Used to identify the datatype. Should be a define.
 	var/datatype
 
+	/// The subtype of datatype. Define it if this datatype is a subtype
+	var/parent_datatype
+
 	/// The color of the port in the UI. Doesn't work with hex colours.
 	var/color = "blue"
 

@@ -359,7 +359,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/virtualspeaker)
 	else  // Unidentifiable mob
 		job = "Unknown"
 
-/atom/movable/virtualspeaker/GetVoice(bool) // MONKESTATION ADDITION -- NTSL (this entire proc)
+/atom/movable/virtualspeaker/GetVoice(bool)
 	if(bool && realvoice)
 		return realvoice
 	else

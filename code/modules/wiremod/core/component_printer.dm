@@ -222,7 +222,6 @@
 	circuit.update_static_data_for_all_viewers()
 	balloon_alert(user, "successfully linked to the integrated circuit")
 
-
 /obj/machinery/component_printer/crowbar_act(mob/living/user, obj/item/tool)
 	if(..())
 		return TRUE
@@ -240,6 +239,11 @@
 		data[initial(material_type.name)] = materials[material_type] * efficiency_coeff
 
 	return data
+
+/obj/machinery/component_printer/multitool_act(mob/living/user, obj/item/multitool/tool)
+	tool.set_buffer(src)
+	balloon_alert(user, "saved to multitool buffer")
+	return ITEM_INTERACT_SUCCESS
 
 /obj/machinery/debug_component_printer
 	name = "debug component printer"

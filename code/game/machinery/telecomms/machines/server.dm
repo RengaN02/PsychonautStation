@@ -21,6 +21,7 @@
 	/// Total trafic, which is increased every time a signal is increased and
 	/// the current traffic is higher than 0. See `traffic` for more info.
 	var/total_traffic = 0
+	var/autoruncode = TRUE
 
 /obj/machinery/telecomms/server/receive_information(datum/signal/subspace/vocal/signal, obj/machinery/telecomms/machine_from)
 	// can't log non-vocal signals
@@ -59,12 +60,14 @@
 		log.name = "data packet ([md5(identifier)])"
 		log_entries.Add(log)
 
-	if(Compiler && autoruncode)
-		Compiler.Run(signal)
+	var/obj/machinery/telecomms/traffic/traffic_controller = pick(links_by_telecomms_type?[/obj/machinery/telecomms/traffic])
 
-	var/can_send = relay_information(signal, /obj/machinery/telecomms/hub)
-	if(!can_send)
-		relay_information(signal, /obj/machinery/telecomms/broadcaster)
+	if(autoruncode && traffic_controller && traffic_controller.on && traffic_controller.active_servers[src])
+		relay_information(signal, /obj/machinery/telecomms/traffic)
+	else
+		var/can_send = relay_information(signal, /obj/machinery/telecomms/hub)
+		if(!can_send)
+			relay_information(signal, /obj/machinery/telecomms/broadcaster)
 
 	use_energy(idle_power_usage)
 

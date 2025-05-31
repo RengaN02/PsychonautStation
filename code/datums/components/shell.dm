@@ -395,3 +395,7 @@
 		return FALSE
 
 	return TRUE
+
+/datum/component/shell/traffic_control/on_multitool_act(atom/source, mob/living/user, obj/item/tool)
+	if (user.combat_mode)
+		return ..()

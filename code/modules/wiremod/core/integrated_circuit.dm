@@ -359,6 +359,7 @@ GLOBAL_LIST_EMPTY_TYPED(integrated_circuits, /obj/item/integrated_circuit)
 			component_data["input_ports"] += list(list(
 				"name" = port.name,
 				"type" = port.datatype,
+				"parent_type" = port.parent_datatype,
 				"ref" = REF(port), // The ref is the identifier to work out what it is connected to
 				"connected_to" = connected_to,
 				"color" = port.color,
@@ -370,6 +371,7 @@ GLOBAL_LIST_EMPTY_TYPED(integrated_circuits, /obj/item/integrated_circuit)
 			component_data["output_ports"] += list(list(
 				"name" = port.name,
 				"type" = port.datatype,
+				"parent_type" = port.parent_datatype,
 				"ref" = REF(port),
 				"color" = port.color,
 				"datatype_data" = port.datatype_ui_data(user)
@@ -710,6 +712,13 @@ GLOBAL_LIST_EMPTY_TYPED(integrated_circuits, /obj/item/integrated_circuit)
 	SIGNAL_HANDLER
 	usb_cable.balloon_alert(user, "circuit needs to be in a compatible shell")
 	return COMSIG_CANCEL_USB_CABLE_ATTACK
+
+/obj/item/integrated_circuit/multitool_act(mob/living/user, obj/item/multitool/tool)
+	if(istype(tool) && istype(tool.buffer, /obj/machinery/component_printer))
+		balloon_alert(user, "successfully linked to the integrated circuit")
+		linked_component_printer = WEAKREF(tool.buffer)
+		update_static_data_for_all_viewers()
+		return ITEM_INTERACT_SUCCESS
 
 /// Sets the display name that appears on the shell.
 /obj/item/integrated_circuit/proc/set_display_name(new_name)
