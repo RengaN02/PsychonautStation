@@ -48,6 +48,8 @@
 /// User datatype
 #define PORT_TYPE_USER "user"
 
+/// PORT SUBTYPES
+#define PORT_SUBTYPE_VOCAL_SIGNAL "vocalsignal"
 
 /// The maximum range between a port and an atom
 #define PORT_ATOM_MAX_RANGE 7

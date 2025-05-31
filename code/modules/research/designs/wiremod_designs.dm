@@ -241,6 +241,16 @@
 	id = "comp_split"
 	build_path = /obj/item/circuit_component/split
 
+/datum/design/component/tolist
+	name = "To List Component"
+	id = "comp_tolist"
+	build_path = /obj/item/circuit_component/tolist
+
+/datum/design/component/tolist_assoc
+	name = "To Associative List Component"
+	id = "comp_tolist_assoc"
+	build_path = /obj/item/circuit_component/tolist/assoc
+
 /datum/design/component/pull
 	name = "Pull Component"
 	id = "comp_pull"
@@ -382,6 +392,16 @@
 	id = "comp_pinpointer"
 	build_path = /obj/item/circuit_component/pinpointer
 
+/datum/design/component/create_signal
+	name = "Create Signal Component"
+	id = "comp_sig_create"
+	build_path = /obj/item/circuit_component/traffic_control/create_signal
+
+/datum/design/component/broadcast_signal
+	name = "Broadcast Signal Component"
+	id = "comp_sig_broadcast"
+	build_path = /obj/item/circuit_component/traffic_control/broadcast_signal
+
 /datum/design/component/equipment_action
 	name = "Equipment Action Component"
 	id = "comp_equip_action"
@@ -431,6 +451,11 @@
 	name = "For Each Component"
 	id = "comp_foreach"
 	build_path = /obj/item/circuit_component/foreach
+
+/datum/design/component/foreach_assoc
+	name = "For Each Associative Component"
+	id = "comp_foreach_assoc"
+	build_path = /obj/item/circuit_component/foreach/assoc
 
 /datum/design/component/filter_list
 	name = "Filter List Component"
