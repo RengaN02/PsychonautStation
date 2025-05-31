@@ -2,10 +2,6 @@
 "a" = (
 /turf/template_noop,
 /area/template_noop)
-"b" = (
-/obj/machinery/rnd/production/protolathe/department/science,
-/turf/template_noop,
-/area/template_noop)
 "n" = (
 /obj/effect/landmark/start/signal_technician,
 /turf/template_noop,
@@ -59,7 +55,7 @@ a
 "}
 (7,1,1) = {"
 a
-b
+a
 a
 a
 a

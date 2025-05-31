@@ -13,9 +13,15 @@ GLOBAL_LIST_INIT(allowed_custom_spans, list(
 	desc = "A computer used to interface with the programming of communication servers."
 	icon = 'icons/obj/machines/computer.dmi'
 	icon_state = "computer"
-
 	density = TRUE
 	telecomms_type = /obj/machinery/telecomms/traffic
+	idle_power_usage = BASE_MACHINE_IDLE_CONSUMPTION * 0.01
+	light_color = LIGHT_COLOR_GREEN
+	circuit = /obj/item/circuitboard/computer/traffic_control
+
+	var/icon_screen = "forensic"
+	var/icon_keyboard = "power_key"
+
 	var/datum/component/shell/shell
 	var/obj/item/circuit_component/traffic_control/receive_signal/receivecomp
 	var/obj/item/integrated_circuit/integrated_circuit
@@ -43,6 +49,74 @@ GLOBAL_LIST_INIT(allowed_custom_spans, list(
 	integrated_circuit.forceMove(src)
 
 	RegisterSignal(shell.attached_circuit, COMSIG_CIRCUIT_PRE_POWER_USAGE, PROC_REF(use_energy_for_circuits))
+
+// Computer Procs
+/obj/machinery/telecomms/traffic/screwdriver_act(mob/living/user, obj/item/I)
+	if(..())
+		return TRUE
+	if(circuit)
+		balloon_alert(user, "disconnecting monitor...")
+		if(I.use_tool(src, user, time_to_unscrew, volume=50))
+			deconstruct(TRUE)
+	return TRUE
+
+/obj/machinery/telecomms/traffic/power_change()
+	. = ..()
+	set_light(!!(machine_stat & NOPOWER))
+
+/obj/machinery/telecomms/traffic/update_overlays()
+	. = ..()
+	if(machine_stat & NOPOWER)
+		. += mutable_appearance(icon, "[icon_keyboard]_off")
+		return
+
+	. += mutable_appearance(icon, icon_keyboard)
+	if(machine_stat & BROKEN)
+		. += mutable_appearance(icon, "[icon_state]_broken")
+		return
+	. += mutable_appearance(icon, icon_screen)
+
+/obj/machinery/telecomms/traffic/spawn_frame(disassembled)
+	if(QDELETED(circuit)) //no circuit, no computer frame
+		return
+
+	var/obj/structure/frame/computer/new_frame = new(loc)
+	new_frame.setDir(dir)
+	new_frame.set_anchored(TRUE)
+	new_frame.circuit = circuit
+	// Circuit removal code is handled in /obj/machinery/Exited()
+	component_parts -= circuit
+	circuit.forceMove(new_frame)
+
+	if((machine_stat & BROKEN) || !disassembled)
+		var/atom/drop_loc = drop_location()
+		playsound(src, 'sound/effects/hit_on_shattered_glass.ogg', 70, TRUE)
+		new /obj/item/shard(drop_loc)
+		new /obj/item/shard(drop_loc)
+		new_frame.state = FRAME_COMPUTER_STATE_WIRED
+	else
+		new_frame.state = FRAME_COMPUTER_STATE_GLASSED
+	new_frame.update_appearance()
+
+/obj/machinery/telecomms/traffic/play_attack_sound(damage_amount, damage_type = BRUTE, damage_flag = 0)
+	switch(damage_type)
+		if(BRUTE)
+			if(machine_stat & BROKEN)
+				playsound(src.loc, 'sound/effects/hit_on_shattered_glass.ogg', 70, TRUE)
+			else
+				playsound(src.loc, 'sound/effects/glass/glasshit.ogg', 75, TRUE)
+		if(BURN)
+			playsound(src.loc, 'sound/items/tools/welder.ogg', 100, TRUE)
+
+/obj/machinery/telecomms/traffic/atom_break(damage_flag)
+	if(!circuit) //no circuit, no breaking
+		return
+	. = ..()
+	if(.)
+		playsound(loc, 'sound/effects/glass/glassbr3.ogg', 100, TRUE)
+		set_light(0)
+
+// Computer Procs
 
 /obj/machinery/telecomms/traffic/add_new_link(obj/machinery/telecomms/new_connection, mob/user)
 	if(istype(new_connection, /obj/machinery/component_printer))
@@ -120,98 +194,6 @@ GLOBAL_LIST_INIT(allowed_custom_spans, list(
 		if(printer.z != src.z)
 			continue
 		add_new_link(printer)
-
-/obj/item/circuit_component/traffic_control
-	var/obj/machinery/telecomms/traffic/attached_computer
-	required_shells = list(/obj/machinery/telecomms/traffic)
-
-/obj/item/circuit_component/traffic_control/register_shell(atom/movable/shell)
-	. = ..()
-	if(istype(shell, /obj/machinery/telecomms/traffic))
-		attached_computer = shell
-
-/obj/item/circuit_component/traffic_control/unregister_shell(atom/movable/shell)
-	attached_computer = null
-	return ..()
-
-/obj/item/circuit_component/traffic_control/proc/handle_relay_signal(datum/signal/subspace/vocal/received, list/data, datum/callback/after_relay)
-	if(!istype(received) || !attached_computer)
-		return
-
-	process_signal(received, data)
-
-	var/can_send = attached_computer.relay_information(received, /obj/machinery/telecomms/hub)
-	if(!can_send)
-		attached_computer.relay_information(received, /obj/machinery/telecomms/broadcaster)
-	if(after_relay)
-		after_relay.Invoke()
-
-/obj/item/circuit_component/traffic_control/proc/process_signal(datum/signal/subspace/vocal/signal, list/data)
-	if(!data || !data.len)
-		return
-
-	// Signal data
-	var/list/signal_data = list(
-		"content" = html_decode(signal.data["message"]),
-		"freq" = signal.frequency,
-		"source" = signal.data["name"],
-		"sector" = signal.levels,
-		"job" = signal.data["job"],
-		"pass" = !(signal.data["reject"]),
-		"filters" = signal.data["spans"],
-		"language" = "[signal.language::name]",
-		"say" = signal.virt.verb_say,
-		"ask" = signal.virt.verb_ask,
-		"yell" = signal.virt.verb_yell,
-		"exclaim" = signal.virt.verb_exclaim,
-	)
-
-	for(var/data_type in data)
-		var/data_value = data[data_type]
-		signal_data[data_type] = data_value
-
-	// Backwards-apply variables onto signal data
-	/* sanitize EVERYTHING. players can't be trusted with SHIT */
-
-	var/msg = signal_data["content"]
-	if(isnum(msg))
-		msg = "[msg]"
-	else if(!msg)
-		msg = "*beep*"
-	signal.data["message"] = msg
-
-	signal.frequency = signal_data["freq"]
-
-	var/setname = signal_data["source"]
-
-	if(signal.data["name"] != setname)
-		signal.data["realname"] = signal.data["name"]
-		signal.virt.name = setname
-	signal.data["name"] = setname
-
-	signal.levels = signal_data["sector"]
-	signal.data["job"] = signal_data["job"]
-	signal.data["reject"] = !(signal_data["pass"])
-
-	var/datum/language/newlang = GLOB.language_types_by_name[signal_data["language"]]
-	if(newlang)
-		signal.language = newlang
-		signal.data["language"] = newlang
-
-	signal.virt.verb_say = signal_data["say"]
-	signal.virt.verb_ask = signal_data["ask"]
-	signal.virt.verb_yell = signal_data["yell"]
-	signal.virt.verb_exclaim = signal_data["exclaim"]
-	var/list/setspans = signal_data["filters"] //Save the span vector/list to a holder list
-	if(islist(setspans)) //Players cannot be trusted with ANYTHING. At all. Ever.
-		setspans &= GLOB.allowed_custom_spans //Prune out any illegal ones. Go ahead, comment this line out. See the horror you can unleash!
-		signal.data["spans"] = setspans //Apply new span to the signal only if it is a valid list, made using $filters & vector() in the script.
-	else
-		signal.data["spans"] = list()
-
-	// If the message is invalid, just don't broadcast it!
-	if(signal.data["message"] == "" || !signal.data["message"])
-		signal.data["reject"] = TRUE
 
 /obj/item/circuit_component/traffic_control/relay_signal
 	display_name = "Relay Signal"
