@@ -56,7 +56,7 @@ GLOBAL_LIST_INIT(allowed_custom_spans, list(
 		return TRUE
 	if(circuit)
 		balloon_alert(user, "disconnecting monitor...")
-		if(I.use_tool(src, user, time_to_unscrew, volume=50))
+		if(I.use_tool(src, user, 2 SECONDS, volume=50))
 			deconstruct(TRUE)
 	return TRUE
 
