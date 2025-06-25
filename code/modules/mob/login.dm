@@ -34,6 +34,7 @@
 	client.persistent_client.set_mob(src)
 
 	add_to_player_list()
+	set_logged_in_mob()
 	lastKnownIP = client.address
 	computer_id = client.computer_id
 	log_access("Mob Login: [key_name(src)] was assigned to a [type] ([tag])")
@@ -167,3 +168,6 @@
 		return client.holder.auto_deadmin()
 	if(job)
 		return SSjob.handle_auto_deadmin_roles(client, job)
+
+/mob/proc/set_logged_in_mob()
+	GLOB.ckey_to_occupied_mob[client.ckey] = src
