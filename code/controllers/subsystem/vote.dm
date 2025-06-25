@@ -442,7 +442,7 @@ SUBSYSTEM_DEF(vote)
 	voting -= user.client?.ckey
 
 /// Mob level verb that allows players to vote on the current vote.
-/mob/verb/vote()
+CLIENT_VERB(vote)
 	set category = "OOC"
 	set name = "Vote"
 
@@ -450,7 +450,7 @@ SUBSYSTEM_DEF(vote)
 		to_chat(usr, span_notice("<i>Voting is not set up yet!</i>"))
 		return
 
-	SSvote.ui_interact(usr)
+	SSvote.ui_interact(mob)
 
 /// Datum action given to mobs that allows players to vote on the current vote.
 /datum/action/vote
@@ -466,7 +466,7 @@ SUBSYSTEM_DEF(vote)
 	if(!.)
 		return
 
-	owner.vote()
+	owner.client?.vote()
 	Remove(owner)
 
 // We also need to remove our action from the player actions when we're cleaning up.

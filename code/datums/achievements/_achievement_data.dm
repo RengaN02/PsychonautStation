@@ -126,7 +126,7 @@
 			continue
 		.["highscores"] += list(list("name" = score.name, "scores" = score.high_scores))
 
-/client/verb/checkachievements()
+CLIENT_VERB(checkachievements)
 	set category = "OOC"
 	set name = "Check achievements"
 	set desc = "See all of your achievements!"

@@ -1,5 +1,5 @@
 //Please use mob or src (not usr) in these procs. This way they can be called in the same fashion as procs.
-/client/verb/wiki(query as text)
+CLIENT_VERB(wiki, query as text)
 	set name = "wiki"
 	set desc = "Type what you want to know about.  This will open the wiki in your web browser. Type nothing to go to the main page."
 	set hidden = TRUE
@@ -14,7 +14,7 @@
 		to_chat(src, span_danger("The wiki URL is not set in the server configuration."))
 	return
 
-/client/verb/patreon()
+CLIENT_VERB(patreon)
 	set name = "patreon"
 	set desc = "Destek ol"
 	set hidden = TRUE
@@ -25,7 +25,7 @@
 		to_chat(src, span_danger("The website URL is not set in the server configuration."))
 	return
 
-/client/verb/rules()
+CLIENT_VERB(rules)
 	set name = "rules"
 	set desc = "Sunucu kuralları"
 	set hidden = TRUE
@@ -36,7 +36,7 @@
 		to_chat(src, span_danger("The rules URL is not set in the server configuration."))
 	return
 
-/client/verb/github()
+CLIENT_VERB(github)
 	set name = "github"
 	set desc = "Visit Github"
 	set hidden = TRUE
@@ -47,7 +47,7 @@
 		to_chat(src, span_danger("The Github URL is not set in the server configuration."))
 	return
 
-/client/verb/reportissue()
+CLIENT_VERB(reportissue)
 	set name = "report-issue"
 	set desc = "Hata bildir"
 	set hidden = TRUE
@@ -91,8 +91,7 @@
 
 	DIRECT_OUTPUT(src, link(jointext(concatable, "")))
 
-
-/client/verb/changelog()
+CLIENT_VERB(changelog)
 	set name = "Changelog"
 	set category = "OOC"
 	if(!GLOB.changelog_tgui)
@@ -104,7 +103,7 @@
 		prefs.save_preferences()
 		winset(src, "infobuttons.changelog", "font-style=;")
 
-/client/verb/hotkeys_help()
+CLIENT_VERB(hotkeys_help)
 	set name = "Hotkeys Help"
 	set category = "OOC"
 

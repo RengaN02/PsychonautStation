@@ -10,3 +10,15 @@
 /// The maximum client BYOND build to disable screentip icons for.
 /// Update this whenever https://www.byond.com/forum/post/2967731 is fixed.
 #define MAX_BYOND_BUILD_DISABLE_SCREENTIP_ICONS 1699
+
+#define CLIENT_VERB(verb_name, args...)\
+/client/collect_client_verbs(){\
+	. = ..();\
+	. += /client/proc/##verb_name;\
+};\
+/client/proc/##verb_name(args)\
+
+/// This gathers all the client *procs* that we are pretending are verbs - but only particularly want
+/// authorized users to be able to use
+/client/proc/collect_client_verbs() as /list
+	return list()

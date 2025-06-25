@@ -51,7 +51,7 @@
 		var/details = ": '" + html_encode(tm.title) + "' by " + html_encode(tm.author) + " at commit " + html_encode(copytext_char(cm, 1, 11))
 		. += "<a href=\"[CONFIG_GET(string/githuburl)]/pull/[tm.number]\">#[tm.number][details]</a><br>"
 
-/client/verb/showrevinfo()
+CLIENT_VERB(showrevinfo)
 	set category = "OOC"
 	set name = "Show Server Revision"
 	set desc = "Check the current server code revision"

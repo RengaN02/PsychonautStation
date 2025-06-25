@@ -367,8 +367,8 @@ GLOBAL_DATUM_INIT(ahelp_tickets, /datum/admin_help_tickets, new)
 
 //Removes the ahelp verb and returns it after 2 minutes
 /datum/admin_help/proc/TimeoutVerb()
-	remove_verb(initiator, /client/verb/adminhelp)
-	remove_verb(initiator, /client/verb/mentorhelp)
+	remove_verb(initiator, /client/proc/adminhelp)
+	remove_verb(initiator, /client/proc/mentorhelp)
 	initiator.adminhelptimerid = addtimer(CALLBACK(initiator, TYPE_PROC_REF(/client, giveadminhelpverb)), 1200, TIMER_STOPPABLE) //2 minute cooldown of admin helps
 
 //private
@@ -753,8 +753,8 @@ GLOBAL_DATUM_INIT(ahelp_tickets, /datum/admin_help_tickets, new)
 //
 
 /client/proc/giveadminhelpverb()
-	add_verb(src, /client/verb/adminhelp)
-	add_verb(src, /client/verb/mentorhelp)
+	add_verb(src, /client/proc/adminhelp)
+	add_verb(src, /client/proc/mentorhelp)
 	deltimer(adminhelptimerid)
 	adminhelptimerid = 0
 
@@ -838,7 +838,7 @@ GLOBAL_DATUM_INIT(admin_help_ui_handler, /datum/admin_help_ui_handler, new)
 
 	new /datum/admin_help(message, user_client, FALSE, urgent)
 
-/client/verb/no_tgui_adminhelp(message as message)
+CLIENT_VERB(no_tgui_adminhelp, message as message)
 	set name = "NoTguiAdminhelp"
 	set hidden = TRUE
 
@@ -849,7 +849,7 @@ GLOBAL_DATUM_INIT(admin_help_ui_handler, /datum/admin_help_ui_handler, new)
 
 	GLOB.admin_help_ui_handler.perform_adminhelp(src, message, FALSE)
 
-/client/verb/adminhelp()
+CLIENT_VERB(adminhelp)
 	set category = "Admin"
 	set name = "Adminhelp"
 	GLOB.admin_help_ui_handler.ui_interact(mob)
@@ -917,12 +917,12 @@ GLOBAL_DATUM_INIT(mentor_help_ui_handler, /datum/mentor_help_ui_handler, new)
 
 	new /datum/admin_help(message, user_client, FALSE, FALSE, TICKET_TYPE_MENTOR)
 
-/client/verb/mentorhelp()
+CLIENT_VERB(mentorhelp)
 	set category = "Admin"
 	set name = "Mentorhelp"
 	GLOB.mentor_help_ui_handler.ui_interact(mob)
 
-/client/verb/view_latest_ticket()
+CLIENT_VERB(view_latest_ticket)
 	set category = "Admin"
 	set name = "View Latest Ticket"
 
@@ -979,7 +979,7 @@ GLOBAL_DATUM_INIT(ticket_helper_ui_handler, /datum/ticket_helper_ui_handler, new
 
 	ui.close()
 
-/client/verb/tickethelper()
+CLIENT_VERB(tickethelper)
 	set name = "Tickethelper"
 	set hidden = TRUE
 

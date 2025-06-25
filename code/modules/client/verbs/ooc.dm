@@ -2,7 +2,7 @@ GLOBAL_VAR_INIT(OOC_COLOR, null)//If this is null, use the CSS for OOC. Otherwis
 GLOBAL_VAR_INIT(normal_ooc_colour, "#002eb8")
 
 ///talking in OOC uses this
-/client/verb/ooc(msg as text)
+CLIENT_VERB(ooc, msg as text)
 	set name = "OOC" //Gave this shit a shorter name so you only have to time out "ooc" rather than "ooc message" to use it --NeoFite
 	set category = "OOC"
 
@@ -171,8 +171,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 	log_admin("[key_name_admin(user)] has reset player ooc color.")
 	GLOB.OOC_COLOR = null
 
-
-/client/verb/looc(msg as text)
+CLIENT_VERB(looc, msg as text)
 	set name = "LOOC"
 	set category = "OOC"
 
@@ -268,7 +267,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 		confidential = TRUE)
 
 //Checks admin notice
-/client/verb/admin_notice()
+CLIENT_VERB(admin_notice)
 	set name = "Adminnotice"
 	set category = "Admin"
 	set desc ="Check the admin notice if it has been set"
@@ -278,7 +277,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 	else
 		to_chat(src, span_notice("There are no admin notices at the moment."))
 
-/client/verb/motd()
+CLIENT_VERB(motd)
 	set name = "MOTD"
 	set category = "OOC"
 	set desc ="Check the Message of the Day"
@@ -312,7 +311,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 	new /datum/job_report_menu(src, usr)
 
 // Ignore verb
-/client/verb/select_ignore()
+CLIENT_VERB(select_ignore)
 	set name = "Ignore"
 	set category = "OOC"
 	set desc ="Ignore a player's messages on the OOC channel"
@@ -394,7 +393,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 	to_chat(src, span_infoplain("You are now ignoring [selection] on the OOC channel."))
 
 // Unignore verb
-/client/verb/select_unignore()
+CLIENT_VERB(select_unignore)
 	set name = "Unignore"
 	set category = "OOC"
 	set desc = "Stop ignoring a player's messages on the OOC channel"
@@ -445,7 +444,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 
 	SSticker.show_roundend_report(src, report_type = SERVER_LAST_ROUND)
 
-/client/verb/fit_viewport()
+CLIENT_VERB(fit_viewport)
 	set name = "Fit Viewport"
 	set category = "OOC"
 	set desc = "Fit the width of the map window to match the viewport"
@@ -525,11 +524,11 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 	if (!prefs.read_preference(/datum/preference/toggle/auto_fit_viewport))
 		return
 	if(fully_created)
-		INVOKE_ASYNC(src, VERB_REF(fit_viewport))
+		INVOKE_ASYNC(src, PROC_REF(fit_viewport))
 	else //Delayed to avoid wingets from Login calls.
-		addtimer(CALLBACK(src, VERB_REF(fit_viewport), 1 SECONDS))
+		addtimer(CALLBACK(src, PROC_REF(fit_viewport), 1 SECONDS))
 
-/client/verb/policy()
+CLIENT_VERB(policy)
 	set name = "Show Policy"
 	set desc = "Show special server rules related to your current character."
 	set category = "OOC"
@@ -552,7 +551,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 	browser.set_content(policytext.Join(""))
 	browser.open()
 
-/client/verb/fix_stat_panel()
+CLIENT_VERB(fix_stat_panel)
 	set name = "Fix Stat Panel"
 	set hidden = TRUE
 
@@ -567,7 +566,7 @@ ADMIN_VERB(reset_ooc_color, R_FUN, "Reset Player OOC Color", "Returns player OOC
 
 	prefs.savefile.export_json_to_client(usr, ckey)
 
-/client/verb/map_vote_tally_count()
+CLIENT_VERB(map_vote_tally_count)
 	set name = "Show Map Vote Tallies"
 	set desc = "View the current map vote tally counts."
 	set category = "Server"

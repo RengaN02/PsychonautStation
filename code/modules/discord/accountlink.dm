@@ -1,4 +1,4 @@
-/client/verb/verify_in_discord()
+CLIENT_VERB(verify_in_discord)
 	set category = "OOC"
 	set name = "Verify Discord Account"
 	set desc = "Verify your discord account with your BYOND account"

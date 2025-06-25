@@ -1,5 +1,8 @@
 ///Returns whether or not a player is a guest using their ckey as an input
-/proc/is_guest_key(key)
+/proc/is_guest_key(key, strict = FALSE)
+	if(!strict && (key in GLOB.permitted_guests))
+		return FALSE
+
 	if(findtext(key, "Guest-", 1, 7) != 1) //was findtextEx
 		return FALSE
 

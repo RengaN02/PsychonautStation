@@ -1282,7 +1282,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	var/mob/dead/observer/observer = mob
 	observer.ManualFollow(target)
 
-/client/verb/stop_client_sounds()
+CLIENT_VERB(stop_client_sounds)
 	set name = "Stop Sounds"
 	set category = "OOC"
 	set desc = "Stop Current Sounds"
@@ -1291,7 +1291,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	tgui_panel?.destroy_all_jukebox()
 	SSblackbox.record_feedback("nested tally", "preferences_verb", 1, list("Stop Self Sounds"))
 
-/client/verb/toggle_fullscreen()
+CLIENT_VERB(toggle_fullscreen)
 	set name = "Toggle Fullscreen"
 	set category = "OOC"
 
@@ -1300,7 +1300,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	winset(src, "mainwindow", "menu=;is-fullscreen=[fullscreen ? "true" : "false"]")
 	attempt_auto_fit_viewport()
 
-/client/verb/toggle_status_bar()
+CLIENT_VERB(toggle_status_bar)
 	set name = "Toggle Status Bar"
 	set category = "OOC"
 
