@@ -20,7 +20,7 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 	. = ..()
 
 	GLOB.dead_mob_list -= src
-	ADD_TRAIT(src, TRAIT_IMMOBILIZED, TRAIT_SOURCE_INHERENT)
+	ADD_TRAIT(src, TRAIT_IMMOBILIZED, "Unauthenticated")
 
 /mob/unauthenticated/Login()
 	. = ..()
@@ -31,22 +31,22 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 
 	client.prefs = dummy_preferences
 
-	display_unauthenticated_menu()
-
 /mob/unauthenticated/set_logged_in_mob()
 	return FALSE
 
 /// Creates our authentication request, stores the code in the database and on us
-/mob/unauthenticated/proc/create_access_code_entity()
-	WAIT_DB_READY
+/mob/unauthenticated/proc/create_authentication_request()
 
 	access_code = generate_access_code()
 
-	var/datum/entity/authentication_request/access_entity = DB_ENTITY(/datum/entity/authentication_request)
-	access_entity.access_code = access_code
-	access_entity.time = time2text(world.timeofday, "YYYY-MM-DD hh:mm:ss")
-	access_entity.save()
-	access_entity.detach()
+	var/datum/db_query/query_log_auth = SSdbcore.NewQuery({"
+		INSERT INTO [format_table_name("authentication_requests")] (access_code, timestamp)
+		VALUES (:access_code, NOW())
+	"}, list(
+		"access_code" = access_code
+	))
+	query_log_auth.Execute()
+	qdel(query_log_auth)
 
 #define ACCESS_CODE_LENGTH 20
 
@@ -66,40 +66,33 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 	if(new_ckey)
 		return
 
-	var/datum/view_record/authentication_request/request = locate() in DB_VIEW(
-		/datum/view_record/authentication_request,
-		DB_AND(
-			DB_COMP("access_code", DB_EQUALS, code ? code : access_code),
-			DB_COMP("time", DB_GREATER, time2text(world.timeofday - 3 HOURS, "YYYY-MM-DD hh:mm:ss")),
-			DB_COMP("approved", DB_EQUALS, TRUE),
-		)
+	var/query = "SELECT external_username, authentication_method, access_code, time, approved FROM [format_table_name("discord_links")] WHERE access_code = :access_code AND access_code = :access_code AND timestamp >= Now() - INTERVAL 4 HOUR LIMIT 1"
+	var/datum/db_query/query_get_discord_link_record = SSdbcore.NewQuery(
+		query,
+		list("approved" = TRUE, "access_code" = code ? code : access_code)
 	)
+	if(!query_get_discord_link_record.Execute())
+		qdel(query_get_discord_link_record)
+		return
+	var/result
+	if(query_get_discord_link_record.NextRow())
+		result = query_get_discord_link_record.item
 
-	if(!request)
+	if(!result)
 		if(!code)
 			addtimer(CALLBACK(src, PROC_REF(check_logged_in)), 5 SECONDS)
 		return
 
-	if(request.external_username)
-		client.external_username = ckey(request.external_username)
+	var/external_username = result[1]
+	var/authentication_method = result[2]
+	if(external_username)
+		client.external_username = ckey(external_username)
 
 		var/middle = ""
-		if(request.authentication_method)
-			middle = "[capitalize(request.authentication_method)]-"
+		if(authentication_method)
+			middle = "[capitalize(authentication_method)]-"
 
 		new_ckey = "Guest-[middle][client.external_username]"
-
-	else if(request.internal_user_id)
-		var/datum/view_record/players/player = locate() in DB_VIEW(
-			/datum/view_record/players,
-			DB_COMP("id", DB_EQUALS, request.internal_user_id)
-		)
-
-		if(!player)
-			message_admins("Something has gone really wrong when authenticating [client].")
-			return
-
-		new_ckey = player.ckey
 
 	if(!code)
 		notify_unauthenticated_menu()
@@ -109,7 +102,7 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 		QDEL_IN(client, 10 SECONDS)
 		return FALSE
 
-	message_admins("Non-BYOND user [new_ckey] (previously [key]) has been authenticated via [request.authentication_method].")
+	message_admins("Non-BYOND user [new_ckey] (previously [key]) has been authenticated via [authentication_method].")
 
 	log_in()
 
@@ -125,54 +118,33 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 	// Readd the client to the directory with the *new* Guest ckey
 	GLOB.directory[ckey] = user
 
-	close_unauthenticated_menu(user)
-
-	user.PreLogin()
+	var/list/pre_data = user.PreLogin()
 
 	var/mob/new_mob = GLOB.ckey_to_occupied_mob[user.ckey]
 	if(QDELETED(new_mob))
-		new_mob = new /mob/new_player()
+		new_mob = new /mob/dead/new_player()
 
 	new_mob.client = user
 
-	new_mob.client.PostLogin()
+	new_mob.client.PostLogin(pre_data = pre_data)
 
-/// Displays the usual lobby menu and moves the splitter all the way over, for the full screen effect
-/mob/unauthenticated/proc/display_unauthenticated_menu()
-	set waitfor = FALSE
+/mob/unauthenticated/proc/open_unauthenticated_menu()
+	set category = "OOC"
+	set name = "Open Unauthenticated Menu"
+	set desc = "Open unauthenticated menu"
 
-	winset(client, null, list(
-		"mainwindow.fullscreen_browser.is-disabled" = "false",
-		"mainwindow.fullscreen_browser.is-visible" = "true",
-	))
+	if(!unauthenticated_menu)
+		unauthenticated_menu = new(usr)
 
-	unauthenticated_menu = new(client, "fullscreen_browser")
-	unauthenticated_menu.initialize(
-		assets = list(
-				get_asset_datum(/datum/asset/simple/tgui),
-				get_asset_datum(/datum/asset/simple/namespaced/chakrapetch)
-			)
-	)
+	unauthenticated_menu.ui_interact(usr)
 
-	tgui_interact(src)
-
-/mob/unauthenticated/proc/close_unauthenticated_menu(client/to_close)
-	set waitfor = FALSE
-
-	winset(to_close, null, list(
-		"mainwindow.fullscreen_browser.is-disabled" = "true",
-		"mainwindow.fullscreen_browser.is-visible" = "false",
-	))
-
-
-/mob/unauthenticated/tgui_interact(mob/user, datum/tgui/ui)
+/mob/unauthenticated/ui_interact(mob/user, datum/tgui/ui)
 	. = ..()
 
 	ui = SStgui.try_update_ui(user, src, ui)
 	if (!ui)
-		ui = new(user, src, "UnauthenticatedMenu", window = unauthenticated_menu)
-		ui.closeable = FALSE
-		ui.open(preinitialized = TRUE)
+		ui = new(user, src, "UnauthenticatedMenu")
+		ui.open()
 
 /mob/unauthenticated/ui_static_data(mob/user)
 	. = ..()
@@ -194,7 +166,7 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 	switch(action)
 		if("open_browser")
 			if(!access_code)
-				create_access_code_entity()
+				create_authentication_request()
 
 			client << link("[CONFIG_GET(keyed_list/auth_urls)[params["auth_option"]]]?code=[access_code]")
 

@@ -4,7 +4,7 @@ CLIENT_VERB(verify_in_discord)
 	set desc = "Verify your discord account with your BYOND account"
 
 	if(is_guest_key(key, TRUE))
-		to_chat(src, SPAN_WARNING("You must be connected as a BYOND key to connect to Discord."))
+		to_chat(src, span_warning("You must be connected as a BYOND key to connect to Discord."))
 		return FALSE
 
 	if(!CONFIG_GET(flag/sql_enabled))

@@ -253,23 +253,21 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(connection != "seeker" && connection != "web")//Invalid connection type.
 		return null
 
-	if(!CanLogin())
+	// Admin Verbs need the client's mob to exist. Must be after ..()
+	var/connecting_admin = FALSE //because de-admined admins connecting should be treated like admins.
+	//Admin Authorisation
+	var/datum/admins/admin_datum = GLOB.admin_datums[ckey]
+	if (!isnull(admin_datum))
+		connecting_admin = TRUE
+	else if(GLOB.deadmins[ckey])
+		connecting_admin = TRUE
+
+	if(!CanLogin(connecting_admin))
 		qdel(src)
 		return
 
 	GLOB.clients += src
 	GLOB.directory[ckey] = src
-
-	var/reconnecting = FALSE
-	if(GLOB.persistent_clients_by_ckey[ckey])
-		reconnecting = TRUE
-		persistent_client = GLOB.persistent_clients_by_ckey[ckey]
-		persistent_client.byond_build = byond_build
-		persistent_client.byond_version = byond_version
-	else
-		persistent_client = new(ckey)
-		persistent_client.byond_build = byond_build
-		persistent_client.byond_version = byond_version
 
 	if(byond_version >= 516)
 		winset(src, null, list("browser-options" = "find,refresh,byondstorage"))
@@ -286,11 +284,30 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	initialize_commandbar_spy()
 
 	// we should interrupt this here, now
-	if(is_guest_key(key) && length(CONFIG_GET(keyed_list/auth_urls)) && !is_localhost())
+	if(is_guest_key(key) && length(CONFIG_GET(keyed_list/auth_urls)) /*&& !is_localhost()*/)
 		mob = new /mob/unauthenticated()
 		return mob
 
-/client/proc/PreLogin()
+	var/list/pre_data = PreLogin()
+
+	. = ..() //calls mob.Login()
+
+	PostLogin(tdata, pre_data, connecting_admin)
+
+/client/proc/PreLogin() as /list
+	var/list/pre_data = list()
+
+	pre_data["reconnecting"] = FALSE
+	if(GLOB.persistent_clients_by_ckey[ckey])
+		pre_data["reconnecting"] = TRUE
+		persistent_client = GLOB.persistent_clients_by_ckey[ckey]
+		persistent_client.byond_build = byond_build
+		persistent_client.byond_version = byond_version
+	else
+		persistent_client = new(ckey)
+		persistent_client.byond_build = byond_build
+		persistent_client.byond_version = byond_version
+
 	set_right_click_menu_mode(TRUE)
 
 	GLOB.ahelp_tickets.ClientLogin(src)
@@ -317,8 +334,8 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	var/full_version = "[byond_version].[byond_build ? byond_build : "xxx"]"
 	log_access("Login: [key_name(src)] from [address ? address : "localhost"]-[computer_id] || BYOND v[full_version]")
 
-	var/alert_mob_dupe_login = FALSE
-	var/alert_admin_multikey = FALSE
+	pre_data["alert_mob_dupe_login"] = FALSE
+	pre_data["alert_admin_multikey"] = FALSE
 	if(CONFIG_GET(flag/log_access))
 		var/list/joined_players = list()
 		for(var/player_ckey in GLOB.joined_player_list)
@@ -344,10 +361,10 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 			if(joined_player_preferences.last_id == computer_id)
 				if(matches)
 					matches = "BOTH [matches] and "
-					alert_admin_multikey = TRUE
+					pre_data["alert_mob_dupe_login"] = TRUE
 					message_type = "MULTIKEY"
 				matches += "Computer ID ([computer_id])"
-				alert_mob_dupe_login = TRUE
+				pre_data["alert_mob_dupe_login"] = TRUE
 
 			if(matches)
 				if(C)
@@ -357,18 +374,16 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 					message_admins(span_danger("<B>[message_type]: </B></span><span class='notice'>Connecting player [key_name_admin(src)] has the same [matches] as [joined_player_ckey](no longer logged in)<b>[in_round]</b>. "))
 					log_admin_private("[message_type]: Connecting player [key_name(src)] has the same [matches] as [joined_player_ckey](no longer logged in)[in_round].")
 
-	. = ..() //calls mob.Login()
+	return pre_data
 
-	// Admin Verbs need the client's mob to exist. Must be after ..()
-	var/connecting_admin = FALSE //because de-admined admins connecting should be treated like admins.
+/client/proc/PostLogin(tdata = list(), pre_data = list(), connecting_admin = FALSE)
+
 	//Admin Authorisation
 	var/datum/admins/admin_datum = GLOB.admin_datums[ckey]
 	if (!isnull(admin_datum))
 		admin_datum.associate(src)
-		connecting_admin = TRUE
 	else if(GLOB.deadmins[ckey])
 		add_verb(src, /client/proc/readmin)
-		connecting_admin = TRUE
 	if(CONFIG_GET(flag/autoadmin))
 		if(!GLOB.admin_datums[ckey])
 			var/list/autoadmin_ranks = ranks_from_rank_name(CONFIG_GET(string/autoadmin_rank))
@@ -386,8 +401,9 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		if (!length(GLOB.stickybanadminexemptions))
 			restore_stickybans()
 
-/client/proc/PostLogin()
-	add_verb(src, collect_client_verbs())
+	if(SSinput.initialized)
+		set_macros()
+
 	// Initialize stat panel
 	stat_panel.initialize(
 		inline_html = file("html/statbrowser.html"),
@@ -403,12 +419,9 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 
 	tgui_say.initialize()
 
-	if(SSinput.initialized)
-		INVOKE_ASYNC(src, /client/proc/set_macros)
-
-	if(alert_mob_dupe_login && !holder)
+	if(pre_data["alert_mob_dupe_login"] && !holder)
 		var/dupe_login_message = "Your ComputerID has already logged in with another key this round, please log out of this one NOW or risk being banned!"
-		if (alert_admin_multikey)
+		if (pre_data["alert_admin_multikey"])
 			dupe_login_message += "\nAdmins have been informed."
 			message_admins(span_danger("<B>MULTIKEYING: </B></span><span class='notice'>[key_name_admin(src)] has a matching CID+IP with another player and is clearly multikeying. They have been warned to leave the server or risk getting banned."))
 			log_admin_private("MULTIKEYING: [key_name(src)] has a matching CID+IP with another player and is clearly multikeying. They have been warned to leave the server or risk getting banned.")
@@ -440,7 +453,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		add_admin_verbs()
 		display_admin_memos(src)
 		adminGreet()
-	if (mob && reconnecting)
+	if (mob && pre_data["reconnecting"])
 		var/stealth_admin = mob.client?.holder?.fakekey
 		var/announce_leave = mob.client?.prefs?.read_preference(/datum/preference/toggle/broadcast_login_logout)
 		if (!stealth_admin)
@@ -541,7 +554,8 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_CLIENT_CONNECT, src)
 	fully_created = TRUE
 
-/client/proc/CanLogin()
+/client/proc/CanLogin(connecting_admin = FALSE)
+	. = TRUE
 	if (byond_version >= 512)
 		if (!byond_build || byond_build < 1386)
 			message_admins(span_adminnotice("[key_name(src)] has been detected as spoofing their byond version. Connection rejected."))
@@ -616,7 +630,8 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 
 	GLOB.clients -= src
 	GLOB.directory -= ckey
-	persistent_client.client = null
+	if(!isnull(persistent_client))
+		persistent_client.client = null
 
 	log_access("Logout: [key_name(src)]")
 	GLOB.ahelp_tickets.ClientLogout(src)

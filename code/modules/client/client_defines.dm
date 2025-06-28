@@ -282,4 +282,6 @@
 	/// The DPI scale of the client. 1 is equivalent to 100% window scaling, 2 will be 200% window scaling
 	var/window_scaling
 
+	var/unauthenticated = FALSE
+
 	var/external_username
