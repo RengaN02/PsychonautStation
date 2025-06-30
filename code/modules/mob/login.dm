@@ -167,6 +167,3 @@
 		return client.holder.auto_deadmin()
 	if(job)
 		return SSjob.handle_auto_deadmin_roles(client, job)
-
-/mob/proc/set_logged_in_mob()
-	GLOB.ckey_to_occupied_mob[client.ckey] = src

@@ -1,17 +1,17 @@
 ///Returns whether or not a player is a guest using their ckey as an input
-/proc/is_guest_key(key, strict = FALSE, allow_nan = FALSE)
+/proc/is_guest_key(key, strict = FALSE)
 	if(!strict && (key in GLOB.permitted_guests))
 		return FALSE
 
 	if(findtext(key, "Guest-", 1, 7) != 1) //was findtextEx
 		return FALSE
 
-	if(!allow_nan)
-		var/i, ch, len = length(key)
-		for(i = 7, i <= len, ++i) //we know the first 6 chars are Guest-
-			ch = text2ascii(key, i)
-			if (ch < 48 || ch > 57) //0-9
-				return FALSE
+	var/i, ch, len = length(key)
+	for(i = 7, i <= len, ++i) //we know the first 6 chars are Guest-
+		ch = text2ascii(key, i)
+		if (ch < 48 || ch > 57) //0-9
+			return FALSE
+
 	return TRUE
 
 /// Proc that just logs whenever an uninitialized client tries to do something before they have fully gone through New().

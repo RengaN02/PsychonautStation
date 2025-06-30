@@ -22,9 +22,7 @@
 			client.interviewee = TRUE
 
 	. = ..()
-	if(client.unauthenticated)
-		register_for_authentication()
-		return
+
 	if(!. || !client)
 		return FALSE
 
@@ -53,6 +51,10 @@
 	// and set the player's client up for interview.
 	if(client.interviewee)
 		register_for_interview()
+		return
+
+	if(client.unauthenticated)
+		register_for_authentication()
 		return
 
 	if(SSticker.current_state < GAME_STATE_SETTING_UP)

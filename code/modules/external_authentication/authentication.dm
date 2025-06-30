@@ -19,17 +19,16 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 
 	if (!(key in GLOB.permitted_guests) || unauthenticated)
 		return
-
+/*
 	if(mob)
 		mob.ghostize()
-
+*/
 	logout_external_account()
 	GLOB.permitted_guests -= key
 
-	var/new_ckey = ckey(get_guest_key())
-	log_auth("[key_name(src)] has logged out from the external account [ckey], their new ckey is [new_ckey].")
+	log_auth("[key_name(src)] has logged out from the external account [ckey].")
 
-	persistent_client.change_ckey(src, new_ckey)
+	//persistent_client.change_ckey(src, new_ckey)
 
 	winset(src, null, "command=.reconnect")
 
@@ -103,7 +102,7 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 	close_unauthenticated_menu(owner)
 	owner.unauthenticated = FALSE
 	log_auth("[key_name(owner)] has logged in as [new_ckey].")
-	owner.persistent_client.change_ckey(owner, new_ckey)
+	//owner.persistent_client.change_ckey(owner, new_ckey)
 
 	winset(owner, null, "command=.reconnect")
 

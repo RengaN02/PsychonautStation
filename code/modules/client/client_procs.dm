@@ -262,7 +262,6 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(length(external_account_data))
 		var/new_key = prepare_external_account_key(external_account_data["internal_byond_id"], external_account_data["external_uid"], external_account_data["authentication_method"])
 		if(new_key)
-
 			unauthenticated = FALSE
 			key = new_key
 			GLOB.permitted_guests |= key
@@ -280,7 +279,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		persistent_client.byond_build = byond_build
 		persistent_client.byond_version = byond_version
 	else
-		persistent_client = new(ckey)
+		persistent_client = new(ckey, src)
 		persistent_client.byond_build = byond_build
 		persistent_client.byond_version = byond_version
 
@@ -1414,9 +1413,6 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 /// This grabs the DPI of the user per their skin
 /client/proc/acquire_dpi()
 	window_scaling = text2num(winget(src, null, "dpi"))
-
-/client/proc/get_guest_key()
-	return "Guest-[computer_id]"
 
 /// To be used when displaying a client's "username" to players
 /client/proc/username()

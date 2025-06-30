@@ -282,13 +282,7 @@
 	/// The DPI scale of the client. 1 is equivalent to 100% window scaling, 2 will be 200% window scaling
 	var/window_scaling
 
-	/// Temporary reconnecting bool value for client login
-	var/reconnecting = FALSE
-
 	var/datum/unauthenticated_menu/unauthenticated_menu
-
-	/// New connection TopicData, cached prior to authentication
-	var/temp_topicdata = null
 
 	var/unauthenticated = FALSE
 
