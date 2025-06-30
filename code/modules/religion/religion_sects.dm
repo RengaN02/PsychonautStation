@@ -386,18 +386,15 @@
 
 	if(!HAS_TRAIT(chaplain, TRAIT_NOBLOOD))
 		if(target.blood_volume < BLOOD_VOLUME_SAFE)
-			var/datum/blood_type/target_blood_data = target.dna.blood_type
-			var/datum/blood_type/chaplain_blood_data = chaplain.dna.blood_type
 			var/transferred_blood_amount = min(chaplain.blood_volume, BLOOD_VOLUME_SAFE - target.blood_volume)
-			if(transferred_blood_amount && (chaplain_blood_data.type_key() in target_blood_data.compatible_types))
-				transferred = TRUE
-				chaplain.transfer_blood_to(target, transferred_blood_amount, forced = TRUE)
-		if(target.blood_volume > BLOOD_VOLUME_EXCESS)
-			target.transfer_blood_to(chaplain, target.blood_volume - BLOOD_VOLUME_EXCESS, forced = TRUE)
+			if(transferred_blood_amount && target.get_blood_compatibility(chaplain))
+				transferred = chaplain.transfer_blood_to(target, transferred_blood_amount, forced = TRUE)
+		else if(target.blood_volume > BLOOD_VOLUME_EXCESS)
+			transferred = target.transfer_blood_to(chaplain, target.blood_volume - BLOOD_VOLUME_EXCESS, forced = TRUE)
 
 	target.update_damage_overlays()
 	chaplain.update_damage_overlays()
-	if(transferred)
+	if(!transferred)
 		to_chat(chaplain, span_warning("They hold no burden!"))
 		return BLESSING_IGNORED
 
@@ -533,9 +530,9 @@
 	quote = "An undead army is a must have!"
 	tgui_icon = "skull"
 	alignment = ALIGNMENT_EVIL
-	max_favor = 10000
+	max_favor = 1500
 	desired_items = list(/obj/item/organ/)
-	rites_list = list(/datum/religion_rites/raise_dead, /datum/religion_rites/living_sacrifice, /datum/religion_rites/raise_undead)
+	rites_list = list(/datum/religion_rites/living_sacrifice, /datum/religion_rites/raise_undead)
 	altar_icon_state = "convertaltar_necro"
 
 //Necro bibles don't heal or do anything special apart from the standard holy water blessings
@@ -545,8 +542,8 @@
 /datum/religion_sect/necro_sect/on_sacrifice(obj/item/N, mob/living/L)
 	if(!istype(N, /obj/item/organ))
 		return
-	adjust_favor(10, L)
-	to_chat(L, "<span class='notice'>You offer [N] to [GLOB.deity], pleasing them and gaining 10 favor in the process.</span>")
+	adjust_favor(30, L)
+	to_chat(L, "<span class='notice'>You offer [N] to [GLOB.deity], pleasing them and gaining 30 favor in the process.</span>")
 	qdel(N)
 	return TRUE
 

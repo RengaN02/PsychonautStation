@@ -128,12 +128,6 @@
 		return
 	update_ai_detect_hud()
 
-///Called when the AI shiftclicks on something to examinate it.
-/mob/eye/camera/ai/proc/examinate_check(mob/user, atom/source)
-	SIGNAL_HANDLER
-	if(user.client.eye == src)
-		return COMPONENT_ALLOW_EXAMINATE
-
 /*----------------------------------------------------*/
 
 /atom/proc/move_camera_by_click()
@@ -206,7 +200,6 @@
 	eyeobj.name = "[name] (AI Eye)"
 	eyeobj.update_name_tag()
 	eyeobj.setLoc(loc, TRUE)
-	eyeobj.RegisterSignal(src, COMSIG_CLICK_SHIFT, TYPE_PROC_REF(/mob/eye/camera/ai, examinate_check))
 	set_eyeobj_visible(TRUE)
 
 /mob/living/silicon/ai/proc/set_eyeobj_visible(state = TRUE)
@@ -231,6 +224,11 @@
 	. = ..()
 	if(relay_speech && speaker && ai && !radio_freq && speaker != ai && GLOB.cameranet.checkCameraVis(speaker))
 		ai.relay_speech(message, speaker, message_language, raw_message, radio_freq, spans, message_mods)
+
+/mob/eye/camera/ai/get_mob_appearance()
+	if(!isnull(ai))
+		return ai.appearance
+	return ..()
 
 /obj/effect/overlay/ai_detect_hud
 	name = ""

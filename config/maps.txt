@@ -45,6 +45,11 @@ map metastation
 	#webmap_url https://webmap.affectedarc07.co.uk/maps/tgstation/metastation
 endmap
 
+map theiastation
+	minplayers 10
+	votable
+endmap
+
 map tramstation
 	minplayers 35
 	votable
@@ -58,6 +63,11 @@ endmap
 map wawastation
 	votable
 	minplayers 40
+endmap
+
+map heliostation
+	votable
+	minplayers 20
 endmap
 
 # Debug-only maps.
