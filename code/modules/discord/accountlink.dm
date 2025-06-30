@@ -3,6 +3,10 @@
 	set name = "Verify Discord Account"
 	set desc = "Verify your discord account with your BYOND account"
 
+	if(is_guest_key(key, TRUE, TRUE))
+		to_chat(src, span_warning("You must be connected as a BYOND key to connect to Discord."))
+		return FALSE
+
 	if(!CONFIG_GET(flag/sql_enabled))
 		to_chat(src, span_warning("This feature requires the SQL backend to be running."))
 		return

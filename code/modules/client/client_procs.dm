@@ -253,6 +253,23 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(connection != "seeker" && connection != "web")//Invalid connection type.
 		return null
 
+	var/list/external_account_data = list()
+
+	if(is_guest_key(key, TRUE) && length(CONFIG_GET(keyed_list/auth_urls)))
+		unauthenticated = TRUE
+		external_account_data = check_external_account()
+
+	if(length(external_account_data))
+		var/new_key = prepare_external_account_key(external_account_data["internal_byond_id"], external_account_data["external_uid"], external_account_data["authentication_method"])
+		if(new_key)
+
+			unauthenticated = FALSE
+			key = new_key
+			GLOB.permitted_guests |= key
+
+	if(unauthenticated)
+		unauthenticated_menu = new(src)
+
 	GLOB.clients += src
 	GLOB.directory[ckey] = src
 
@@ -303,6 +320,9 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 
 	if(fexists("data/server_last_roundend_report.html"))
 		add_verb(src, /client/proc/show_servers_last_roundend_report)
+
+	if(GLOB.permitted_guests.Find(key))
+		add_verb(src, /client/proc/external_logout)
 
 	var/full_version = "[byond_version].[byond_build ? byond_build : "xxx"]"
 	log_access("Login: [key_name(src)] from [address ? address : "localhost"]-[computer_id] || BYOND v[full_version]")
@@ -565,7 +585,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(!tooltips)
 		tooltips = new /datum/tooltip(src)
 
-	if (!interviewee)
+	if (!interviewee && !unauthenticated)
 		initialize_menus()
 
 	loot_panel = new(src)
@@ -575,6 +595,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	view_size.setZoomMode()
 	Master.UpdateTickRate()
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_CLIENT_CONNECT, src)
+
 	fully_created = TRUE
 
 //////////////
@@ -628,6 +649,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	QDEL_NULL(loot_panel)
 	QDEL_NULL(parallax_rock)
 	QDEL_LIST(parallax_layers_cached)
+	QDEL_NULL(unauthenticated_menu)
 	parallax_layers = null
 	seen_messages = null
 	Master.UpdateTickRate()
@@ -896,6 +918,44 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		var/list/json = json_decode(response.body)
 		return json["patron"]
 
+/client/proc/check_external_account()
+	var/datum/db_query/query_get_external_account = SSdbcore.NewQuery(
+		"SELECT internal_byond_id, external_uid, access_code, authentication_method, timestamp FROM [format_table_name("authentication_requests")] WHERE request_status = :request_status AND address = INET_ATON(:address) AND computer_id = :computer_id AND timestamp >= Now() - INTERVAL 15 day ORDER BY timestamp DESC LIMIT 1",
+		list("request_status" = 1, "address" = address, "computer_id" = computer_id)
+	)
+	if(!query_get_external_account.Execute())
+		qdel(query_get_external_account)
+		return FALSE
+	var/list/result
+	if(query_get_external_account.NextRow())
+		result = query_get_external_account.item
+	qdel(query_get_external_account)
+	if(!result && !islist(result))
+		return FALSE
+	return list(
+		"internal_byond_id" = result[1], //Conntected byond id which linked to the auth method(like discord)
+		"external_uid" = result[2], // Unique User id from the auth method
+		"access_code" = result[3],
+		"authentication_method" = result[4], // Auth method
+		"timestamp" = result[5] // Timestamp of the oauth
+	)
+
+/client/proc/logout_external_account()
+	var/list/external_account_data = check_external_account()
+	if(!length(external_account_data))
+		return FALSE
+	var/datum/db_query/logout_query = SSdbcore.NewQuery(
+		"UPDATE [format_table_name("authentication_requests")] SET request_status = 2 WHERE access_code = :access_code ORDER BY timestamp DESC",
+		list("access_code" = external_account_data["access_code"])
+	)
+
+	if(!logout_query.Execute())
+		qdel(logout_query)
+		return FALSE
+
+	qdel(logout_query)
+	return TRUE
+
 /client/proc/add_system_note(system_ckey, message, message_type = "note")
 	//check to see if we noted them in the last day.
 	var/datum/db_query/query_get_notes = SSdbcore.NewQuery(
@@ -1004,7 +1064,7 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	..()
 
 /client/proc/add_verbs_from_config()
-	if (interviewee)
+	if (interviewee || unauthenticated)
 		return
 	if(CONFIG_GET(flag/see_own_notes))
 		add_verb(src, /client/proc/self_notes)
@@ -1354,6 +1414,41 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 /// This grabs the DPI of the user per their skin
 /client/proc/acquire_dpi()
 	window_scaling = text2num(winget(src, null, "dpi"))
+
+/client/proc/get_guest_key()
+	return "Guest-[computer_id]"
+
+/// To be used when displaying a client's "username" to players
+/client/proc/username()
+	if(external_username)
+		return external_username
+
+	return key
+
+/client/proc/check_player_by_ckey(internal_byond_id)
+	var/datum/db_query/query_get_player = SSdbcore.NewQuery(
+		"SELECT ckey FROM [format_table_name("player")] WHERE ckey = :ckey",
+		list("ckey" = internal_byond_id)
+	)
+	if(!query_get_player.Execute())
+		qdel(query_get_player)
+		return FALSE
+	if(query_get_player.NextRow())
+		qdel(query_get_player)
+		return FALSE
+	qdel(query_get_player)
+	return TRUE
+
+/client/proc/prepare_external_account_key(internal_byond_id, external_uid, authentication_method)
+	var/new_key
+	if(internal_byond_id && check_player_by_ckey(internal_byond_id))
+		new_key = internal_byond_id
+	else if(external_uid)
+		var/middle = ""
+		if(authentication_method)
+			middle = "[capitalize(authentication_method)]-"
+		new_key = "Guest-[middle][external_uid]" // Guest-discord-1234567890
+	return new_key
 
 #undef ADMINSWARNED_AT
 #undef CURRENT_MINUTE

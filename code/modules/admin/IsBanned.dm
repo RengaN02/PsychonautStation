@@ -6,7 +6,7 @@
 #define STICKYBAN_MAX_EXISTING_USER_MATCHES 3 //ie, users who were connected before the ban triggered
 #define STICKYBAN_MAX_ADMIN_MATCHES 1
 
-/world/IsBanned(key, address, computer_id, type, real_bans_only=FALSE)
+/world/IsBanned(key, address, computer_id, type, real_bans_only=FALSE, guest_bypass_with_ext_auth = TRUE)
 	debug_world_log("isbanned(): '[args.Join("', '")]'")
 	if (!key || (!real_bans_only && (!address || !computer_id)))
 		if(real_bans_only)
@@ -81,6 +81,11 @@
 			if(!CONFIG_GET(flag/byond_member_bypass_popcap) || !world.IsSubscribed(ckey, "BYOND"))
 				log_access("Failed Login: [ckey] - Population cap reached")
 				return list("reason"="popcap", "desc"= "\nReason: [CONFIG_GET(string/extreme_popcap_message)]")
+
+	// When a user is logging in as a guest, and we're authenticating them externally, they should bypass this for now
+	// so we can check them when they log in with their real login
+	if(guest_bypass_with_ext_auth && is_guest_key(key) && length(CONFIG_GET(keyed_list/auth_urls)))
+		return ..()
 
 	if(CONFIG_GET(flag/sql_enabled))
 		if(!SSdbcore.Connect())
@@ -247,7 +252,7 @@
 		. = list("reason" = "Stickyban", "desc" = desc)
 		log_suspicious_login("Failed Login: [ckey] [computer_id] [address] - StickyBanned [ban["message"]] Target Username: [bannedckey] Placed by [ban["admin"]]")
 
-	if (!real_bans_only && !C && CONFIG_GET(flag/require_discord_linking))
+	if (!real_bans_only && !C && CONFIG_GET(flag/require_discord_linking) && !is_guest_key(key, TRUE))
 		var/discord_id = SSdiscord.lookup_id(ckey)
 		if (!discord_id)
 			var/cached_token = SSdiscord.reverify_cache[ckey]

@@ -53,7 +53,7 @@
 	if (!client)
 		return
 
-	if (client.interviewee)
+	if (client.interviewee || client.unauthenticated)
 		return
 
 	if (href_list["viewpoll"])
@@ -359,6 +359,38 @@
 	// Add verb for re-opening the interview panel, fixing chat and re-init the verbs for the stat panel
 	add_verb(src, /mob/dead/new_player/proc/open_interview)
 	add_verb(client, /client/verb/fix_tgui_panel)
+
+/**
+ * Prepares a client for the external authentication.
+ *
+ * This proc will both prepare the user by removing all verbs from them, as well as
+ * giving them the authentication form and forcing it to appear.
+ */
+/mob/dead/new_player/proc/register_for_authentication()
+	// First we detain them by removing all the verbs they have on client
+	for (var/v in client.verbs)
+		var/procpath/verb_path = v
+		remove_verb(client, verb_path)
+
+	// Then remove those on their mob as well
+	for (var/v in verbs)
+		var/procpath/verb_path = v
+		remove_verb(src, verb_path)
+
+	// Then we create the interview form and show it to the client
+	open_unauthenticated_menu()
+
+	// Add verb for re-opening the interview panel, fixing chat and re-init the verbs for the stat panel
+	add_verb(src, /mob/dead/new_player/proc/open_unauthenticated_menu)
+	add_verb(client, /client/verb/fix_tgui_panel)
+	add_verb(client, /client/verb/refresh_tgui)
+
+/mob/dead/new_player/get_status_tab_items()
+	. = ..()
+	if(!client.unauthenticated)
+		. += "Ckey: [client.key]"
+	else
+		.+= "Please Log In"
 
 ///Resets the Lobby Menu HUD, recreating and reassigning it to the new player
 /mob/dead/new_player/proc/reset_menu_hud()

@@ -1674,3 +1674,10 @@
 		return
 	name_tag.set_name(name)
 	name_tag.refresh()
+
+/// To be used when displaying a mobs "username" to players
+/mob/proc/username()
+	if(client)
+		return client.username()
+
+	return key

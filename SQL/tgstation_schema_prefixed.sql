@@ -675,6 +675,24 @@ CREATE TABLE `SS13_admin_connections` (
 ) ENGINE=InnoDB;
 
 --
+-- Table structure for table `authentication_requests`
+--
+DROP TABLE IF EXISTS `SS13_authentication_requests`;
+CREATE TABLE `SS13_authentication_requests` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+  `access_code` text NOT NULL,
+  `timestamp` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `request_status` tinyint(1) NOT NULL DEFAULT '0',
+  `authentication_method` text DEFAULT NULL,
+  `internal_byond_id` text DEFAULT NULL,
+	`external_uid` text DEFAULT NULL,
+	`external_username` text DEFAULT NULL,
+	`address` INT(10) UNSIGNED NOT NULL,
+  `computer_id` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+--
 -- Table structure for table `known_alts`
 --
 DROP TABLE IF EXISTS `SS13_known_alts`;

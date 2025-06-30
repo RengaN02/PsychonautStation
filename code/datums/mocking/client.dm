@@ -31,12 +31,11 @@
 	var/tgui_say
 	var/typing_indicators
 
-/datum/client_interface/New()
+/datum/client_interface/New(key=null)
 	..()
 	var/static/mock_client_uid = 0
 	mock_client_uid++
-
-	src.key = "[key]_[mock_client_uid]"
+	src.key = "[key ? key : src.key]_[mock_client_uid]"
 	ckey = ckey(key)
 
 #ifdef UNIT_TESTS // otherwise this shit can leak into production servers which is drather bad

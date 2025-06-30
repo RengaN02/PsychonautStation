@@ -14,7 +14,7 @@
 	if (!owner || !owner.client)
 		return
 
-	if (owner.client.interviewee)
+	if (owner.client.interviewee || owner.client.unauthenticated)
 		return
 
 	var/list/buttons = subtypesof(/atom/movable/screen/lobby)
@@ -39,7 +39,7 @@
 
 /// Load and then display the buttons for relevant station traits
 /datum/hud/new_player/proc/show_station_trait_buttons()
-	if (!mymob?.client || mymob.client.interviewee || !length(GLOB.lobby_station_traits))
+	if (!mymob?.client || mymob.client.interviewee || mymob.client.unauthenticated || !length(GLOB.lobby_station_traits))
 		return
 	for (var/datum/station_trait/trait as anything in GLOB.lobby_station_traits)
 		if (QDELETED(trait) || !trait.can_display_lobby_button(mymob.client))
@@ -139,7 +139,7 @@
 	if(usr != get_mob())
 		return
 
-	if(!usr.client || usr.client.interviewee)
+	if(!usr.client || usr.client.interviewee || usr.client.unauthenticated)
 		return
 
 	. = ..()
@@ -158,7 +158,7 @@
 	if(usr != get_mob())
 		return
 
-	if(!usr.client || usr.client.interviewee)
+	if(!usr.client || usr.client.interviewee || usr.client.unauthenticated)
 		return
 
 	. = ..()
@@ -169,7 +169,7 @@
 	if(usr != get_mob())
 		return
 
-	if(!usr.client || usr.client.interviewee)
+	if(!usr.client || usr.client.interviewee || usr.client.unauthenticated)
 		return
 
 	. = ..()

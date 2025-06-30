@@ -74,6 +74,12 @@ GLOBAL_LIST_EMPTY_TYPED(persistent_clients, /datum/persistent_client)
 		return "Unknown"
 	return "[byond_version].[byond_build || "xxx"]"
 
+/datum/persistent_client/proc/change_ckey(client/client, new_ckey)
+	GLOB.persistent_clients_by_ckey -= client.ckey
+	GLOB.persistent_clients_by_ckey[new_ckey] = src
+	achievements.owner_ckey = new_ckey
+	achievements.load_all_achievements()
+
 /// Adds the new names to the player's played_names list on their /datum/persistent_client for use of admins.
 /// `ckey` should be their ckey, and `data` should be an associative list with the keys being the names they played under and the values being the unique mob ID tied to that name.
 /proc/log_played_names(ckey, data)

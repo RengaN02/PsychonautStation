@@ -821,3 +821,9 @@
 
 // If set, enables the "Link forum account" OOC verb
 /datum/config_entry/string/forum_link_uri
+
+/datum/config_entry/keyed_list/auth_urls
+	splitter = "|"
+	key_mode = KEY_MODE_TEXT
+	value_mode = VALUE_MODE_TEXT
+	protection = CONFIG_ENTRY_HIDDEN|CONFIG_ENTRY_LOCKED

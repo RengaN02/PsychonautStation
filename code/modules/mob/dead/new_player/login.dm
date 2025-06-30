@@ -22,6 +22,9 @@
 			client.interviewee = TRUE
 
 	. = ..()
+	if(client.unauthenticated)
+		register_for_authentication()
+		return
 	if(!. || !client)
 		return FALSE
 

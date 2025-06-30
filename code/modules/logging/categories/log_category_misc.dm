@@ -49,6 +49,9 @@
 /datum/log_category/dynamic
 	category = LOG_CATEGORY_DYNAMIC
 
+/datum/log_category/external_authentication
+	category = LOG_CATEGORY_AUTH
+
 /datum/log_category/telecomms
 	category = LOG_CATEGORY_TELECOMMS
 	config_flag = /datum/config_entry/flag/log_telecomms

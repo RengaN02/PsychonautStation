@@ -65,6 +65,8 @@
 
 	if(!SSachievements.achievements_enabled)
 		return
+	if(user.client?.unauthenticated)
+		return //No achievements for you mr anon.
 	var/datum/award/award = SSachievements.awards[achievement_type]
 	get_data(achievement_type) //Get the current status first if necessary
 	award.unlock(user, src, value)

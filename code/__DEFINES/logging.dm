@@ -96,6 +96,7 @@
 
 // Misc categories
 #define LOG_CATEGORY_ATTACK "attack"
+#define LOG_CATEGORY_AUTH "external_authendication"
 #define LOG_CATEGORY_CONFIG "config"
 #define LOG_CATEGORY_DYNAMIC "dynamic"
 #define LOG_CATEGORY_ECONOMY "economy"
