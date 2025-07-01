@@ -19,16 +19,19 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 
 	if (!(key in GLOB.permitted_guests) || unauthenticated)
 		return
-/*
-	if(mob)
-		mob.ghostize()
-*/
+
+	if(!istype(mob, /mob/dead/new_player))
+		to_chat(src, "<span class='warning'>You cannot logout after joining game or observe.</span>")
+		return
+
 	logout_external_account()
 	GLOB.permitted_guests -= key
 
 	log_auth("[key_name(src)] has logged out from the external account [ckey].")
+	var/new_ckey = "Guest-[computer_id]"
 
-	//persistent_client.change_ckey(src, new_ckey)
+	persistent_client.change_ckey(src, new_ckey)
+	GLOB.connected_external_accounts -= "[address]_[computer_id]"
 
 	winset(src, null, "command=.reconnect")
 
@@ -67,7 +70,7 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 
 /datum/unauthenticated_menu/proc/check_logged_in()
 	var/list/result = owner.check_external_account()
-	if(!result)
+	if(!result || !islist(result) || !length(result))
 		return
 	var/internal_byond_id = result["internal_byond_id"]
 	var/external_uid = result["external_uid"]
@@ -95,16 +98,20 @@ GLOBAL_LIST_EMPTY(permitted_guests)
 	message_admins("Non-BYOND user [new_ckey] (previously [owner.key]) has been authenticated via [auth_method].")
 
 	STOP_PROCESSING(SSauthentication, src)
-	log_in()
+	log_in(result)
 
-/datum/unauthenticated_menu/proc/log_in()
+/datum/unauthenticated_menu/proc/log_in(list/account_data)
 
 	close_unauthenticated_menu(owner)
-	owner.unauthenticated = FALSE
+
 	log_auth("[key_name(owner)] has logged in as [new_ckey].")
-	//owner.persistent_client.change_ckey(owner, new_ckey)
+
+	owner.persistent_client.change_ckey(owner, new_ckey)
+	GLOB.connected_external_accounts["[owner.address]_[owner.computer_id]"] = account_data
 
 	winset(owner, null, "command=.reconnect")
+
+// OBSERVE ATIP RECONNECT ATINCA BOK OLUYOO, CLIENT PROCSDAN GIRISE BAK, EN KOTU IHTIMALLE HER TUR GIRIS YAPARLAR
 
 /// Creates a base 62 access code
 /datum/unauthenticated_menu/proc/generate_access_code()

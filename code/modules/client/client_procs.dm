@@ -253,11 +253,13 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	if(connection != "seeker" && connection != "web")//Invalid connection type.
 		return null
 
+	var/start_time = REALTIMEOFDAY
+
 	var/list/external_account_data = list()
 
-	if(is_guest_key(key, TRUE) && length(CONFIG_GET(keyed_list/auth_urls)))
+	if(is_guest_key(key) && length(CONFIG_GET(keyed_list/auth_urls)))
 		unauthenticated = TRUE
-		external_account_data = check_external_account()
+		external_account_data = GLOB.connected_external_accounts["[address]_[computer_id]"]
 
 	if(length(external_account_data))
 		var/new_key = prepare_external_account_key(external_account_data["internal_byond_id"], external_account_data["external_uid"], external_account_data["authentication_method"])
@@ -268,6 +270,8 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 
 	if(unauthenticated)
 		unauthenticated_menu = new(src)
+
+	log_world("Loaded in [(REALTIMEOFDAY - start_time)]s!")
 
 	GLOB.clients += src
 	GLOB.directory[ckey] = src

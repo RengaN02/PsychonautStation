@@ -23,12 +23,12 @@
 
 	. = ..()
 
+	if(!. || !client)
+		return FALSE
+
 	if(client.unauthenticated)
 		register_for_authentication()
 		return
-
-	if(!. || !client)
-		return FALSE
 
 	var/motd = global.config.motd
 	if(motd)
