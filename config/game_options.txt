@@ -564,6 +564,13 @@ RANDOM_LOOT_WEIGHT_MODIFIER 1
 MAX_SHUTTLE_COUNT 6
 MAX_SHUTTLE_SIZE 300
 
+## Modular Room weights
+## See modules\mapping\modular_rooms for the full modular room list
+## Make sure there is one space between the room_id and the weight value.
+
+#MODULAR_ROOM_WEIGHT meta_supermatter 10
+#MODULAR_ROOM_WEIGHT meta_singularity 10
+
 ### Spy config
 ## Changes refresh period between bounties - in deciseconds
 SPY_BOUNTY_REFRESH_TIMER 7200
