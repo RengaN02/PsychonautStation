@@ -61,6 +61,9 @@
 		return CACHE_INVALID
 	if(!fexists("data/spritesheets/spritesheet_[name].css"))
 		return CACHE_INVALID
+	if(type in (CONFIG_GET(keyed_list/persistent_assets)) && !fexists("[CONFIG_GET(string/persistent_asset_path)]spritesheet_.[name].json"))
+		world.log << "BOKKKKKKK BOKKKKK BOKKKKK BOKKKK BOKKKK BOKKKK BOKKK"
+		return CACHE_INVALID
 	if(isnull(cache_data) || isnull(cache_dmi_hashes_json))
 		cache_data = rustg_file_read("[ASSET_CROSS_ROUND_SMART_CACHE_DIRECTORY]/spritesheet_cache.[name].json")
 		if(!findtext(cache_data, "{", 1, 2)) // cache isn't valid JSON
@@ -210,9 +213,12 @@
 		var/png_name = "[name]_[size_id].png"
 		var/file_directory = "data/spritesheets/[png_name]"
 		var/file_hash = rustg_hash_file(RUSTG_HASH_MD5, file_directory)
-		SSassets.transport.register_asset(png_name, fcopy_rsc(file_directory), file_hash)
+		var/datum/asset_cache_item/asset_cache_item = SSassets.transport.register_asset(png_name, fcopy_rsc(file_directory), file_hash)
 		if(CONFIG_GET(flag/save_spritesheets))
 			save_to_logs(file_name = png_name, file_location = file_directory)
+		if(type in (CONFIG_GET(keyed_list/persistent_assets)))
+			var/asset_name = SSassets.transport.get_asset_name(asset_cache_item)
+			save_to_persistent_assets(file_name = asset_name, file_location = file_directory)
 	var/css_name = "spritesheet_[name].css"
 	var/file_directory = "data/spritesheets/[css_name]"
 
@@ -224,6 +230,9 @@
 
 	if(CONFIG_GET(flag/save_spritesheets))
 		save_to_logs(file_name = css_name, file_location = file_directory)
+
+	if(type in (CONFIG_GET(keyed_list/persistent_assets)))
+		write_persistent_meta()
 
 	if (do_cache)
 		write_cache_meta(input_hash, dmi_hashes)
@@ -258,14 +267,14 @@
 	for(var/size_id in sizes)
 		.["[name]_[size_id].png"] = SSassets.transport.get_asset_url("[name]_[size_id].png")
 
-/datum/asset/spritesheet_batched/proc/generate_css()
+/datum/asset/spritesheet_batched/proc/generate_css(persistent=FALSE)
 	var/list/out = list()
 
 	for (var/size_id in sizes)
 		var/size_split = splittext(size_id, "x")
 		var/width = text2num(size_split[1])
 		var/height = text2num(size_split[2])
-		out += ".[name][size_id]{display:inline-block;width:[width]px;height:[height]px;background-image:url('[get_background_url("[name]_[size_id].png")]');background-repeat:no-repeat;}"
+		out += ".[name][size_id]{display:inline-block;width:[width]px;height:[height]px;background-image:url('[get_background_url("[name]_[size_id].png", persistent)]');background-repeat:no-repeat;}"
 
 	for (var/sprite_id in sprites)
 		var/sprite = sprites[sprite_id]
@@ -307,7 +316,12 @@
 	return TRUE
 
 /// Returns the URL to put in the background:url of the CSS asset
-/datum/asset/spritesheet_batched/proc/get_background_url(asset)
+/datum/asset/spritesheet_batched/proc/get_background_url(asset, persistent)
+	if(persistent && CONFIG_GET(string/persistent_asset_url))
+		var/datum/asset_cache_item/asset_cache_item = SSassets.cache[asset]
+		var/url = CONFIG_GET(string/persistent_asset_url) //config loading will handle making sure this ends in a /
+		var/asset_name = SSassets.transport.get_asset_name(asset_cache_item)
+		return "[url][asset_name]"
 	return SSassets.transport.get_asset_url(asset)
 
 /datum/asset/spritesheet_batched/proc/write_cache_meta(input_hash, dmi_hashes)
@@ -320,6 +334,20 @@
 		"dm_version" = SPRITESHEET_SYSTEM_VERSION,
 	)
 	rustg_file_write(json_encode(cache_data), "[ASSET_CROSS_ROUND_SMART_CACHE_DIRECTORY]/spritesheet_cache.[name].json")
+
+/datum/asset/spritesheet_batched/proc/write_persistent_meta()
+	var/list/dmi_files = list()
+	for (var/size_id in sizes)
+		var/background_url = get_background_url("[name]_[size_id].png", TRUE)
+		dmi_files[background_url] = size_id
+
+	var/list/cache_data = list(
+		"dmi_files" = dmi_files,
+		"sprites" = sprites,
+		"rustg_version" = rustg_get_version(),
+		"dm_version" = SPRITESHEET_SYSTEM_VERSION,
+	)
+	rustg_file_write(json_encode(cache_data), "[CONFIG_GET(string/persistent_asset_path)]spritesheet_[name].json")
 
 /**
  * Third party helpers

@@ -79,6 +79,11 @@ GLOBAL_LIST_EMPTY(asset_datums)
 	fdel(asset_path) // just in case, sadly we can't use rust_g stuff here.
 	fcopy(file_location, asset_path)
 
+/datum/asset/proc/save_to_persistent_assets(file_name, file_location)
+	var/asset_path = "[CONFIG_GET(string/persistent_asset_path)][file_name]"
+	fdel(asset_path) // just in case, sadly we can't use rust_g stuff here.
+	fcopy(file_location, asset_path)
+
 /// If you don't need anything complicated.
 /datum/asset/simple
 	_abstract = /datum/asset/simple

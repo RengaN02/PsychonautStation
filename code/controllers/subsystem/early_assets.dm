@@ -24,7 +24,7 @@ SUBSYSTEM_DEF(early_assets)
 		if (initial(asset_type._abstract) == asset_type)
 			continue
 
-		if (!initial(asset_type.early))
+		if (!initial(asset_type.early) && !(asset_type in (CONFIG_GET(keyed_list/persistent_assets))))
 			continue
 
 		if (!load_asset_datum(asset_type))

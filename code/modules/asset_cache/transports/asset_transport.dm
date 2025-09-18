@@ -79,6 +79,9 @@
 	return url_encode("asset.[asset_cache_item.hash][asset_cache_item.ext]")
 
 
+/datum/asset_transport/proc/get_asset_name(datum/asset_cache_item/asset_cache_item)
+	return "asset.[asset_cache_item.hash][asset_cache_item.ext]"
+
 /// Sends a list of browser assets to a client
 /// client - a client or mob
 /// asset_list - A list of asset filenames to be sent to the client. Can optionally be assoicated with the asset's asset_cache_item datum.

@@ -28,3 +28,29 @@
 	if (str_var && str_var[length(str_var)] != "/")
 		str_var += "/"
 	return ..(str_var)
+
+/datum/config_entry/keyed_list/persistent_assets
+	key_mode = KEY_MODE_TEXT
+	value_mode = VALUE_MODE_FLAG
+
+/datum/config_entry/string/persistent_asset_path
+	protection = CONFIG_ENTRY_LOCKED
+	default = "data/persistent-assets/"
+
+/datum/config_entry/string/persistent_asset_path/ValidateAndSet(str_var)
+	if (!str_var || trim(str_var) == "")
+		return FALSE
+	if (str_var && str_var[length(str_var)] != "/")
+		str_var += "/"
+	return ..(str_var)
+
+/datum/config_entry/string/persistent_asset_url
+	protection = CONFIG_ENTRY_LOCKED
+	default = null
+
+/datum/config_entry/string/persistent_asset_url/ValidateAndSet(str_var)
+	if (!str_var || trim(str_var) == "")
+		return FALSE
+	if (str_var && str_var[length(str_var)] != "/")
+		str_var += "/"
+	return ..(str_var)
