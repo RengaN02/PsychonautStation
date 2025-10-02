@@ -108,3 +108,5 @@
 /// Global signal whenever a camera network broadcast is started/stopped/updated: (camera_net, is_show_active, announcement)
 #define COMSIG_GLOB_NETWORK_BROADCAST_UPDATED "!network_broadcast_updated"
 
+/// Global Signal sent when the crew wins the revolution (No arguments).
+#define COMSIG_GLOB_REVOLUTION_VICTORY "!revolution_victory"

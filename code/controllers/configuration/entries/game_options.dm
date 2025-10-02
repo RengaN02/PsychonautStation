@@ -512,3 +512,5 @@
 /datum/config_entry/keyed_list/modular_room_weight
 	key_mode = KEY_MODE_TEXT
 	value_mode = VALUE_MODE_NUM
+
+/datum/config_entry/flag/rev_victory_finish_round

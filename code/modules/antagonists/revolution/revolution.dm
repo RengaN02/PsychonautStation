@@ -295,7 +295,7 @@
 	to_chat(old_owner, span_userdanger("Revolution has been disappointed of your leader traits! You are a regular revolutionary now!"))
 
 /datum/antagonist/rev/farewell()
-	if(!owner.current)
+	if(!owner.current || deconversion_source == DECONVERTER_REV_WIN)
 		return
 	owner.current.balloon_alert_to_viewers("deconverted!")
 	if(ishuman(owner.current))
@@ -306,7 +306,7 @@
 		to_chat(owner, span_userdanger("The frame's firmware detects and deletes your neural reprogramming! You remember nothing but the name of the one who flashed you."))
 
 /datum/antagonist/rev/head/farewell()
-	if (deconversion_source == DECONVERTER_STATION_WIN || !owner.current)
+	if (deconversion_source == DECONVERTER_STATION_WIN || !owner.current || deconversion_source == DECONVERTER_REV_WIN)
 		return
 	owner.current.balloon_alert_to_viewers("deconverted!")
 	if((ishuman(owner.current)))

@@ -242,7 +242,7 @@ SUBSYSTEM_DEF(ticker)
 		return TRUE
 	if(GLOB.station_was_nuked)
 		return TRUE
-	if(GLOB.revolution_handler?.result == REVOLUTION_VICTORY)
+	if(CONFIG_GET(flag/rev_victory_finish_round) && GLOB.revolution_handler?.result == REVOLUTION_VICTORY)
 		return TRUE
 	return FALSE
 

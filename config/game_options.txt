@@ -600,3 +600,6 @@ SPY_HARD_REWARD_TC_THRESHOLD 15
 
 #MODULAR_ROOM_WEIGHT meta_supermatter 10
 #MODULAR_ROOM_WEIGHT meta_singularity 10
+
+## Revolution victory will end the game
+#REV_VICTORY_FINISH_ROUND
