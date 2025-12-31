@@ -6,7 +6,7 @@
 	hud_type = /datum/hud/living
 	interaction_flags_click = ALLOW_RESTING
 	interaction_flags_mouse_drop = ALLOW_RESTING
-
+	impact_sound = SFX_BULLET_IMPACT_FLESH
 	///Tracks the scale of the mob transformation matrix in relation to its identity. Use update_transform(resize) to change it.
 	var/current_size = RESIZE_DEFAULT_SIZE
 	///How the mob transformation matrix is scaled on init.
@@ -94,10 +94,8 @@
 	/// Lazylist of all typepaths of personalities the mob has.
 	var/list/personalities
 
-	///a list of surgery datums. generally empty, they're added when the player wants them.
-	var/list/surgeries = list()
-	///Mob specific surgery speed modifier
-	var/mob_surgery_speed_mod = 1
+	/// Lazylist of surgery speed modifiers - id to number - 2 = 2x faster, 0.5x = 0.5x slower
+	var/list/mob_surgery_speed_mods
 
 	/// Used by [living/Bump()][/mob/living/proc/Bump] and [living/PushAM()][/mob/living/proc/PushAM] to prevent potential infinite loop.
 	var/now_pushing = null

@@ -39,6 +39,9 @@
 	var/maxdistance = SOUND_RANGE + extrarange
 	var/source_z = turf_source.z
 
+	if (falloff_distance >= maxdistance)
+		CRASH("playsound(): falloff_distance is equal to or higher than maxdistance! Bump up extrarange or reduce the falloff_distance.")
+
 	if(vary && !frequency)
 		frequency = get_rand_frequency() // skips us having to do it per-sound later. should just make this a macro tbh
 
@@ -211,7 +214,7 @@
 /proc/get_rand_frequency_low_range()
 	return rand(38000, 45000)
 
-///Used to convert a SFX define into a .ogg so we can add some variance to sounds. If soundin is already a .ogg, we simply return it
+///Used to convert a SFX define into a .ogg so we can add some variance to sounds. If soundin is already a .ogg, we simply return it.
 /proc/get_sfx(soundin)
 	if(!istext(soundin))
 		return soundin

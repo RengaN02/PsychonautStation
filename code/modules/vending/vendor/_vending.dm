@@ -52,6 +52,7 @@
 	light_power = 0.7
 	light_range = MINIMUM_USEFUL_LIGHT_RANGE
 	voice_filter = "alimiter=0.9,acompressor=threshold=0.2:ratio=20:attack=10:release=50:makeup=2,highpass=f=1000"
+	impact_sound = SFX_BULLET_IMPACT_METAL
 
 	///Next world time to send a purchase message
 	var/purchase_message_cooldown
@@ -330,7 +331,7 @@
 		return CONTEXTUAL_SCREENTIP_SET
 
 	if(panel_open && istype(held_item, refill_canister))
-		context[SCREENTIP_CONTEXT_LMB] = "Restock vending machine[credits_contained ? " and collect credits" : null]"
+		context[SCREENTIP_CONTEXT_LMB] = "Restock vending machine[credits_contained ? " and collect [MONEY_NAME]" : null]"
 		return CONTEXTUAL_SCREENTIP_SET
 
 /**
@@ -370,9 +371,9 @@
 		else
 			. += span_notice("\The [src] is fully stocked.")
 	if(credits_contained < CREDITS_DUMP_THRESHOLD && credits_contained > 0)
-		. += span_notice("It should have a handfull of credits stored based on the missing items.")
+		. += span_notice("It should have a handfull of [MONEY_NAME] stored based on the missing items.")
 	else if (credits_contained > PAYCHECK_CREW)
-		. += span_notice("It should have at least a full paycheck worth of credits inside!")
+		. += span_notice("It should have at least a full paycheck worth of [MONEY_NAME] inside!")
 
 /obj/machinery/vending/update_appearance(updates = ALL)
 	. = ..()

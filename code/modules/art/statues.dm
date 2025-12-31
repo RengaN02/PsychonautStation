@@ -27,7 +27,7 @@
 	. = ..()
 	AddElement(art_type, impressiveness)
 	AddElement(/datum/element/beauty, impressiveness * 75)
-	AddComponent(/datum/component/simple_rotation)
+	AddElement(/datum/element/simple_rotation)
 	AddComponent(/datum/component/marionette)
 
 /obj/structure/statue/wrench_act(mob/living/user, obj/item/tool)
@@ -250,6 +250,7 @@
 	max_integrity = 50
 	custom_materials = list(/datum/material/snow=SHEET_MATERIAL_AMOUNT*5)
 	abstract_type = /obj/structure/statue/snow
+	impact_sound = SFX_BULLET_IMPACT_ICE
 
 /obj/structure/statue/snow/snowman
 	name = "snowman"
