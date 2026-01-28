@@ -176,8 +176,8 @@
 	crossing_mob.knockOver(owner)
 
 /obj/item/organ/brain/primate/get_attacking_limb(mob/living/carbon/human/target)
-	if(!HAS_TRAIT(owner, TRAIT_ADVANCEDTOOLUSER) || HAS_TRAIT(owner, TRAIT_FERAL_BITER))
-		return owner.get_bodypart(BODY_ZONE_HEAD)
+	if((!HAS_TRAIT(owner, TRAIT_ADVANCEDTOOLUSER) || HAS_TRAIT(owner, TRAIT_FERAL_BITER)) && owner.get_bodypart(BODY_ZONE_HEAD))
+		return list(owner.get_bodypart(BODY_ZONE_HEAD), ATTACK_EFFECT_BITE)
 	return ..()
 
 #undef MONKEY_SPEC_ATTACK_BITE_MISS_CHANCE

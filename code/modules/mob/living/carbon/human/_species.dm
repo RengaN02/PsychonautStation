@@ -771,18 +771,30 @@ GLOBAL_LIST_EMPTY(features_by_species)
 		return FALSE
 
 	var/obj/item/organ/brain/brain = user.get_organ_slot(ORGAN_SLOT_BRAIN)
-	var/obj/item/bodypart/attacking_bodypart = attacker_style?.get_attacking_limb(user, target) || brain?.get_attacking_limb(target) || user.get_active_hand()
+	var/obj/item/bodypart/attacking_bodypart = attacker_style?.get_attacking_limb(user, target) || brain?.get_attacking_limb(target)[1] || user.get_active_hand()
+
+	var/list/attacking_information = brain?.get_attacking_information(target)
 
 	// Whether or not we get some protein for a successful attack. Nom.
 	var/biting = FALSE
 
 	var/atk_verb_index = rand(1, length(attacking_bodypart.unarmed_attack_verbs))
 	var/atk_verb = attacking_bodypart.unarmed_attack_verbs[atk_verb_index]
-	var/atk_verb_continuous = "[atk_verb]s"
+	var/atk_verb_continuous = attacking_bodypart.unarmed_attack_verbs_continuous[atk_verb_index]
 	if (length(attacking_bodypart.unarmed_attack_verbs_continuous) >= atk_verb_index) // Just in case
 		atk_verb_continuous = attacking_bodypart.unarmed_attack_verbs_continuous[atk_verb_index]
 
 	var/atk_effect = attacking_bodypart.unarmed_attack_effect
+
+	var/unarmed_attack_sound = attacking_bodypart.unarmed_attack_sound
+	var/unarmed_miss_sound = attacking_bodypart.unarmed_miss_sound
+
+	if(isnull(attacker_style) && length(attacking_information))
+		atk_verb = attacking_information[1]
+		atk_verb_continuous = attacking_information[2]
+		atk_effect = attacking_information[3]
+		unarmed_attack_sound = attacking_information[4]
+		unarmed_miss_sound = attacking_information[5]
 
 	if(atk_effect == ATTACK_EFFECT_BITE)
 		if(!user.is_mouth_covered(ITEM_SLOT_MASK))
@@ -868,7 +880,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 			miss_chance = clamp(UNARMED_MISS_CHANCE_BASE - limb_accuracy + (puncher_brute_and_burn / 2), 0, UNARMED_MISS_CHANCE_MAX) //Limb miss chance + various damage. capped at 80 so there is at least a chance to land a hit.
 
 	if(!damage || !affecting || prob(miss_chance))//future-proofing for species that have 0 damage/weird cases where no zone is targeted
-		playsound(target.loc, attacking_bodypart.unarmed_miss_sound, 25, TRUE, -1)
+		playsound(target.loc, unarmed_miss_sound, 25, TRUE, -1)
 		target.visible_message(span_danger("[user]'s [atk_verb] misses [target]!"), \
 						span_danger("You avoid [user]'s [atk_verb]!"), span_hear("You hear a swoosh!"), COMBAT_MESSAGE_RANGE, user)
 		to_chat(user, span_warning("Your [atk_verb] misses [target]!"))
@@ -893,7 +905,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 			armor_block += 10
 			target.adjust_disgust(2)
 
-	playsound(target.loc, attacking_bodypart.unarmed_attack_sound, 25, TRUE, -1)
+	playsound(target.loc, unarmed_attack_sound, 25, TRUE, -1)
 
 	if(grappled && attacking_bodypart.grappled_attack_verb)
 		atk_verb = attacking_bodypart.grappled_attack_verb

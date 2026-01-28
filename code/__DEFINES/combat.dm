@@ -157,6 +157,7 @@ DEFINE_BITFIELD(status_flags, list(
 #define ATTACK_EFFECT_MECHTOXIN "mech_toxin"
 #define ATTACK_EFFECT_BOOP "boop" //Honk
 #define ATTACK_EFFECT_VOID "void"
+#define ATTACK_EFFECT_HEADBUTT "headbutt"
 
 /// Attack animation for sharp items
 #define ATTACK_ANIMATION_SLASH "slash"

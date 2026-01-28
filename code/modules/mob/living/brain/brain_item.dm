@@ -555,8 +555,8 @@
 /obj/item/organ/brain/felinid/get_attacking_limb(mob/living/carbon/human/target)
 	var/starving_cat_bonus = owner.nutrition <= NUTRITION_LEVEL_HUNGRY ? 1 : 10
 	var/crazy_feral_cat = clamp((starving_cat_bonus * owner.mob_mood?.sanity_level), 0, 100)
-	if(prob(crazy_feral_cat) || HAS_TRAIT(owner, TRAIT_FERAL_BITER))
-		return owner.get_bodypart(BODY_ZONE_HEAD) || ..()
+	if((prob(crazy_feral_cat) || HAS_TRAIT(owner, TRAIT_FERAL_BITER)) && owner.get_bodypart(BODY_ZONE_HEAD))
+		return list(owner.get_bodypart(BODY_ZONE_HEAD), ATTACK_EFFECT_BITE)
 	return ..()
 
 /obj/item/organ/brain/lizard
@@ -721,15 +721,57 @@
 /// This proc lets the mob's brain decide what bodypart to attack with in an unarmed strike.
 /obj/item/organ/brain/proc/get_attacking_limb(mob/living/carbon/human/target)
 	var/obj/item/bodypart/arm/active_hand = owner.get_active_hand()
+	var/obj/item/bodypart/active_motor = owner.get_bodypart(deprecise_zone(owner.motor_zone_selected))
 	if(HAS_TRAIT(owner, TRAIT_FERAL_BITER)) //Feral biters will always prefer biting.
 		var/obj/item/bodypart/head/found_head = owner.get_bodypart(BODY_ZONE_HEAD)
-		return found_head || active_hand // If we are a feral biter, return a usable head.
+		return list(found_head || active_motor || active_hand, ATTACK_EFFECT_BITE) // If we are a feral biter, return a usable head.
 	if(target.pulledby == owner) // if we're grabbing our target we're beating them to death with our bare hands
-		return active_hand
-	if(target.body_position == LYING_DOWN && owner.usable_legs)
-		var/obj/item/bodypart/found_bodypart = owner.get_bodypart(IS_LEFT_INDEX(active_hand.held_index) ? BODY_ZONE_L_LEG : BODY_ZONE_R_LEG)
-		return found_bodypart || active_hand
-	return active_hand
+		return list(active_hand, NONE)
+	return list(active_motor || active_hand, NONE)
+
+/obj/item/organ/brain/proc/get_attacking_information(mob/living/carbon/human/target) as /list
+	var/list/attacking_limb = get_attacking_limb(target)
+	var/obj/item/bodypart/attacking_bodypart = attacking_limb[1]
+	var/force_attack_effect = attacking_limb[2]
+
+	// Get default attacking information
+	var/atk_verb_index = rand(1, length(attacking_bodypart.unarmed_attack_verbs))
+	var/atk_verb = attacking_bodypart.unarmed_attack_verbs[atk_verb_index]
+	var/atk_verb_continuous = "[atk_verb]s"
+	var/unarmed_attack_sound = attacking_bodypart.unarmed_attack_sound
+	var/unarmed_miss_sound = attacking_bodypart.unarmed_miss_sound
+	if (length(attacking_bodypart.unarmed_attack_verbs_continuous) >= atk_verb_index) // Just in case
+		atk_verb_continuous = attacking_bodypart.unarmed_attack_verbs_continuous[atk_verb_index]
+	var/atk_effect = attacking_bodypart.unarmed_attack_effect
+
+	if(istype(attacking_bodypart, /obj/item/bodypart/head))
+		if(owner.motor_zone_selected == BODY_ZONE_HEAD) // If selected motor zone is head
+			if(force_attack_effect != ATTACK_EFFECT_BITE) // And its not forced to bite change it to headbutt
+				atk_verb = "headbutt"
+				atk_verb_continuous = "[atk_verb]s"
+				atk_effect = ATTACK_EFFECT_HEADBUTT
+				unarmed_attack_sound = 'sound/items/weapons/punch1.ogg'
+				unarmed_miss_sound = 'sound/items/weapons/punchmiss.ogg'
+
+	if(atk_effect == ATTACK_EFFECT_BITE)
+		if(owner.is_mouth_covered(ITEM_SLOT_MASK) && owner.get_active_hand()) //In the event we can't bite, emergency swap to see if we can attack with a hand.
+			attacking_bodypart = owner.get_active_hand()
+			atk_verb_index = rand(1, length(attacking_bodypart.unarmed_attack_verbs))
+			atk_verb = attacking_bodypart.unarmed_attack_verbs[atk_verb_index]
+			atk_verb_continuous = "[atk_verb]s"
+			if (length(attacking_bodypart.unarmed_attack_verbs_continuous) >= atk_verb_index) // Just in case
+				atk_verb_continuous = attacking_bodypart.unarmed_attack_verbs_continuous[atk_verb_index]
+			atk_effect = attacking_bodypart.unarmed_attack_effect
+			unarmed_attack_sound = attacking_bodypart.unarmed_attack_sound
+			unarmed_miss_sound = attacking_bodypart.unarmed_miss_sound
+
+	return list(
+		atk_verb,
+		atk_verb_continuous,
+		atk_effect,
+		unarmed_attack_sound,
+		unarmed_miss_sound
+	)
 
 /// Brains REALLY like ghosting people. we need special tricks to avoid that, namely removing the old brain with no_id_transfer
 /obj/item/organ/brain/replace_into(mob/living/carbon/new_owner)

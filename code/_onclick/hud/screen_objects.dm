@@ -586,6 +586,7 @@
 	screen_loc = ui_zonesel
 	mouse_over_pointer = MOUSE_HAND_POINTER
 	var/overlay_icon = 'icons/hud/screen_gen.dmi'
+	var/motor_overlay_icon = 'icons/psychonaut/hud/screen_gen.dmi'
 	var/static/list/hover_overlays_cache = list()
 	var/hovering
 
@@ -599,6 +600,10 @@
 	var/choice = get_zone_at(icon_x, icon_y)
 	if (!choice)
 		return 1
+
+	if(LAZYACCESS(modifiers, RIGHT_CLICK))
+		var/motor_zone = get_motor_zone_at(choice)
+		return set_selected_motor_zone(motor_zone, usr)
 
 	return set_selected_zone(choice, usr)
 
@@ -678,6 +683,17 @@
 							return BODY_ZONE_PRECISE_EYES
 				return BODY_ZONE_HEAD
 
+/atom/movable/screen/zone_sel/proc/get_motor_zone_at(checked_zone)
+	switch(checked_zone)
+		if(BODY_ZONE_R_LEG, BODY_ZONE_L_LEG, BODY_ZONE_PRECISE_MOUTH, BODY_ZONE_HEAD)
+			return checked_zone
+		if(BODY_ZONE_PRECISE_EYES)
+			return BODY_ZONE_HEAD
+		if(null)
+			return null
+		else
+			return BODY_ZONE_R_ARM
+
 /atom/movable/screen/zone_sel/proc/set_selected_zone(choice, mob/user, should_log = TRUE)
 	if(user != hud?.mymob)
 		return
@@ -691,11 +707,28 @@
 
 	return TRUE
 
+/atom/movable/screen/zone_sel/proc/set_selected_motor_zone(choice, mob/user, should_log = TRUE)
+	if(isnull(choice))
+		return
+
+	if(user != hud?.mymob)
+		return
+
+	if(choice != hud.mymob.motor_zone_selected)
+		if(should_log)
+			hud.mymob.log_manual_motor_zone_selected_update("screen_hud", new_target = choice)
+		hud.mymob.motor_zone_selected = choice
+		update_appearance()
+		SEND_SIGNAL(user, COMSIG_MOB_SELECTED_ZONE_SET, choice)
+
+	return TRUE
+
 /atom/movable/screen/zone_sel/update_overlays()
 	. = ..()
 	if(!hud?.mymob)
 		return
 	. += mutable_appearance(overlay_icon, "[hud.mymob.zone_selected]")
+	. += mutable_appearance(motor_overlay_icon, "[hud.mymob.motor_zone_selected]")
 
 /atom/movable/screen/zone_sel/alien
 	icon = 'icons/hud/screen_alien.dmi'
@@ -703,6 +736,13 @@
 
 /atom/movable/screen/zone_sel/robot
 	icon = 'icons/hud/screen_cyborg.dmi'
+
+/obj/effect/overlay/motor_sel
+	icon = 'icons/psychonaut/hud/screen_gen.dmi'
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	alpha = 128
+	anchored = TRUE
+	plane = ABOVE_HUD_PLANE
 
 /atom/movable/screen/flash
 	name = "flash"

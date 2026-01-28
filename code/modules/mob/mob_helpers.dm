@@ -545,6 +545,49 @@
 	)
 
 /**
+ * Generates a log message when a user manually changes their motor zone.
+ * Only need to one of new_target or old_target, and the other will be auto populated with the current selected zone.
+ */
+/mob/proc/log_manual_motor_zone_selected_update(source, new_target, old_target)
+	if(!new_target && !old_target)
+		CRASH("Called log_manual_motor_zone_selected_update without specifying a new or old target")
+
+	old_target ||= motor_zone_selected
+	new_target ||= motor_zone_selected
+	if(old_target == new_target)
+		return
+
+	var/list/data = list(
+		"new_target" = new_target,
+		"old_target" = old_target,
+	)
+
+	if(mind?.assigned_role)
+		data["assigned_role"] = mind.assigned_role.title
+	if(job)
+		data["assigned_job"] = job
+
+	var/atom/handitem = get_active_held_item()
+	if(handitem)
+		data["active_item"] = list(
+			"type" = handitem.type,
+			"name" = handitem.name,
+		)
+
+	var/atom/offhand = get_inactive_held_item()
+	if(offhand)
+		data["offhand_item"] = list(
+			"type" = offhand.type,
+			"name" = offhand.name,
+		)
+
+	logger.Log(
+		LOG_CATEGORY_TARGET_MOTOR_ZONE_SWITCH,
+		"[key_name(src)] manually changed selected motor zone",
+		data,
+	)
+
+/**
  * Returns an associative list of the logs of a certain amount of lines spoken recently by this mob
  * copy_amount - number of lines to return
  * line_chance - chance to return a line, if you don't want just the most recent x lines

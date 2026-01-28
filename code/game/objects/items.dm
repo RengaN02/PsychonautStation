@@ -1584,7 +1584,11 @@
 			used_item.animate_attack(src, attacked_atom, animation_type)
 		return
 
-	var/image/attack_image = image(icon = 'icons/effects/effects.dmi', icon_state = visual_effect_icon)
+	var/attack_animation_icon = 'icons/effects/effects.dmi'
+	if(visual_effect_icon == ATTACK_EFFECT_HEADBUTT)
+		attack_animation_icon = 'icons/psychonaut/effects/effects.dmi'
+
+	var/image/attack_image = image(icon = attack_animation_icon, icon_state = visual_effect_icon)
 	attack_image.plane = attacked_atom.plane + 1
 	// Scale the icon.
 	attack_image.transform *= 0.4

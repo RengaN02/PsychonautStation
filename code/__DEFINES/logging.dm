@@ -115,6 +115,7 @@
 // Leave the underscore, it's there for backwards compatibility reasons
 #define LOG_CATEGORY_SUSPICIOUS_LOGIN "suspicious_logins"
 #define LOG_CATEGORY_TARGET_ZONE_SWITCH "target-zone-switch"
+#define LOG_CATEGORY_TARGET_MOTOR_ZONE_SWITCH "target-motor-zone-switch"
 #define LOG_CATEGORY_TELECOMMS "telecomms"
 #define LOG_CATEGORY_TOOL "tool"
 #define LOG_CATEGORY_TRANSPORT "transport"

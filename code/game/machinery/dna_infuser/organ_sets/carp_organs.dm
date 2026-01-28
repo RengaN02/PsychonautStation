@@ -143,7 +143,7 @@
 	deltimer(cooldown_timer)
 
 /obj/item/organ/brain/carp/get_attacking_limb(mob/living/carbon/human/target)
-	return owner.get_bodypart(BODY_ZONE_HEAD)
+	return list(owner.get_bodypart(BODY_ZONE_HEAD), ATTACK_EFFECT_BITE)
 
 /obj/item/organ/brain/carp/proc/unsatisfied_nomad()
 	owner.add_mood_event("nomad", /datum/mood_event/unsatisfied_nomad)
